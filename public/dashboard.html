@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #f8e1e7, #fdf6f0);
+    margin: 0;
+    padding: 20px;
+}
+
+/* 🔥 HEADER */
+.header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.admin {
+    font-weight: bold;
+    color: #c48b9f;
+    margin-right: 10px;
+}
+
+.logout {
+    background: #e57373;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+/* 🔥 TITULO CENTRADO */
+.titulo-centro {
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    color: #c48b9f;
+}
+
+.titulo-centro .fila {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.titulo-centro img {
+    width: 80px;
+}
+
+/* 🔥 OCULTAR ORIGINALES */
+h1, h2 {
+    display: none;
+}
+
+.botones {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+    flex-wrap: nowrap;
+}
+
+.botones button {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 15px;
+}
+
+
+button {
+    background: #c48b9f;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+    min-width: 110px;
+}
+
+button:hover {
+    background: #b3748a;
+}
+
+.cancelar {
+    display: none;
+}
+
+hr {
+    margin: 10px 0 20px 0;
+    border: none;
+    border-top: 2px solid #ddd;
+}
+
+form {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    max-width: 490px;
+    margin: auto;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+input:focus {
+    outline: none;
+    border-color: #c48b9f;
+    box-shadow: 0 0 0 3px rgba(196, 139, 159, 0.15);
+}
+
+/* 🔥 CONTENEDOR BUSCADOR */
+.buscador-contenedor {
+    position: relative;
+}
+
+/* 🔥 LISTA BONITA */
+.lista-buscador {
+    position: absolute;
+    top: calc(100% - 7px);
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #e2c3ce;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 500;
+    display: none;
+    box-sizing: border-box;
+}
+
+/* 🔥 MOSTRAR LISTA */
+.lista-buscador.mostrar {
+    display: block;
+}
+
+/* 🔥 OPCIÓN */
+.opcion-buscador {
+    padding: 11px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #f3e8ec;
+    color: #444;
+    transition: 0.2s;
+}
+
+.opcion-buscador:last-child {
+    border-bottom: none;
+}
+
+.opcion-buscador:hover {
+    background: #f8e1e7;
+    color: #a95e78;
+}
+
+/* 🔥 NOMBRE DEL ARTÍCULO EN LA LISTA */
+.nombre-articulo-lista {
+    font-weight: bold;
+    color: #444;
+}
+
+/* 🔥 DESCRIPCIÓN DEL ARTÍCULO EN LA LISTA */
+.descripcion-articulo-lista {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #888;
+    line-height: 1.4;
+}
+
+/* 🔥 SIN RESULTADOS */
+.sin-resultados {
+    padding: 12px;
+    color: #888;
+    font-size: 13px;
+    text-align: center;
+}
+
+/* 🔥 TOAST ARRIBA CENTRO (PRO) */
+.toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: white;
+    color: #333;
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-weight: 500;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    opacity: 0;
+    transition: all 0.35s ease;
+    z-index: 1000;
+    text-align: center;
+    min-width: 240px;
+    pointer-events: none;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ICONO */
+.toast::before {
+    content: "✔";
+    display: block;
+    font-size: 28px;
+    color: #4caf50;
+    margin-bottom: 8px;
+}
+
+/* 🔥 TOAST ERROR */
+.toast.error::before {
+    content: "!";
+    color: #e57373;
+}
+
+.toast.error {
+    color: #c62828;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- 🔥 MENSAJE PROFESIONAL -->
+<div id="mensajeExito" class="toast">
+    Pedido guardado correctamente
+</div>
+
+<!-- 🔥 HEADER DERECHA -->
+<div class="header">
+    <span class="admin">📊 Panel Administrador</span>
+    <a href="/logout" class="logout">Cerrar sesión</a>
+</div>
+
+<!-- 🔥 TITULO CENTRADO -->
+<div class="titulo-centro">
+    <div class="fila">
+        <h2 style="display:block;">📝 Crear Pedido</h2>
+        <img src="logo.jpg" alt="Logo">
+    </div>
+</div>
+
+<hr>
+<form id="formPedido">
+
+    <!-- 🔥 BUSCADOR CLIENTE -->
+    <div class="buscador-contenedor">
+
+        <input
+            type="text"
+            id="clienteInput"
+            placeholder="Buscar o seleccionar cliente..."
+            autocomplete="off"
+            required
+        >
+
+        <div
+            id="listaClientes"
+            class="lista-buscador"
+        ></div>
+
+    </div>
+
+    <!-- 🔥 BUSCADOR ARTÍCULO -->
+    <div class="buscador-contenedor">
+
+        <input
+            type="text"
+            id="articulo"
+            placeholder="Buscar o escribir artículo..."
+            autocomplete="off"
+            required
+        >
+
+        <div
+            id="listaArticulos"
+            class="lista-buscador"
+        ></div>
+
+    </div>
+
+    <input
+        type="number"
+        id="cantidad"
+        placeholder="Cantidad"
+        min="1"
+        required
+    >
+
+    <input
+        type="number"
+        id="precio"
+        placeholder="Precio producto"
+        min="0"
+        step="0.01"
+        required
+    >
+
+    <div class="botones">
+
+        <button type="submit">
+            Guardar
+        </button>
+
+        <button
+            type="button"
+            id="btnPaisOrigen"
+        >
+            País: EEUU
+        </button>
+
+        <button
+            type="button"
+            onclick="window.location.href='/add_article.html'"
+        >
+            Agregar artículo
+        </button>
+
+        <button
+            type="button"
+            onclick="window.location.href='/add_weight.html'"
+        >
+            Agregar peso
+        </button>
+
+    </div>
+
+</form>
+
+<script>
+
+let clientes = [];
+let articulos = [];
+
+let clienteSeleccionado = null;
+let articuloSeleccionado = null;
+let precioUnitarioSeleccionado = null;
+let paisOrigen = 'En_EEUU';
+
+const clienteInput =
+    document.getElementById('clienteInput');
+
+const listaClientes =
+    document.getElementById('listaClientes');
+
+const articuloInput =
+    document.getElementById('articulo');
+
+const listaArticulos =
+    document.getElementById('listaArticulos');
+
+const precioInput =
+    document.getElementById('precio');
+
+const cantidadInput =
+    document.getElementById('cantidad');
+
+ const btnPaisOrigen =
+    document.getElementById('btnPaisOrigen');
+
+btnPaisOrigen.addEventListener(
+    'click',
+    () => {
+
+        if(paisOrigen === 'En_EEUU'){
+
+            paisOrigen = 'COLOMBIA';
+
+            btnPaisOrigen.textContent =
+                'País: Colombia';
+
+        }else{
+
+            paisOrigen = 'En_EEUU';
+
+            btnPaisOrigen.textContent =
+                'País: EEUU';
+
+        }
+
+    }
+);
+
+
+// 🔥 NORMALIZAR TEXTO
+function normalizar(texto){
+
+    return String(texto || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+
+}
+
+
+// 🔥 MENSAJE PROFESIONAL
+function mostrarMensaje(
+    texto = 'Pedido guardado correctamente',
+    tipo = 'ok'
+){
+
+    const toast =
+        document.getElementById("mensajeExito");
+
+    toast.textContent =
+        texto;
+
+    toast.classList.remove('error');
+
+    if(tipo === 'error'){
+        toast.classList.add('error');
+    }
+
+    toast.classList.add("show");
+
+    setTimeout(()=>{
+        toast.classList.remove("show");
+    }, 2200);
+
+}
+
+
+// 🔥 CARGAR CLIENTES
+async function cargarClientes(){
+
+    try{
+
+        const res =
+            await fetch('/clientes');
+
+        clientes =
+            await res.json();
+
+    }catch(error){
+
+        console.error(
+            'Error cargando clientes:',
+            error
+        );
+
+        clientes = [];
+
+    }
+
+}
+
+
+// 🔥 CARGAR ARTÍCULOS
+async function cargarArticulos(){
+
+    try{
+
+        const res =
+            await fetch('/articulos');
+
+        articulos =
+            await res.json();
+
+    }catch(error){
+
+        console.error(
+            'Error cargando artículos:',
+            error
+        );
+
+        articulos = [];
+
+    }
+
+}
+
+
+// 🔥 MOSTRAR CLIENTES
+function mostrarClientes(filtro = ''){
+
+    const buscar =
+        normalizar(filtro);
+
+    const resultados =
+        clientes.filter(c => {
+
+            const nombreCompleto =
+                normalizar(
+                    `${c.nombre} ${c.apellido}`
+                );
+
+            return nombreCompleto.includes(buscar);
+
+        });
+
+    listaClientes.innerHTML = '';
+
+    if(resultados.length === 0){
+
+        listaClientes.innerHTML = `
+            <div class="sin-resultados">
+                No se encontraron clientes
+            </div>
+        `;
+
+        listaClientes.classList.add('mostrar');
+
+        return;
+
+    }
+
+    resultados.forEach(c => {
+
+        const opcion =
+            document.createElement('div');
+
+        opcion.className =
+            'opcion-buscador';
+
+        opcion.textContent =
+            `${c.nombre} ${c.apellido}`;
+
+        opcion.addEventListener(
+            'mousedown',
+            (e) => {
+
+                e.preventDefault();
+
+                seleccionarCliente(c);
+
+            }
+        );
+
+        listaClientes.appendChild(opcion);
+
+    });
+
+    listaClientes.classList.add('mostrar');
+
+}
+
+
+// 🔥 SELECCIONAR CLIENTE
+function seleccionarCliente(cliente){
+
+    clienteSeleccionado =
+        cliente;
+
+    clienteInput.value =
+        `${cliente.nombre} ${cliente.apellido}`;
+
+    listaClientes.classList.remove('mostrar');
+
+}
+
+
+// 🔥 AL ENTRAR AL CLIENTE
+clienteInput.addEventListener(
+    'focus',
+    () => {
+
+        mostrarClientes(
+            clienteInput.value
+        );
+
+    }
+);
+
+
+// 🔥 AL ESCRIBIR CLIENTE
+clienteInput.addEventListener(
+    'input',
+    () => {
+
+        clienteSeleccionado = null;
+
+        mostrarClientes(
+            clienteInput.value
+        );
+
+    }
+);
+
+
+// 🔥 MOSTRAR ARTÍCULOS
+function mostrarArticulos(filtro = ''){
+
+    const buscar =
+        normalizar(filtro);
+
+    const resultados =
+        articulos.filter(item => {
+
+            return normalizar(
+                item.nombre
+            ).includes(buscar);
+
+        });
+
+    listaArticulos.innerHTML = '';
+
+    if(resultados.length === 0){
+
+        listaArticulos.innerHTML = `
+            <div class="sin-resultados">
+                No se encontraron artículos guardados.
+            </div>
+        `;
+
+        listaArticulos.classList.add('mostrar');
+
+        return;
+
+    }
+
+    resultados.forEach(item => {
+
+        const opcion =
+            document.createElement('div');
+
+        opcion.className =
+            'opcion-buscador';
+
+
+        const nombre =
+            document.createElement('div');
+
+        nombre.className =
+            'nombre-articulo-lista';
+
+        nombre.textContent =
+            item.nombre || '';
+
+        opcion.appendChild(nombre);
+
+
+        if(item.descripcion){
+
+            const descripcion =
+                document.createElement('div');
+
+            descripcion.className =
+                'descripcion-articulo-lista';
+
+            descripcion.textContent =
+                item.descripcion;
+
+            opcion.appendChild(
+                descripcion
+            );
+
+        }
+
+
+        opcion.addEventListener(
+            'mousedown',
+            (e) => {
+
+                e.preventDefault();
+
+                seleccionarArticulo(item);
+
+            }
+        );
+
+        listaArticulos.appendChild(opcion);
+
+    });
+
+    listaArticulos.classList.add('mostrar');
+
+}
+
+
+// 🔥 ACTUALIZAR PRECIO SEGÚN CANTIDAD
+function actualizarPrecioPorCantidad(){
+
+    if(
+        !articuloSeleccionado ||
+        precioUnitarioSeleccionado === null
+    ){
+        return;
+    }
+
+    const cantidad =
+        Math.max(
+            Number(cantidadInput.value) || 1,
+            1
+        );
+
+    const total =
+        precioUnitarioSeleccionado * cantidad;
+
+    precioInput.value =
+        Number(total.toFixed(2));
+
+}
+
+
+// 🔥 SELECCIONAR ARTÍCULO
+function seleccionarArticulo(item){
+
+    articuloSeleccionado =
+        item;
+
+    precioUnitarioSeleccionado =
+        Number(item.tasa) || 0;
+
+    articuloInput.value =
+        item.nombre || '';
+
+    actualizarPrecioPorCantidad();
+
+    listaArticulos
+        .classList
+        .remove('mostrar');
+
+}
+
+
+// 🔥 BUSCAR ARTÍCULO EXACTO POR NOMBRE
+function buscarArticulo(nombre){
+
+    return articulos.find(item =>
+
+        normalizar(item.nombre) ===
+        normalizar(nombre)
+
+    );
+
+}
+
+
+// 🔥 AL ENTRAR AL ARTÍCULO
+articuloInput.addEventListener(
+    'focus',
+    () => {
+
+        mostrarArticulos(
+            articuloInput.value
+        );
+
+    }
+);
+
+
+// 🔥 AL ESCRIBIR ARTÍCULO
+articuloInput.addEventListener(
+    'input',
+    () => {
+
+        articuloSeleccionado = null;
+        precioUnitarioSeleccionado = null;
+
+        mostrarArticulos(
+            articuloInput.value
+        );
+
+    }
+);
+
+
+// 🔥 ACTUALIZAR PRECIO AL CAMBIAR CANTIDAD
+cantidadInput.addEventListener(
+    'input',
+    () => {
+
+        actualizarPrecioPorCantidad();
+
+    }
+);
+
+
+// 🔥 CERRAR LISTAS AL HACER CLICK AFUERA
+document.addEventListener(
+    'mousedown',
+    (e) => {
+
+        if(
+            !clienteInput.contains(e.target) &&
+            !listaClientes.contains(e.target)
+        ){
+
+            listaClientes
+                .classList
+                .remove('mostrar');
+
+        }
+
+        if(
+            !articuloInput.contains(e.target) &&
+            !listaArticulos.contains(e.target)
+        ){
+
+            listaArticulos
+                .classList
+                .remove('mostrar');
+
+        }
+
+    }
+);
+
+
+// 🔥 BUSCAR CLIENTE POR NOMBRE
+function buscarCliente(nombreCompleto){
+
+    return clientes.find(c =>
+
+        normalizar(
+            `${c.nombre} ${c.apellido}`
+        ) ===
+        normalizar(nombreCompleto)
+
+    );
+
+}
+
+
+// 🔥 GUARDAR PEDIDO
+document
+.getElementById('formPedido')
+.addEventListener(
+    'submit',
+    async (e)=>{
+
+        e.preventDefault();
+
+
+        // 🔥 BUSCAR CLIENTE SI LO ESCRIBIÓ
+        // EXACTAMENTE PERO NO HIZO CLICK
+        if(!clienteSeleccionado){
+
+            clienteSeleccionado =
+                buscarCliente(
+                    clienteInput.value
+                );
+
+        }
+
+
+        if(!clienteSeleccionado){
+
+            mostrarMensaje(
+                'Seleccione un cliente válido de la lista',
+                'error'
+            );
+
+            clienteInput.focus();
+
+            return;
+
+        }
+
+
+        const articulo =
+            articuloInput.value.trim();
+
+        const cantidad =
+            document
+            .getElementById('cantidad')
+            .value;
+
+        if(!articulo){
+
+            mostrarMensaje(
+                'Ingrese un artículo',
+                'error'
+            );
+
+            return;
+
+        }
+
+
+        /*
+            🔥 SI ESCRIBIÓ EXACTAMENTE
+            UN ARTÍCULO EXISTENTE,
+            LO SELECCIONAMOS AUTOMÁTICAMENTE
+        */
+        if(!articuloSeleccionado){
+
+            const encontrado =
+                buscarArticulo(articulo);
+
+            if(encontrado){
+
+                articuloSeleccionado =
+                    encontrado;
+
+                precioUnitarioSeleccionado =
+                    Number(encontrado.tasa) || 0;
+
+                actualizarPrecioPorCantidad();
+
+            }
+
+        }
+
+
+        /*
+            🔥 PRECIO A GUARDAR
+            SI EL ARTÍCULO VIENE DEL CATÁLOGO,
+            SE GUARDA EL PRECIO UNITARIO.
+            EL CAMPO VISIBLE MUESTRA EL TOTAL
+            SEGÚN LA CANTIDAD.
+        */
+        const precio =
+            articuloSeleccionado &&
+            precioUnitarioSeleccionado !== null
+                ? precioUnitarioSeleccionado
+                : precioInput.value;
+
+
+                /*
+            🔥 DESCRIPCIÓN
+            NO SE MUESTRA EN EL DASHBOARD.
+            SE OBTIENE DEL ARTÍCULO GUARDADO.
+        */
+        const descripcion =
+            articuloSeleccionado
+                ? articuloSeleccionado.descripcion || null
+                : null;
+
+
+        const data = {
+
+            id_usuario:
+                clienteSeleccionado.id_usuario,
+
+            id_articulo:
+                articuloSeleccionado
+                    ? articuloSeleccionado.id_articulo
+                    : null,
+
+            articulo:
+                articulo,
+
+            descripcion:
+                descripcion,
+
+            cantidad:
+                cantidad,
+
+            precio_unidad:
+                precio,
+
+            estado:
+                paisOrigen
+
+        };
+
+
+        console.log(
+            "📦 Enviando pedido:",
+            data
+        );
+
+
+        try{
+
+            const res =
+                await fetch(
+                    '/create-order',
+                    {
+                        method:'POST',
+
+                        headers:{
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        body:
+                            JSON.stringify(data)
+                    }
+                );
+
+
+            if(res.ok){
+
+                mostrarMensaje(
+                    'Pedido guardado correctamente'
+                );
+
+
+                document
+                    .getElementById('formPedido')
+                    .reset();
+
+
+                clienteSeleccionado = null;
+
+                articuloSeleccionado = null;
+                precioUnitarioSeleccionado = null;
+
+
+                listaClientes
+                    .classList
+                    .remove('mostrar');
+
+
+                listaArticulos
+                    .classList
+                    .remove('mostrar');
+
+
+                await cargarArticulos();
+
+
+            }else{
+
+                mostrarMensaje(
+                    'Error al guardar el pedido',
+                    'error'
+                );
+
+            }
+
+
+        }catch(error){
+
+            console.error(
+                'Error al guardar:',
+                error
+            );
+
+            mostrarMensaje(
+                'No se pudo guardar el pedido',
+                'error'
+            );
+
+        }
+
+    }
+);
+
+
+// 🔥 INICIO
+async function iniciar(){
+
+    await Promise.all([
+        cargarClientes(),
+        cargarArticulos()
+    ]);
+
+}
+
+iniciar();
+
+</script>
+
+</body>
+</html>

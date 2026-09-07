@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Payments</title>
+</head>
+
+<body>
+
+<h1>💰 Payments</h1>
+
+<button onclick="window.location.href='/dashboard.html'">
+    ⬅ Back
+</button>
+
+<br><br>
+
+<input type="text" id="search" placeholder="Search client..." onkeyup="filterTable()">
+
+<br><br>
+
+<table border="1">
+<thead>
+<tr>
+<th>Client</th>
+<th>Product</th>
+<th>Total</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="table"></tbody>
+
+</table>
+
+<script>
+
+// LOAD ORDERS
+async function loadOrders(){
+    const res = await fetch('/orders');
+    const data = await res.json();
+
+    let html = '';
+
+    data.forEach(p => {
+        html += `
+        <tr>
+            <td>${p.nombre} ${p.apellido}</td>
+            <td>${p.articulo}</td>
+            <td>₡${p.total_precio}</td>
+            <td>
+                <button onclick="addPayment(${p.id_pedido})">
+                    Add Payment
+                </button>
+            </td>
+        </tr>
+        `;
+    });
+
+    document.getElementById('table').innerHTML = html;
+}
+
+// ADD PAYMENT
+async function addPayment(id){
+
+    const amount = prompt("Enter amount");
+    if(!amount) return;
+
+    const method = prompt("Payment method (cash, sinpe)");
+    if(!method) return;
+
+    await fetch('/add-payment',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+            id_pedido: id,
+            amount: amount,
+            payment_method: method
+        })
+    });
+
+    alert('Payment saved ✅');
+}
+
+// FILTER
+function filterTable() {
+    const value = document.getElementById('search').value.toLowerCase();
+    const rows = document.querySelectorAll('#table tr');
+
+    rows.forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(value) ? '' : 'none';
+    });
+}
+
+// START
+loadOrders();
+
+</script>
+
+</body>
+</html>

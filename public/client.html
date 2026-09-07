@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pedidos Cliente - Tienda Ana</title>
+
+<style>
+
+    /* ========================================
+       🔹 RESET
+    ======================================== */
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+
+    /* ========================================
+       🔹 PÁGINA GENERAL
+    ======================================== */
+
+    body {
+
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+        background:
+            linear-gradient(
+                135deg,
+                #fdf6f0,
+                #f8e1e7
+            );
+
+        color: #4b3f42;
+
+        min-height: 100vh;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        padding: 20px;
+    }
+
+
+
+    /* ========================================
+       🔹 HEADER
+    ======================================== */
+
+    #header {
+
+        width: 100%;
+        max-width: 1200px;
+
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+
+        padding: 15px 20px;
+
+        background-color: #fffaf8;
+
+        border: 1px solid #f2d5dd;
+
+        border-radius: 12px;
+
+        box-shadow:
+            0 4px 12px rgba(150, 90, 110, 0.12);
+
+        margin-bottom: 30px;
+    }
+
+
+
+    /* 🔹 Nombre del cliente */
+
+    #nombreCliente {
+
+        font-weight: bold;
+
+        font-size: 16px;
+
+        color: #714f5b;
+
+        margin-right: 20px;
+    }
+
+/* 🔹 Mi perfil */
+
+#miPerfil {
+
+    background-color: #c48b9f;
+
+    color: white;
+
+    border: none;
+
+    padding: 9px 17px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    margin-right: 10px;
+
+    transition:
+        background-color 0.3s,
+        transform 0.2s;
+}
+
+
+#miPerfil:hover {
+
+    background-color: #b3748a;
+
+    transform: translateY(-1px);
+
+}
+/* 🔹 Mi perfil */
+
+#miPerfil {
+
+    background-color: #c48b9f;
+
+    color: white;
+
+    border: none;
+
+    padding: 9px 17px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    margin-right: 10px;
+
+    transition:
+        background-color 0.3s,
+        transform 0.2s;
+}
+
+
+#miPerfil:hover {
+
+    background-color: #b3748a;
+
+    transform: translateY(-1px);
+}
+
+
+/* 🔹 Cerrar sesión */
+
+#cerrarSesion {
+
+    background-color: #d95c68;
+
+    color: white;
+
+    border: none;
+
+    padding: 9px 17px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition:
+        background-color 0.3s,
+        transform 0.2s;
+}
+
+
+#cerrarSesion:hover {
+
+    background-color: #c94c59;
+
+    transform: translateY(-1px);
+}
+
+
+    /* ========================================
+       🔹 CONTENEDOR DE TABLA
+    ======================================== */
+
+    .tabla-container {
+
+        width: 100%;
+        max-width: 1200px;
+
+        background-color: #fffaf8;
+
+        border: 1px solid #f1d4dc;
+
+        border-radius: 12px;
+
+        box-shadow:
+            0 5px 18px rgba(150, 90, 110, 0.13);
+
+        padding: 20px;
+    }
+
+
+
+    table {
+
+        width: 100%;
+
+        border-collapse: collapse;
+
+        margin-top: 10px;
+
+        overflow: hidden;
+    }
+
+
+
+    th,
+    td {
+
+        padding: 13px 15px;
+
+        text-align: left;
+    }
+
+
+
+    /* 🔹 Encabezado de la tabla */
+
+    th {
+
+        background-color: #d990a4;
+
+        color: white;
+
+        font-weight: 600;
+
+        font-size: 14px;
+    }
+
+
+
+    td {
+
+        background-color: #fffdfc;
+
+        border-bottom: 1px solid #f3e3e7;
+
+        font-size: 14px;
+
+        color: #55494d;
+    }
+
+
+
+    tbody tr:hover td {
+
+        background-color: #fff4f6;
+    }
+
+
+
+    /* ========================================
+       🔹 ESTADOS
+    ======================================== */
+
+    .estado {
+
+        padding: 5px 10px;
+
+        border-radius: 12px;
+
+        font-size: 12px;
+
+        font-weight: 600;
+
+        color: white;
+
+        display: inline-block;
+    }
+
+
+    .En_EEUU {
+
+        background-color: #3498db;
+    }
+
+
+    .EN_CAMINO {
+
+        background-color: #f39c12;
+    }
+
+
+    .COSTA_RICA {
+
+        background-color: #8e44ad;
+    }
+
+
+    .EMPACADO {
+
+        background-color: #16a085;
+    }
+
+
+    .ENTREGADO {
+
+        background-color: #27ae60;
+    }
+
+
+
+    /* ========================================
+       🔹 MENSAJE SIN PEDIDOS
+    ======================================== */
+
+    .sin-pedidos {
+
+        text-align: center;
+
+        color: #9a7d85;
+
+        padding: 30px;
+
+        font-size: 15px;
+    }
+
+
+
+    /* ========================================
+       🔹 REDES SOCIALES
+    ======================================== */
+
+    .contacto {
+
+        width: 100%;
+        max-width: 1200px;
+
+        /* 🔹 Más abajo de la tabla */
+
+        margin-top: 140px;
+
+        margin-bottom: 15px;
+
+        background-color: #fffaf8;
+
+        border: 1px solid #efccd6;
+
+        border-radius: 12px;
+
+        box-shadow:
+            0 5px 18px rgba(150, 90, 110, 0.13);
+
+        overflow: hidden;
+
+        text-align: center;
+    }
+
+
+
+    /* 🔹 Franja superior */
+
+    .contacto-titulo {
+
+        background-color: #d990a4;
+
+        color: white;
+
+        padding: 14px 20px;
+    }
+
+
+
+    .contacto-titulo h3 {
+
+        margin: 0;
+
+        font-size: 18px;
+
+        font-weight: 600;
+    }
+
+
+
+    /* 🔹 Parte interior */
+
+    .contacto-contenido {
+
+        padding: 26px;
+    }
+
+
+
+    .contacto-contenido p {
+
+        color: #856d74;
+
+        font-size: 14px;
+
+        margin-bottom: 25px;
+    }
+
+
+
+    .redes {
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+        gap: 22px;
+
+        flex-wrap: wrap;
+    }
+
+
+
+    .red-social {
+
+        text-decoration: none;
+
+        color: #714f5b;
+
+        font-weight: 600;
+
+        font-size: 12px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 6px;
+
+        min-width: 65px;
+
+        padding: 7px;
+
+        border-radius: 10px;
+
+        transition:
+            transform 0.2s,
+            background-color 0.2s;
+    }
+
+
+
+    .red-social:hover {
+
+        transform: translateY(-4px);
+
+        background-color: #fcecef;
+    }
+
+
+
+    /* ========================================
+       🔹 LOGOS REALES
+    ======================================== */
+
+    .logo-red {
+
+        width: 32px;
+
+        height: 32px;
+
+        object-fit: contain;
+
+        display: block;
+
+        border-radius: 8px;
+
+        transition:
+            transform 0.2s;
+    }
+
+
+
+    .red-social:hover .logo-red {
+
+        transform: scale(1.08);
+    }
+
+
+
+    /* ========================================
+       🔹 FOOTER
+    ======================================== */
+
+    .footer {
+
+        margin-top: 8px;
+
+        padding: 12px;
+
+        text-align: center;
+
+        color: #9c7f88;
+
+        font-size: 12px;
+    }
+
+
+
+    /* ========================================
+       🔹 RESPONSIVE
+    ======================================== */
+
+    @media(max-width:700px){
+
+        body {
+
+            padding: 10px;
+        }
+
+
+
+        #header {
+
+            flex-wrap: wrap;
+
+            gap: 10px;
+        }
+
+
+
+        #nombreCliente {
+
+            margin-right: 10px;
+
+            font-size: 14px;
+        }
+
+
+
+        .tabla-container {
+
+            overflow-x: auto;
+        }
+
+
+
+        table {
+
+            min-width: 750px;
+        }
+
+
+
+        .redes {
+
+            gap: 25px;
+        }
+
+
+
+        .contacto {
+
+            margin-top: 90px;
+        }
+
+    }
+
+</style>
+
+</head>
+
+
+<body>
+
+
+
+<!-- ========================================
+     🔹 HEADER
+======================================== -->
+
+<div id="header">
+
+    <span id="nombreCliente">
+
+        👤 Cargando cliente...
+
+    </span>
+
+    <button id="miPerfil">
+
+        Mi perfil
+
+    </button>
+
+    <button id="cerrarSesion">
+
+        Cerrar sesión
+
+    </button>
+
+</div>
+
+
+
+<!-- ========================================
+     🔹 TABLA DE PEDIDOS
+======================================== -->
+
+<div class="tabla-container">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Artículo
+                </th>
+
+                <th>
+                    Cantidad
+                </th>
+
+                <th>
+                    Precio
+                </th>
+
+                <th>
+                    Envío
+                </th>
+
+                <th>
+                    Abono
+                </th>
+
+                <th>
+                    Estado del paquete
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody id="tabla">
+
+            <!-- Pedidos se llenan aquí -->
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+
+<!-- ========================================
+     🔹 CONTACTO Y REDES SOCIALES
+======================================== -->
+
+<div class="contacto">
+
+
+    <div class="contacto-titulo">
+
+        <h3>
+            Tienda Ana Compras
+        </h3>
+
+    </div>
+
+
+    <div class="contacto-contenido">
+
+
+        <p>
+            Contáctanos o síguenos en nuestras redes sociales
+        </p>
+
+
+        <div class="redes">
+
+
+            <!-- WHATSAPP -->
+
+            <a
+                class="red-social"
+                href="https://wa.me/50685039316"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+
+                <img
+                    src="whatsapp.png"
+                    class="logo-red"
+                    alt="WhatsApp"
+                >
+
+                <span>
+                    WhatsApp
+                </span>
+
+            </a>
+
+
+
+            <!-- FACEBOOK -->
+
+            <a
+                class="red-social"
+                href="https://www.facebook.com/share/18zRyz8dEo/"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+
+                <img
+                    src="facebook.png"
+                    class="logo-red"
+                    alt="Facebook"
+                >
+
+                <span>
+                    Facebook
+                </span>
+
+            </a>
+
+
+
+            <!-- INSTAGRAM -->
+
+            <a
+                class="red-social"
+                href="https://www.instagram.com/ana_decompras_?igsi=Y2c1emVvMGNwaDY4"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+
+                <img
+                    src="instagram.png"
+                    class="logo-red"
+                    alt="Instagram"
+                >
+
+                <span>
+                    Instagram
+                </span>
+
+            </a>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- ========================================
+     🔹 FOOTER
+======================================== -->
+
+<div class="footer">
+
+    Tienda Ana Compras
+
+</div>
+
+
+
+<script>
+
+
+// ========================================
+// 🔹 OBTENER ID DEL CLIENTE
+// ========================================
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const id =
+    params.get("id");
+
+
+
+// ========================================
+// 🔹 TRADUCIR ESTADO
+// ========================================
+
+function traducirEstado(e){
+
+    switch(e){
+
+        case "En_EEUU":
+
+            return {
+                texto: "Estados Unidos",
+                clase: "En_EEUU"
+            };
+
+
+        case "EN_CAMINO":
+
+            return {
+                texto: "En camino",
+                clase: "EN_CAMINO"
+            };
+
+
+        case "COSTA_RICA":
+
+            return {
+                texto: "Costa Rica",
+                clase: "COSTA_RICA"
+            };
+
+
+        case "EMPACADO":
+
+            return {
+                texto: "Empacado",
+                clase: "EMPACADO"
+            };
+
+
+        case "ENTREGADO":
+
+            return {
+                texto: "Entregado",
+                clase: "ENTREGADO"
+            };
+
+
+        default:
+
+            return {
+                texto: e,
+                clase: ""
+            };
+
+    }
+
+}
+
+
+
+// ========================================
+// 🔹 CARGAR NOMBRE DEL CLIENTE
+// ========================================
+
+async function cargarNombreCliente(){
+
+    try{
+
+        const respuesta =
+            await fetch(
+                `/user/${id}`
+            );
+
+
+        const usuario =
+            await respuesta.json();
+
+
+        const nombre =
+            usuario.nombre || "";
+
+
+        const apellido =
+            usuario.apellido || "";
+
+
+        const nombreCompleto =
+            `${nombre} ${apellido}`.trim();
+
+
+        if(nombreCompleto){
+
+            document.getElementById(
+                "nombreCliente"
+            ).innerText =
+                "👤 " + nombreCompleto;
+
+        }else{
+
+            document.getElementById(
+                "nombreCliente"
+            ).innerText =
+                "👤 Cliente";
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Error cargando nombre del cliente:",
+            error
+        );
+
+
+        document.getElementById(
+            "nombreCliente"
+        ).innerText =
+            "👤 Cliente";
+
+    }
+
+}
+
+
+
+// ========================================
+// 🔹 CARGAR PEDIDOS
+// ========================================
+
+async function cargar(){
+
+    try{
+
+        const res =
+            await fetch(
+                `/client-orders/${id}`
+            );
+
+
+        const data =
+            await res.json();
+
+
+        let html = "";
+
+
+        if(data.length === 0){
+
+            html = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="sin-pedidos"
+                    >
+
+                        No tienes pedidos registrados.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+
+        data.forEach(p => {
+
+
+            /* ========================================
+               🔹 CALCULAR PRECIO DEL PRODUCTO
+
+               Precio = precio unitario × cantidad
+
+               NO incluye el envío.
+            ======================================== */
+
+            const cantidad =
+                Number(
+                    p.cantidad
+                ) || 0;
+
+
+            const precioUnitario =
+                Number(
+                    p.precio_unidad
+                ) || 0;
+
+
+            const precioProducto =
+                precioUnitario *
+                cantidad;
+
+
+
+            /* ========================================
+               🔹 CALCULAR ENVÍO
+
+               1000 gramos = ₡6000
+            ======================================== */
+
+            const envio =
+                (
+                    (p.peso_gramos || 0)
+                    / 1000
+                )
+                * 6000;
+
+
+            const estado =
+                traducirEstado(
+                    p.estado
+                );
+
+
+            html += `
+
+                <tr>
+
+                    <td>
+
+                        ${p.articulo}
+
+                    </td>
+
+
+                    <td>
+
+                        ${p.cantidad}
+
+                    </td>
+
+
+                    <td>
+
+                        ₡${precioProducto.toLocaleString(
+                            "es-CR"
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        ₡${envio.toLocaleString(
+                            "es-CR"
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        ₡${Number(
+                            p.total_abonado
+                        ).toLocaleString(
+                            "es-CR"
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            class="estado ${estado.clase}"
+                        >
+
+                            ${estado.texto}
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+
+        document.getElementById(
+            "tabla"
+        ).innerHTML =
+            html;
+
+
+    }catch(error){
+
+        console.error(
+            "Error cargando pedidos:",
+            error
+        );
+
+
+        document.getElementById(
+            "tabla"
+        ).innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="sin-pedidos"
+                >
+
+                    No se pudieron cargar los pedidos.
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+
+// ========================================
+// 🔹 ABRIR MI PERFIL
+// ========================================
+
+document.getElementById(
+    "miPerfil"
+).addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            `/profile.html?id=${id}`;
+
+    }
+);
+
+
+// ========================================
+// 🔹 CERRAR SESIÓN
+// ========================================
+
+document.getElementById(
+    "cerrarSesion"
+).addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            "/";
+
+    }
+);
+
+
+// ========================================
+// 🔹 AUTO CIERRE TRAS 10 MINUTOS
+// ========================================
+
+setTimeout(
+    () => {
+
+        window.location.href =
+            "/";
+
+    },
+    600000
+);
+
+
+
+// ========================================
+// 🔹 INICIAR
+// ========================================
+
+cargarNombreCliente();
+
+cargar();
+
+
+</script>
+
+
+</body>
+
+</html>

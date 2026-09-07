@@ -1,0 +1,347 @@
+<!DOCTYPE html> 
+<html lang="es"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <title>Tienda Ana</title> 
+
+    <style> 
+        body { 
+            font-family: Arial; 
+            background: linear-gradient(to right, #f8e1e7, #fdf6f0); 
+            text-align: center; 
+            color: #333; 
+        } 
+ 
+        .container { 
+            margin-top: 80px; 
+        } 
+ 
+        /* 🔥 TEXTO PRINCIPAL */ 
+        .titulo { 
+            font-size: 40px; 
+            color: #c48b9f; 
+            margin-bottom: 10px; 
+        } 
+ 
+        /* 🔥 LOGO CENTRO */ 
+        .logo-center img { 
+            width: 180px; 
+            margin-bottom: 20px; 
+        } 
+ 
+        /* 🔥 BOTONES PRINCIPALES */ 
+        .boton-principal { 
+            display: block; 
+            margin: 15px auto; 
+            padding: 12px; 
+            background: white; 
+            color: #c48b9f; 
+            text-decoration: none; 
+            width: 220px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+        } 
+ 
+        .boton-principal:hover { 
+            background: #f3d3dc; 
+        } 
+
+
+        /* ======================================== */
+        /* 🔥 REDES SOCIALES */
+        /* ======================================== */
+
+        .redes-sociales {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .redes-sociales p {
+            margin-bottom: 10px;
+            color: #8a7b80;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .iconos-redes {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .iconos-redes a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            width: 38px;
+            height: 38px;
+
+            padding: 0;
+            margin: 0;
+
+            background: rgba(255,255,255,0.75);
+
+            border-radius: 50%;
+
+            box-shadow: 0 3px 8px rgba(0,0,0,0.10);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .iconos-redes a:hover {
+            background: white;
+
+            transform:
+                translateY(-2px)
+                scale(1.06);
+
+            box-shadow:
+                0 5px 12px
+                rgba(0,0,0,0.15);
+        }
+
+        .iconos-redes img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+
+        .top-bar { 
+            position: absolute; 
+            top: 20px; 
+            right: 20px; 
+            display: none; 
+            align-items: center; 
+            gap: 10px; 
+        } 
+ 
+        .logout { 
+            background: #e57373; 
+            color: white; 
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            text-decoration: none; 
+        } 
+ 
+        .nombre { 
+            font-weight: bold; 
+        } 
+
+
+        /* ======================================== */
+        /* 🔹 RESPONSIVE */
+        /* ======================================== */
+
+        @media (max-width: 500px) {
+
+            .container {
+                margin-top: 50px;
+            }
+
+            .titulo {
+                font-size: 32px;
+            }
+
+            .logo-center img {
+                width: 150px;
+            }
+
+        }
+
+    </style> 
+</head> 
+
+<body> 
+ 
+    <div class="top-bar" id="topBar"> 
+
+        <span
+            id="nombreCliente"
+            class="nombre"
+        ></span> 
+
+        <a
+            href="login.html"
+            class="logout"
+        >
+            Cerrar sesión
+        </a> 
+
+    </div> 
+ 
+ 
+    <div class="container"> 
+ 
+        <!-- 🔥 TEXTO ARRIBA --> 
+        <div class="titulo">
+            Tienda Ana 🛍️
+        </div> 
+ 
+ 
+        <!-- 🔥 LOGO CENTRO --> 
+        <div class="logo-center"> 
+
+            <img
+                src="logo.jpg"
+                alt="Logo"
+            > 
+
+        </div> 
+ 
+ 
+        <!-- 🔥 TU H1 ORIGINAL -->
+        <!-- no se elimina, solo oculto -->
+
+        <h1 style="display:none;">
+            Tienda Ana 🛍️
+        </h1> 
+ 
+ 
+        <!-- 🔥 BOTONES PRINCIPALES -->
+
+        <a
+            href="register.html"
+            class="boton-principal"
+        >
+            Registrarse
+        </a> 
+
+        <a
+            href="login.html"
+            class="boton-principal"
+        >
+            Iniciar Sesión
+        </a> 
+
+
+        <!-- ======================================== -->
+        <!-- 🔥 REDES SOCIALES -->
+        <!-- ======================================== -->
+
+        <div class="redes-sociales">
+
+            <p>
+                Síguenos en nuestras redes
+            </p>
+
+            <div class="iconos-redes">
+
+
+                <!-- WHATSAPP -->
+
+                <a
+                    href="https://wa.me/50685039316"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="WhatsApp"
+                >
+
+                    <img
+                        src="whatsapp.png"
+                        alt="WhatsApp"
+                    >
+
+                </a>
+
+
+                <!-- FACEBOOK -->
+
+                <a
+                    href="https://www.facebook.com/share/18zRyz8dEo/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Facebook"
+                >
+
+                    <img
+                        src="facebook.png"
+                        alt="Facebook"
+                    >
+
+                </a>
+
+
+                <!-- INSTAGRAM -->
+
+                <a
+                    href="https://www.instagram.com/ana_decompras_?igsi=Y2c1emVvMGNwaDY4"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Instagram"
+                >
+
+                    <img
+                        src="instagram.png"
+                        alt="Instagram"
+                    >
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+
+    </div> 
+ 
+ 
+<script> 
+ 
+// 🔥 OBTENER PARAMETROS 
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    ); 
+
+const id =
+    params.get('id'); 
+ 
+ 
+// 🔥 CARGAR USUARIO SOLO SI EXISTE 
+
+async function cargarUsuario(){ 
+ 
+    if(!id) return; 
+ 
+    const res =
+        await fetch(
+            '/user/' + id
+        ); 
+
+    const data =
+        await res.json(); 
+ 
+ 
+    if(data.nombre){ 
+
+        document.getElementById(
+            'nombreCliente'
+        ).innerText = 
+            data.nombre +
+            ' ' +
+            data.apellido; 
+ 
+ 
+        document.getElementById(
+            'topBar'
+        ).style.display =
+            "flex"; 
+
+    } 
+
+} 
+ 
+ 
+cargarUsuario(); 
+ 
+</script> 
+ 
+</body> 
+</html>

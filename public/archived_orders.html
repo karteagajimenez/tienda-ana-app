@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Pedidos Archivados</title>
+
+<style>
+
+body {
+    font-family: Arial;
+    background: linear-gradient(to right, #f8e1e7, #fdf6f0);
+    margin: 0;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 25px;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 22px;
+    color: #c48b9f;
+    margin: 0;
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.logo-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.logo {
+    height: 90px;
+}
+
+
+/* =========================================================
+   BOTONES HEADER
+========================================================= */
+
+.header-buttons button {
+    background: #b76e8a;
+    color: white;
+    border: none;
+    padding: 9px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 8px;
+    font-weight: bold;
+}
+
+.header-buttons button:last-child {
+    background: #e74c3c;
+}
+
+.header-buttons button:hover {
+    opacity: 0.85;
+}
+
+
+/* =========================================================
+   BUSCADOR
+========================================================= */
+
+#buscar {
+    width: 100%;
+    max-width: 500px;
+    padding: 12px;
+    margin: 20px auto;
+    display: block;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TABLA
+========================================================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+th,
+td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background: #c48b9f;
+    color: white;
+}
+
+
+/* =========================================================
+   SALDO
+========================================================= */
+
+.saldo-pendiente {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.saldo-pagado {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+
+/* =========================================================
+   SIN ARCHIVADOS
+========================================================= */
+
+.sin-archivados {
+    padding: 35px;
+    color: #777;
+    font-size: 16px;
+    text-align: center;
+}
+
+
+/* =========================================================
+   FECHA ARCHIVADO
+========================================================= */
+
+.fecha-archivado {
+    color: #a85c78;
+    font-weight: bold;
+}
+
+/* =========================================================
+   BOTÓN DETALLES
+========================================================= */
+
+.btn-detalles-archivado {
+    background: #c48b9f;
+    color: white;
+    border: none;
+    padding: 9px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 6px;
+}
+
+.btn-detalles-archivado:hover {
+    opacity: 0.85;
+}
+
+/* =========================================================
+   BOTÓN ELIMINAR
+========================================================= */
+
+.btn-eliminar-archivado {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 9px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-eliminar-archivado:hover {
+    opacity: 0.85;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+}
+
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    color: #c48b9f;
+}
+
+.modal-content .ok,
+.modal-content .cancel {
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 5px;
+}
+
+.modal-content .ok {
+    background: #e74c3c;
+    color: white;
+}
+
+.modal-content .cancel {
+    background: #aaa;
+    color: white;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ======================================================
+     HEADER
+====================================================== -->
+
+<div class="header">
+
+    <h1>📦 Pedidos Archivados</h1>
+
+    <div class="logo-container">
+
+        <img
+            src="logo.jpg"
+            class="logo"
+            alt="Logo"
+        >
+
+    </div>
+
+    <div class="header-buttons">
+
+        <button
+            onclick="location.href='/add_weight.html'"
+        >
+            Volver a Gestión
+        </button>
+
+        <button
+            onclick="location.href='/logout'"
+        >
+            Cerrar sesión
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     BUSCADOR
+====================================================== -->
+
+<input
+    type="text"
+    id="buscar"
+    placeholder="Buscar cliente archivado..."
+    onkeyup="filtrar()"
+>
+
+
+<!-- ======================================================
+     TABLA
+====================================================== -->
+
+<table>
+
+    <thead>
+
+        <tr>
+
+            <th>Cliente</th>
+
+            <th>Peso</th>
+
+            <th>Valor del Peso</th>
+
+            <th>Estado</th>
+
+            <th>Abono</th>
+
+            <th>Saldo</th>
+
+            <th>Fecha</th>
+
+            <th>Archivado</th>
+
+            <th>Eliminar</th>
+
+        </tr>
+
+    </thead>
+
+
+    <tbody id="tablaArchivados">
+
+    </tbody>
+
+</table>
+
+
+<!-- ======================================================
+     MODAL ELIMINAR ARCHIVADO
+====================================================== -->
+
+<div class="modal" id="modalEliminarArchivado">
+
+    <div class="modal-content">
+
+        <h3>Eliminar archivado</h3>
+
+        <p id="mensajeEliminarArchivado"></p>
+
+        <br>
+
+        <button
+            class="ok"
+            onclick="confirmarEliminarArchivado()"
+        >
+            Eliminar
+        </button>
+
+        <button
+            class="cancel"
+            onclick="cancelarEliminarArchivado()"
+        >
+            Cancelar
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let pedidosArchivados = [];
+
+let archivadosPorCliente = {};
+
+let clienteArchivadoParaEliminar = null;
+
+
+/* =========================================================
+   TRADUCIR ESTADOS
+========================================================= */
+
+function traducirEstado(estado){
+
+    switch(estado){
+
+        case "En_EEUU":
+            return "Estados Unidos";
+
+        case "EN_CAMINO":
+            return "En camino";
+
+        case "COSTA_RICA":
+            return "Costa Rica";
+
+        case "EMPACADO":
+            return "Empacado";
+
+        case "ENTREGADO":
+            return "Entregado";
+
+        default:
+            return estado || "-";
+
+    }
+
+}
+
+
+/* =========================================================
+   FORMATEAR DINERO
+========================================================= */
+
+function moneda(valor){
+
+    return "₡" +
+        Number(valor || 0)
+        .toLocaleString(
+            "es-CR",
+            {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }
+        );
+
+}
+
+
+/* =========================================================
+   FORMATEAR FECHA
+========================================================= */
+
+function formatearFecha(fecha){
+
+    if(!fecha){
+        return "-";
+    }
+
+    return String(fecha).split("T")[0];
+
+}
+
+
+/* =========================================================
+   CARGAR PEDIDOS ARCHIVADOS
+========================================================= */
+
+async function cargarArchivados(){
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/archived-orders"
+            );
+
+
+        if(!respuesta.ok){
+
+            console.error(
+                "Error cargando archivados"
+            );
+
+            return;
+
+        }
+
+
+        const data =
+            await respuesta.json();
+
+
+        pedidosArchivados =
+            data;
+
+
+        archivadosPorCliente =
+            {};
+
+
+        /* =================================================
+           AGRUPAR POR CLIENTE
+        ================================================= */
+
+        data.forEach(pedido => {
+
+            const idUsuario =
+                pedido.id_usuario;
+
+
+            if(
+                !archivadosPorCliente[
+                    idUsuario
+                ]
+            ){
+
+                archivadosPorCliente[
+                    idUsuario
+                ] = {
+
+                    id_usuario:
+                        idUsuario,
+
+                    nombre:
+                        pedido.nombre,
+
+                    apellido:
+                        pedido.apellido,
+
+                    peso_total:
+                        0,
+
+                    envio_total:
+                        0,
+
+                    total_abonado:
+                        0,
+
+                    fecha_abono:
+                        null,
+
+                    fecha_archivado:
+                        null,
+
+                    estados:
+                        new Set(),
+
+                    pedidos:
+                        []
+
+                };
+
+            }
+
+
+            const cliente =
+                archivadosPorCliente[
+                    idUsuario
+                ];
+
+
+            cliente.pedidos.push(
+                pedido
+            );
+
+
+            /* =============================================
+               PESO
+            ============================================= */
+
+            const peso =
+                Number(
+                    pedido.peso_gramos
+                ) || 0;
+
+
+            cliente.peso_total +=
+                peso;
+
+
+            /* =============================================
+               VALOR ENVÍO
+            ============================================= */
+
+            const envio =
+                (peso / 1000) *
+                6000;
+
+
+            cliente.envio_total +=
+                envio;
+
+
+            /* =============================================
+               ABONO
+            ============================================= */
+
+            cliente.total_abonado +=
+                Number(
+                    pedido.total_abonado
+                ) || 0;
+
+
+            /* =============================================
+               ESTADO
+            ============================================= */
+
+            if(pedido.estado){
+
+                cliente.estados.add(
+                    pedido.estado
+                );
+
+            }
+
+
+            /* =============================================
+               FECHA DEL ÚLTIMO ABONO
+            ============================================= */
+
+            if(pedido.fecha_abono){
+
+                const fecha =
+                    String(
+                        pedido.fecha_abono
+                    ).split("T")[0];
+
+
+                if(
+                    !cliente.fecha_abono ||
+                    fecha >
+                    cliente.fecha_abono
+                ){
+
+                    cliente.fecha_abono =
+                        fecha;
+
+                }
+
+            }
+
+
+            /* =============================================
+               FECHA ARCHIVADO MÁS RECIENTE
+            ============================================= */
+
+            if(
+                pedido.fecha_archivado
+            ){
+
+                const fechaArchivado =
+                    String(
+                        pedido.fecha_archivado
+                    ).split("T")[0];
+
+
+                if(
+                    !cliente.fecha_archivado ||
+                    fechaArchivado >
+                    cliente.fecha_archivado
+                ){
+
+                    cliente.fecha_archivado =
+                        fechaArchivado;
+
+                }
+
+            }
+
+        });
+
+
+        mostrarArchivados();
+
+
+    }catch(error){
+
+        console.error(
+            "Error cargando pedidos archivados:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   MOSTRAR ARCHIVADOS
+========================================================= */
+
+function mostrarArchivados(){
+
+    const tabla =
+        document.getElementById(
+            "tablaArchivados"
+        );
+
+
+    const clientes =
+        Object.values(
+            archivadosPorCliente
+        );
+
+
+    if(clientes.length === 0){
+
+        tabla.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="9"
+                    class="sin-archivados"
+                >
+                    No hay pedidos archivados.
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    let html = "";
+
+
+    clientes.forEach(cliente => {
+
+
+        /* =============================================
+           ESTADO
+        ============================================= */
+
+        const estados =
+            Array.from(
+                cliente.estados
+            );
+
+
+        let estadoMostrar =
+            "-";
+
+
+        if(estados.length === 1){
+
+            estadoMostrar =
+                traducirEstado(
+                    estados[0]
+                );
+
+        }
+
+
+        if(estados.length > 1){
+
+            estadoMostrar =
+                "Varios";
+
+        }
+
+
+        /* =============================================
+           SALDO
+        ============================================= */
+
+        let saldo =
+            cliente.envio_total -
+            cliente.total_abonado;
+
+
+        if(saldo < 0){
+
+            saldo = 0;
+
+        }
+
+
+        const claseSaldo =
+            saldo > 0
+                ? "saldo-pendiente"
+                : "saldo-pagado";
+
+        /* =============================================
+           FILA
+        ============================================= */
+
+        html += `
+
+            <tr>
+
+                <td>
+                    ${cliente.nombre}
+                    ${cliente.apellido}
+                </td>
+
+                <td>
+                    ${cliente.peso_total} g
+                </td>
+
+                <td>
+                    ${moneda(
+                        cliente.envio_total
+                    )}
+                </td>
+
+                <td>
+                    ${estadoMostrar}
+                </td>
+
+                <td>
+                    ${moneda(
+                        cliente.total_abonado
+                    )}
+                </td>
+
+                <td
+                    class="${claseSaldo}"
+                >
+                    ${moneda(saldo)}
+                </td>
+
+                <td>
+                    ${
+                        cliente.fecha_abono
+                            ? cliente.fecha_abono
+                            : "-"
+                    }
+                </td>
+
+                <td
+                    class="fecha-archivado"
+                >
+                    ${
+                        cliente.fecha_archivado
+                            ? cliente.fecha_archivado
+                            : "-"
+                    }
+                </td>
+
+                <td>
+
+                    <button
+                        class="btn-detalles-archivado"
+                        onclick="verDetallesArchivados(${cliente.id_usuario})"
+                    >
+                        Detalles
+                    </button>
+
+                    <button
+                        class="btn-eliminar-archivado"
+                        onclick="abrirEliminarArchivado(${cliente.id_usuario})"
+                    >
+                        Eliminar
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+
+    tabla.innerHTML =
+        html;
+
+}
+
+/* =========================================================
+   BUSCADOR
+========================================================= */
+
+function filtrar(){
+
+    const valor =
+        document.getElementById(
+            "buscar"
+        )
+        .value
+        .toLowerCase();
+
+
+    document.querySelectorAll(
+        "#tablaArchivados tr"
+    ).forEach(fila => {
+
+        const texto =
+            fila.innerText
+            .toLowerCase();
+
+        fila.style.display =
+            texto.includes(valor)
+                ? ""
+                : "none";
+
+    });
+
+}
+
+
+/* =========================================================
+   DETALLES ARCHIVADOS
+========================================================= */
+
+function verDetallesArchivados(idUsuario){
+
+    window.location.href =
+        `/details.html?id=${idUsuario}&archivado=1`;
+
+}
+
+/* =========================================================
+   ABRIR MODAL ELIMINAR
+========================================================= */
+
+function abrirEliminarArchivado(idUsuario){
+
+    const cliente =
+        archivadosPorCliente[
+            idUsuario
+        ];
+
+
+    if(!cliente){
+        return;
+    }
+
+
+    clienteArchivadoParaEliminar =
+        idUsuario;
+
+
+    document.getElementById(
+        "mensajeEliminarArchivado"
+    ).textContent =
+        `¿Desea eliminar definitivamente los pedidos archivados de ${cliente.nombre} ${cliente.apellido}?`;
+
+
+    document.getElementById(
+        "modalEliminarArchivado"
+    ).style.display =
+        "flex";
+
+}
+
+
+/* =========================================================
+   CANCELAR ELIMINACIÓN
+========================================================= */
+
+function cancelarEliminarArchivado(){
+
+    clienteArchivadoParaEliminar =
+        null;
+
+
+    document.getElementById(
+        "modalEliminarArchivado"
+    ).style.display =
+        "none";
+
+}
+
+
+/* =========================================================
+   CONFIRMAR ELIMINACIÓN
+========================================================= */
+
+async function confirmarEliminarArchivado(){
+
+    if(
+        !clienteArchivadoParaEliminar
+    ){
+        return;
+    }
+
+
+    const idUsuario =
+        clienteArchivadoParaEliminar;
+
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/delete-archived-client-orders",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        id_usuario:
+                            idUsuario
+                    })
+                }
+            );
+
+
+        const resultado =
+            await respuesta.json();
+
+
+        if(
+            !respuesta.ok ||
+            !resultado.ok
+        ){
+
+            console.error(
+                resultado.mensaje ||
+                "No se pudieron eliminar los pedidos archivados"
+            );
+
+            return;
+
+        }
+
+
+        cancelarEliminarArchivado();
+
+
+        await cargarArchivados();
+
+
+    }catch(error){
+
+        console.error(
+            "Error eliminando archivado:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   INICIAR
+========================================================= */
+
+cargarArchivados();
+
+
+</script>
+
+
+</body>
+
+</html>

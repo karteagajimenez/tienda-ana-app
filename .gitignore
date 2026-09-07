@@ -1,0 +1,13 @@
+# Variables privadas y contraseñas
+.env
+
+# Dependencias de Node
+node_modules/
+
+# Archivos de registro
+*.log
+npm-debug.log*
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db

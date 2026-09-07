@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Mi Perfil - Tienda Ana</title>
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+
+    font-family:
+        'Segoe UI',
+        Tahoma,
+        Geneva,
+        Verdana,
+        sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fdf6f0,
+            #f8e1e7
+        );
+
+    color: #4b3f42;
+
+    min-height: 100vh;
+
+    padding: 30px 15px;
+}
+
+
+.container {
+
+    width: 100%;
+
+    max-width: 650px;
+
+    margin: auto;
+
+    background: #fffaf8;
+
+    border:
+        1px solid
+        #f2d5dd;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(
+            150,
+            90,
+            110,
+            0.15
+        );
+
+    padding: 30px;
+}
+
+
+.titulo {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    margin-bottom: 25px;
+}
+
+
+.titulo h2 {
+
+    color: #714f5b;
+}
+
+
+.titulo img {
+
+    width: 75px;
+
+    height: 75px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+}
+
+
+label {
+
+    display: block;
+
+    font-weight: 600;
+
+    margin-top: 15px;
+
+    margin-bottom: 6px;
+
+    color: #714f5b;
+}
+
+
+input,
+select {
+
+    width: 100%;
+
+    padding: 11px 12px;
+
+    border:
+        1px solid
+        #e4c5ce;
+
+    border-radius: 7px;
+
+    font-size: 15px;
+
+    outline: none;
+
+    background: white;
+}
+
+
+input:focus,
+select:focus {
+
+    border-color: #c48b9f;
+}
+
+
+.separador {
+
+    margin-top: 28px;
+
+    padding-top: 20px;
+
+    border-top:
+        1px solid
+        #ead4da;
+}
+
+
+.separador h3 {
+
+    color: #714f5b;
+
+    margin-bottom: 5px;
+}
+
+
+.ayuda {
+
+    font-size: 13px;
+
+    color: #8b727a;
+
+    margin-bottom: 15px;
+}
+
+
+#passwordRequisitos {
+
+    display: none;
+
+    margin-top: 8px;
+
+    font-size: 13px;
+
+    color: #c62828;
+}
+
+
+.botones {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 25px;
+}
+
+
+button {
+
+    border: none;
+
+    padding: 11px 18px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+#guardar {
+
+    background: #c48b9f;
+
+    color: white;
+
+    flex: 1;
+}
+
+
+#guardar:hover {
+
+    background: #b3748a;
+}
+
+
+#volver {
+
+    background: #d95c68;
+
+    color: white;
+
+    flex: 1;
+}
+
+
+#volver:hover {
+
+    background: #c94c59;
+}
+
+
+#mensaje {
+
+    display: none;
+
+    margin-top: 20px;
+
+    padding: 12px;
+
+    border-radius: 7px;
+
+    text-align: center;
+
+    font-size: 14px;
+}
+
+
+#mensaje.error {
+
+    display: block;
+
+    color: #c62828;
+
+    background: #ffebee;
+
+    border:
+        1px solid
+        #ef9a9a;
+}
+
+
+#mensaje.exito {
+
+    display: block;
+
+    color: #2e7d32;
+
+    background: #e8f5e9;
+
+    border:
+        1px solid
+        #a5d6a7;
+}
+
+
+@media(max-width:600px){
+
+    .container {
+
+        padding: 20px;
+    }
+
+
+    .titulo {
+
+        gap: 15px;
+    }
+
+
+    .botones {
+
+        flex-direction: column;
+    }
+
+}
+
+.campo-password {
+
+    position: relative;
+
+    width: 100%;
+}
+
+
+.campo-password input {
+
+    width: 100%;
+
+    padding-right: 48px;
+}
+
+
+.ver-password {
+
+    position: absolute;
+
+    right: 10px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    background: transparent;
+
+    border: none;
+
+    padding: 5px;
+
+    cursor: pointer;
+
+    font-size: 18px;
+
+    color: #714f5b;
+}
+
+
+.ver-password:hover {
+
+    background: transparent;
+
+    transform: translateY(-50%);
+
+    opacity: 0.7;
+}
+
+.icono-ojo {
+    width: 22px;
+    height: 22px;
+    display: block;
+    color: #714f5b;
+}
+</style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <div class="titulo">
+
+        <h2>
+            👤 Mi perfil
+        </h2>
+
+        <img
+            src="logo.jpg"
+            alt="Logo"
+        >
+
+    </div>
+
+
+    <form id="formPerfil">
+
+
+        <label for="nombre">
+            Nombre
+        </label>
+
+        <input
+            type="text"
+            id="nombre"
+        >
+
+
+        <label for="apellido">
+            Apellido
+        </label>
+
+        <input
+            type="text"
+            id="apellido"
+        >
+
+
+        <label for="telefono">
+            Teléfono
+        </label>
+
+        <input
+            type="text"
+            id="telefono"
+        >
+
+
+        <label for="correo">
+            Correo
+        </label>
+
+        <input
+            type="email"
+            id="correo"
+        >
+
+
+        <label for="provincia">
+            Provincia
+        </label>
+
+        <select id="provincia">
+
+            <option value="">
+                Seleccione provincia
+            </option>
+
+            <option value="San José">
+                San José
+            </option>
+
+            <option value="Alajuela">
+                Alajuela
+            </option>
+
+            <option value="Cartago">
+                Cartago
+            </option>
+
+            <option value="Heredia">
+                Heredia
+            </option>
+
+            <option value="Guanacaste">
+                Guanacaste
+            </option>
+
+            <option value="Puntarenas">
+                Puntarenas
+            </option>
+
+            <option value="Limón">
+                Limón
+            </option>
+
+        </select>
+
+
+        <label for="canton">
+            Cantón
+        </label>
+
+        <input
+            type="text"
+            id="canton"
+        >
+
+
+        <label for="distrito">
+            Distrito
+        </label>
+
+        <input
+            type="text"
+            id="distrito"
+        >
+
+
+        <label for="direccion">
+            Dirección exacta
+        </label>
+
+        <input
+            type="text"
+            id="direccion"
+        >
+
+
+
+        <div class="separador">
+
+            <h3>
+                🔐 Cambiar contraseña
+            </h3>
+
+            <p class="ayuda">
+                Déjelos vacíos si no desea cambiar la contraseña.
+                Si cambia el correo, deberá establecer una nueva contraseña.
+            </p>
+
+            <!-- CONTRASEÑA ACTUAL -->
+
+            <label for="passwordActual">
+                Contraseña actual
+            </label>
+
+            <div class="campo-password">
+
+                <input
+                    type="password"
+                    id="passwordActual"
+                    autocomplete="current-password"
+                >
+
+                <button
+                    type="button"
+                    class="ver-password"
+                    onclick="mostrarPassword('passwordActual', this)"
+                    aria-label="Mostrar contraseña"
+                >
+                    <svg
+                        class="icono-ojo"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+
+            </div>
+
+
+            <!-- NUEVA CONTRASEÑA -->
+
+            <label for="passwordNueva">
+                Nueva contraseña
+            </label>
+
+            <div class="campo-password">
+
+                <input
+                    type="password"
+                    id="passwordNueva"
+                    autocomplete="new-password"
+                >
+
+                <button
+                    type="button"
+                    class="ver-password"
+                    onclick="mostrarPassword('passwordNueva', this)"
+                    aria-label="Mostrar contraseña"
+                >
+                    <svg
+                        class="icono-ojo"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+
+            </div>
+
+
+            <div id="passwordRequisitos">
+
+                ⚠️ La contraseña debe tener mínimo
+                8 caracteres, al menos una letra
+                y un número.
+
+            </div>
+
+
+            <!-- CONFIRMAR NUEVA CONTRASEÑA -->
+
+            <label for="passwordConfirmar">
+                Confirmar nueva contraseña
+            </label>
+
+            <div class="campo-password">
+
+                <input
+                    type="password"
+                    id="passwordConfirmar"
+                    autocomplete="new-password"
+                >
+
+                <button
+                    type="button"
+                    class="ver-password"
+                    onclick="mostrarPassword('passwordConfirmar', this)"
+                    aria-label="Mostrar contraseña"
+                >
+                    <svg
+                        class="icono-ojo"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="botones">
+
+            <button
+                type="submit"
+                id="guardar"
+            >
+                Guardar cambios
+            </button>
+
+
+            <button
+                type="button"
+                id="volver"
+            >
+                Volver
+            </button>
+
+        </div>
+
+
+    </form>
+
+
+    <div id="mensaje"></div>
+
+
+</div>
+
+
+
+<script>
+// ========================================
+// 🔹 OBTENER ID
+// ========================================
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const id =
+    params.get("id");
+
+
+// ========================================
+// 🔹 CARGAR DATOS DEL CLIENTE
+// ========================================
+
+async function cargarPerfil(){
+
+    try{
+
+        const respuesta =
+            await fetch(
+                `/user/${id}`
+            );
+
+        if(!respuesta.ok){
+
+            throw new Error(
+                "No se pudo cargar el perfil."
+            );
+        }
+
+
+        const usuario =
+            await respuesta.json();
+
+
+        document.getElementById(
+            "nombre"
+        ).value =
+            usuario.nombre || "";
+
+
+        document.getElementById(
+            "apellido"
+        ).value =
+            usuario.apellido || "";
+
+
+        document.getElementById(
+            "telefono"
+        ).value =
+            usuario.telefono || "";
+
+
+        document.getElementById(
+            "correo"
+        ).value =
+            usuario.correo || "";
+
+
+        document.getElementById(
+            "provincia"
+        ).value =
+            usuario.provincia || "";
+
+
+        document.getElementById(
+            "canton"
+        ).value =
+            usuario.canton || "";
+
+
+        document.getElementById(
+            "distrito"
+        ).value =
+            usuario.distrito || "";
+
+
+        document.getElementById(
+            "direccion"
+        ).value =
+            usuario.direccion_exacta || "";
+
+
+    }catch(error){
+
+        const mensaje =
+            document.getElementById(
+                "mensaje"
+            );
+
+        mensaje.className =
+            "error";
+
+        mensaje.innerText =
+            "❌ No se pudieron cargar los datos.";
+
+    }
+
+}
+
+
+// ========================================
+// 🔹 VOLVER
+// ========================================
+
+document.getElementById(
+    "volver"
+).addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            `/client.html?id=${id}`;
+
+    }
+);
+
+// ========================================
+// 🔹 GUARDAR CAMBIOS DEL PERFIL
+// ========================================
+
+document.getElementById(
+    "formPerfil"
+).addEventListener(
+    "submit",
+    async (e) => {
+
+        e.preventDefault();
+
+        const mensaje =
+            document.getElementById(
+                "mensaje"
+            );
+
+        const passwordActual =
+            document.getElementById(
+                "passwordActual"
+            ).value;
+
+        const passwordNueva =
+            document.getElementById(
+                "passwordNueva"
+            ).value;
+
+        const passwordConfirmar =
+            document.getElementById(
+                "passwordConfirmar"
+            ).value;
+
+
+        // ========================================
+        // 🔐 VALIDACIÓN DE NUEVA CONTRASEÑA
+        // ========================================
+
+        if (passwordNueva) {
+
+            const passwordValido =
+                /^(?=.*[A-Za-z])(?=.*\d).{8,}$/
+                    .test(passwordNueva);
+
+            if (!passwordValido) {
+
+                mensaje.className =
+                    "error";
+
+                mensaje.innerText =
+                    "❌ La nueva contraseña debe tener mínimo 8 caracteres, al menos una letra y un número.";
+
+                return;
+            }
+
+
+            if (
+                passwordNueva !==
+                passwordConfirmar
+            ) {
+
+                mensaje.className =
+                    "error";
+
+                mensaje.innerText =
+                    "❌ Las nuevas contraseñas no coinciden.";
+
+                return;
+            }
+
+        }
+
+
+        const datos = {
+
+            nombre:
+                document.getElementById(
+                    "nombre"
+                ).value,
+
+            apellido:
+                document.getElementById(
+                    "apellido"
+                ).value,
+
+            telefono:
+                document.getElementById(
+                    "telefono"
+                ).value,
+
+            correo:
+                document.getElementById(
+                    "correo"
+                ).value,
+
+            provincia:
+                document.getElementById(
+                    "provincia"
+                ).value,
+
+            canton:
+                document.getElementById(
+                    "canton"
+                ).value,
+
+            distrito:
+                document.getElementById(
+                    "distrito"
+                ).value,
+
+            direccion_exacta:
+                document.getElementById(
+                    "direccion"
+                ).value,
+
+            passwordActual:
+                passwordActual,
+
+            passwordNueva:
+                passwordNueva,
+
+            passwordConfirmar:
+                passwordConfirmar
+
+        };
+
+
+        try {
+
+            const respuesta =
+                await fetch(
+                    "/update-profile",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(
+                                datos
+                            )
+                    }
+                );
+
+
+            if (!respuesta.ok) {
+
+                const error =
+                    await respuesta.text();
+
+                mensaje.className =
+                    "error";
+
+                mensaje.innerText =
+                    "❌ " + error;
+
+                return;
+            }
+
+
+            const resultado =
+                await respuesta.json();
+
+
+            mensaje.className =
+                "exito";
+
+            mensaje.innerText =
+                "✅ " +
+                resultado.mensaje;
+
+
+            // ========================================
+            // 🔐 SI CAMBIÓ EL CORREO
+            // ========================================
+
+            if (
+                resultado.cerrarSesion
+            ) {
+
+                setTimeout(
+                    () => {
+
+                        window.location.href =
+                            "/login.html";
+
+                    },
+                    4000
+                );
+
+                return;
+            }
+
+          // Ocultar mensaje de éxito después de 4 segundos
+setTimeout(
+    () => {
+
+        mensaje.className = "";
+        mensaje.innerText = "";
+
+    },
+    4000
+);
+
+
+            // Limpiar contraseñas
+
+            document.getElementById(
+                "passwordActual"
+            ).value = "";
+
+            document.getElementById(
+                "passwordNueva"
+            ).value = "";
+
+            document.getElementById(
+                "passwordConfirmar"
+            ).value = "";
+
+
+            // Volver a cargar los datos
+            await cargarPerfil();
+
+
+        } catch (error) {
+
+            mensaje.className =
+                "error";
+
+            mensaje.innerText =
+                "❌ No se pudieron guardar los cambios.";
+
+        }
+
+    }
+);
+
+// ========================================
+// 🔹 MOSTRAR / OCULTAR CONTRASEÑA
+// ========================================
+
+function mostrarPassword(
+    idCampo,
+    boton
+) {
+
+    const campo =
+        document.getElementById(
+            idCampo
+        );
+
+    if (campo.type === "password") {
+
+        campo.type = "text";
+
+        boton.setAttribute(
+            "aria-label",
+            "Ocultar contraseña"
+        );
+
+    } else {
+
+        campo.type = "password";
+
+        boton.setAttribute(
+            "aria-label",
+            "Mostrar contraseña"
+        );
+
+    }
+
+}
+
+// ========================================
+// 🔹 INICIAR
+// ========================================
+
+cargarPerfil();
+
+</script>
+
+
+</body>
+
+</html>

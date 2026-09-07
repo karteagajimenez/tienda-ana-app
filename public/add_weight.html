@@ -1,0 +1,2686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Gestión de Pedidos</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: linear-gradient(to right, #f8e1e7, #fdf6f0);
+    margin: 0;
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 25px;
+}
+
+.header h1 {
+    font-size: 22px;
+    color: #c48b9f;
+    margin: 0;
+}
+
+/* LOGO MÁS GRANDE */
+.logo-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.logo {
+    height: 90px;
+}
+
+/* BOTONES HEADER */
+.header-buttons button {
+    background: #b76e8a;
+    color: white;
+    border: none;
+    padding: 9px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 8px;
+    font-weight: bold;
+}
+
+/* BOTÓN CERRAR SESIÓN ROJO */
+.header-buttons button:last-child {
+    background: #e74c3c;
+}
+
+.header-buttons button:hover {
+    opacity: 0.85;
+}
+
+/* BUSCADOR */
+#buscar {
+    width: 100%;
+    max-width: 500px;
+    padding: 12px;
+    margin: 20px auto;
+    display: block;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+/* TABLA */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background: #c48b9f;
+    color: white;
+}
+
+/* BOTONES */
+td button {
+    border: none;
+    padding: 8px 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 2px;
+    font-weight: bold;
+}
+
+/* COLORES */
+.peso {
+    background: #a85c78;
+    color: white;
+}
+
+.pago {
+    background: #2ecc71;
+    color: white;
+}
+
+.estado {
+    background: #c48b9f;
+    color: white;
+}
+
+.eliminar {
+    background: #e74c3c;
+    color: white;
+}
+
+.detalles {
+    background: #b76e8a;
+    color: white;
+}
+.editar {
+    background: #5dade2;
+    color: white;
+}
+
+.archivar {
+    background: #f5b041;
+    color: white;
+}
+
+/* SALDO */
+.saldo-pendiente {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.saldo-pagado {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+/* MODAL */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    width: 340px;
+    min-height: 230px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+
+.modal input,
+.modal select {
+    width: 95%;
+    height: 52px;
+    padding: 12px;
+    margin: 10px auto;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.modal button {
+    padding: 8px 12px;
+    margin: 5px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.ok {
+    background: #2ecc71;
+    color: white;
+}
+
+.cancel {
+    background: #95a5a6;
+    color: white;
+}
+
+/* =========================================================
+   BUSCADOR DE ARTÍCULOS - EDITAR PEDIDO
+========================================================= */
+
+#editarBuscadorContenedor {
+    position: relative;
+    width: 95%;
+    margin: 10px auto;
+}
+
+#editarBuscarArticulo {
+    width: 100%;
+    height: 52px;
+    padding: 12px;
+    margin: 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+#editarListaArticulos {
+    position: absolute;
+    top: calc(100% + 3px);
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #e2c3ce;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 2000;
+    display: none;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+#editarListaArticulos.mostrar {
+    display: block;
+}
+
+#editarListaArticulos .opcion-buscador {
+    padding: 11px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #f3e8ec;
+}
+
+#editarListaArticulos .opcion-buscador:last-child {
+    border-bottom: none;
+}
+
+#editarListaArticulos .opcion-buscador:hover {
+    background: #f8e1e7;
+}
+
+#editarListaArticulos .nombre-articulo-lista {
+    font-weight: bold;
+    color: #444;
+}
+
+#editarListaArticulos .descripcion-articulo-lista {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #888;
+    line-height: 1.4;
+}
+
+#editarListaArticulos .sin-resultados {
+    padding: 12px;
+    color: #888;
+    font-size: 13px;
+    text-align: center;
+}
+
+/* MENSAJE PEQUEÑO DE AVISO */
+#mensajeAviso {
+    display: none;
+    position: fixed;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    color: #444;
+    padding: 14px 22px;
+    border-radius: 8px;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.20);
+    border-left: 5px solid #e74c3c;
+    z-index: 5000;
+    font-size: 15px;
+    max-width: 430px;
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+    <h1>📦 Gestión de Pedidos</h1>
+
+    <div class="logo-container">
+        <img src="logo.jpg" class="logo">
+    </div>
+
+    <div class="header-buttons">
+
+        <button onclick="location.href='/dashboard.html'">
+            Volver
+        </button>
+
+        <button onclick="location.href='/archived_orders.html'">
+            Archivados
+        </button>
+
+        <button onclick="cerrarSesion()">
+            Cerrar sesión
+        </button>
+
+    </div>
+
+</div>
+
+
+<input
+    type="text"
+    id="buscar"
+    placeholder="Buscar cliente..."
+    onkeyup="filtrar()"
+>
+
+
+<table>
+
+<thead>
+<tr>
+    <th>Cliente</th>
+    <th>Peso</th>
+    <th>Valor del Peso</th>
+    <th>Estado</th>
+    <th>Abono</th>
+    <th>Saldo</th>
+    <th>Fecha</th>
+    <th>Acción</th>
+</tr>
+
+</thead>
+
+
+<tbody id="tablaPedidos"></tbody>
+
+</table>
+
+
+
+<!-- MODAL -->
+
+<div class="modal" id="modal">
+
+<div class="modal-content">
+
+    <h3 id="titulo"></h3>
+
+
+    <!-- SELECT PARA ESCOGER ARTÍCULO -->
+
+    <select
+        id="pedidoSelect"
+        style="display:none;"
+        onchange="actualizarPedidoSeleccionado()"
+    >
+
+        <option value="">
+            Seleccione artículo
+        </option>
+
+    </select>
+
+
+    <!-- INPUT PESO / ABONO -->
+
+    <input
+        type="number"
+        id="inputValor"
+        placeholder="Ingrese valor"
+    >
+
+
+    <!-- MÉTODO DE PAGO -->
+
+    <select
+        id="metodoPago"
+        style="display:none;"
+    >
+
+        <option value="">
+            Seleccione método
+        </option>
+
+        <option value="efectivo">
+            Efectivo
+        </option>
+
+        <option value="sinpe">
+            SINPE
+        </option>
+
+    </select>
+
+
+    <!-- ESTADO -->
+
+    <select
+        id="estadoSelect"
+        style="display:none;"
+    >
+
+        <option value="">
+            Seleccione estado
+        </option>
+
+        <option value="EN_CAMINO">
+            En camino
+        </option>
+
+        <option value="COSTA_RICA">
+            Costa Rica
+        </option>
+
+        <option value="EMPACADO">
+            Empacado
+        </option>
+
+        <option value="ENTREGADO">
+            Entregado
+        </option>
+
+    </select>
+
+
+    <br>
+
+
+    <button
+        class="ok"
+        onclick="confirmar()"
+    >
+        Aceptar
+    </button>
+
+
+    <button
+        class="cancel"
+        onclick="cerrarModal()"
+    >
+        Cancelar
+    </button>
+
+</div>
+ 
+</div> 
+<!-- MODAL CONFIRMAR ELIMINACIÓN -->
+
+<div class="modal" id="modalConfirmarEliminar">
+
+    <div class="modal-content">
+
+        <h3>Eliminar pedido</h3>
+
+        <p id="mensajeConfirmarEliminar">
+            ¿Seguro que desea eliminar este pedido?
+        </p>
+
+        <p style="color:#e74c3c; font-weight:bold;">
+            Esta acción no se puede deshacer.
+        </p>
+
+        <br>
+
+        <button
+            class="eliminar"
+            onclick="eliminarPedidoConfirmado()"
+        >
+            Eliminar
+        </button>
+
+        <button
+            class="cancel"
+            onclick="cancelarEliminarPedido()"
+        >
+            Cancelar
+        </button>
+
+    </div>
+
+</div>
+
+<!-- MODAL ARCHIVAR PEDIDOS -->
+
+<div class="modal" id="modalArchivar">
+
+    <div class="modal-content">
+
+        <h3>Archivar pedidos</h3>
+
+        <p id="mensajeArchivar"></p>
+
+        <br>
+
+        <button
+            class="ok"
+            onclick="confirmarArchivar()"
+        >
+            Archivar
+        </button>
+
+        <button
+            class="cancel"
+            onclick="cancelarArchivar()"
+        >
+            Cancelar
+        </button>
+
+    </div>
+
+</div>
+
+<!-- MODAL EDITAR PEDIDO -->  
+  
+<div class="modal" id="modalEditar">  
+  
+    <div class="modal-content">  
+  
+        <h3>Editar pedido</h3>  
+  
+        <!-- ARTÍCULO ACTUAL QUE SE VA A EDITAR -->
+        <select  
+            id="editarPedidoSelect"  
+            onchange="cargarPedidoEditar()"  
+        >  
+            <option value="">  
+                Seleccione el artículo a editar
+            </option>  
+        </select>  
+
+
+        <!-- BUSCADOR DEL NUEVO ARTÍCULO -->
+        <div
+            id="editarBuscadorContenedor"
+            class="buscador-contenedor"
+            style="display:none;"
+        >
+
+            <input
+                type="text"
+                id="editarBuscarArticulo"
+                placeholder="Buscar o escribir artículo..."
+                autocomplete="off"
+            >
+
+            <div
+                id="editarListaArticulos"
+                class="lista-buscador"
+            ></div>
+
+        </div>
+
+
+        <!-- GUARDA INTERNAMENTE EL ID DEL ARTÍCULO -->
+        <input
+            type="hidden"
+            id="editarArticuloSelect"
+        >
+  
+
+        <!-- CANTIDAD -->
+        <input  
+            type="number"  
+            id="editarCantidad"  
+            min="1"  
+            placeholder="Cantidad"
+            style="display:none;"  
+        >  
+  
+        <br>  
+  
+        <button  
+            class="ok"  
+            onclick="guardarEdicionPedido()"  
+        >  
+            Guardar  
+        </button>  
+  
+        <button  
+            class="cancel"  
+            onclick="cerrarEditar()"  
+        >  
+            Cancelar  
+        </button>  
+  
+    </div>  
+  
+</div>  
+<!-- MENSAJE PEQUEÑO DE AVISO -->
+<div id="mensajeAviso"></div>
+  
+  
+<script>
+    function mostrarMensaje(texto){
+
+    const mensaje =
+        document.getElementById(
+            "mensajeAviso"
+        );
+
+    mensaje.textContent = texto;
+
+    mensaje.style.display = "block";
+
+    clearTimeout(
+        window.temporizadorMensaje
+    );
+
+    window.temporizadorMensaje =
+        setTimeout(() => {
+
+            mensaje.style.display = "none";
+
+        }, 3500);
+}
+
+/* =========================================================
+   CERRAR SESIÓN
+========================================================= */
+
+function cerrarSesion(){
+
+    window.location.href =
+        "/login.html";
+
+}
+
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let tipo = "";
+
+let pedidoId = null;
+
+let clienteSeleccionado = null;
+
+let pedidosGlobales = [];
+
+let pedidosPorCliente = {};
+
+
+
+/* =========================================================
+   ESTADOS
+========================================================= */
+
+function traducirEstado(estado){
+
+    switch(estado){
+
+        case "En_EEUU":
+            return "Estados Unidos";
+
+        case "COLOMBIA":
+            return "Colombia";
+
+        case "EN_CAMINO":
+            return "En camino";
+
+        case "COSTA_RICA":
+            return "Costa Rica";
+
+        case "EMPACADO":
+            return "Empacado";
+
+        case "ENTREGADO":
+            return "Entregado";
+
+        default:
+            return estado || "-";
+
+    }
+
+}
+
+/* =========================================================
+   FORMATEAR DINERO
+========================================================= */
+
+function moneda(valor){
+
+    return "₡" +
+        Number(valor || 0)
+        .toLocaleString(
+            "es-CR",
+            {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }
+        );
+
+}
+
+
+
+/* =========================================================
+   CARGAR PEDIDOS
+========================================================= */
+
+async function cargarPedidos(){
+
+    try{
+
+
+        const res =
+            await fetch("/orders");
+
+
+        const data =
+            await res.json();
+
+
+        pedidosGlobales =
+            data;
+
+
+        pedidosPorCliente =
+            {};
+
+
+
+        /* =================================================
+           AGRUPAR PEDIDOS POR CLIENTE
+        ================================================= */
+
+        data.forEach(p => {
+
+
+            const idUsuario =
+                p.id_usuario;
+
+
+            if(!pedidosPorCliente[idUsuario]){
+
+
+                pedidosPorCliente[idUsuario] = {
+
+                    id_usuario:
+                        idUsuario,
+
+                    nombre:
+                        p.nombre,
+
+                    apellido:
+                        p.apellido,
+
+                    peso_total:
+                        0,
+
+                    envio_total:
+                        0,
+
+                    total_abonado:
+                        0,
+
+                    fecha_abono:
+                        null,
+
+                    estados:
+                        new Set(),
+
+                    pedidos:
+                        []
+
+                };
+
+            }
+
+
+
+            const cliente =
+                pedidosPorCliente[idUsuario];
+
+
+            /* GUARDAR PEDIDO */
+
+            cliente.pedidos.push(p);
+
+
+
+            /* PESO */
+
+            const peso =
+                Number(
+                    p.peso_gramos
+                ) || 0;
+
+
+            cliente.peso_total +=
+                peso;
+
+
+
+            /* ENVÍO */
+
+            const envio =
+                (peso / 1000) *
+                6000;
+
+
+            cliente.envio_total +=
+                envio;
+
+
+
+            /* ABONOS */
+
+            cliente.total_abonado +=
+                Number(
+                    p.total_abonado
+                ) || 0;
+
+
+
+            /* ESTADO */
+
+            if(p.estado){
+
+                cliente.estados.add(
+                    p.estado
+                );
+
+            }
+
+
+
+            /* FECHA MÁS RECIENTE */
+
+            if(p.fecha_abono){
+
+
+                const fecha =
+                    p.fecha_abono
+                    .split("T")[0];
+
+
+                if(
+                    !cliente.fecha_abono ||
+                    fecha >
+                    cliente.fecha_abono
+                ){
+
+                    cliente.fecha_abono =
+                        fecha;
+
+                }
+
+            }
+
+
+        });
+
+
+
+        /* =================================================
+           CREAR TABLA
+        ================================================= */
+
+        let html = "";
+
+
+        Object.values(
+            pedidosPorCliente
+        ).forEach(cliente => {
+
+
+            /* =============================================
+               ESTADO
+            ============================================= */
+
+            const estados =
+                Array.from(
+                    cliente.estados
+                );
+
+
+            let estadoMostrar =
+                "-";
+
+
+            if(estados.length === 1){
+
+                estadoMostrar =
+                    traducirEstado(
+                        estados[0]
+                    );
+
+            }
+
+
+            if(estados.length > 1){
+
+                estadoMostrar =
+                    estados
+                        .map(estado =>
+                            traducirEstado(estado)
+                        )
+                        .join(" / ");
+
+            }
+
+
+            /* =============================================
+               SALDO
+            ============================================= */
+
+            let saldo =
+                cliente.envio_total -
+                cliente.total_abonado;
+
+
+            if(saldo < 0){
+
+                saldo = 0;
+
+            }
+
+
+            const claseSaldo =
+                saldo > 0
+                ? "saldo-pendiente"
+                : "saldo-pagado";
+
+
+
+            /* =============================================
+               FILA
+            ============================================= */
+
+            html += `
+
+            <tr>
+
+                <td>
+                    ${cliente.nombre}
+                    ${cliente.apellido}
+                </td>
+
+
+                <td>
+                    ${cliente.peso_total} g
+                </td>
+
+
+                <td>
+                    ${moneda(
+                        cliente.envio_total
+                    )}
+                </td>
+
+
+                <td>
+                    ${estadoMostrar}
+                </td>
+
+
+                <td>
+                    ${moneda(
+                        cliente.total_abonado
+                    )}
+                </td>
+
+
+                <td class="${claseSaldo}">
+                    ${moneda(saldo)}
+                </td>
+
+
+                <td>
+                    ${
+                        cliente.fecha_abono
+                        ? cliente.fecha_abono
+                        : "-"
+                    }
+                </td>
+
+
+                <td>
+
+<button 
+    class="peso" 
+    onclick="abrirModal( 
+        'peso', 
+        ${cliente.id_usuario} 
+    )" 
+> 
+    Peso 
+</button> 
+
+
+<button 
+    class="pago" 
+    onclick="abrirModal( 
+        'pago', 
+        ${cliente.id_usuario} 
+    )" 
+> 
+    Abono 
+</button> 
+
+
+<button 
+    class="estado" 
+    onclick="abrirModal( 
+        'estado', 
+        ${cliente.id_usuario} 
+    )" 
+> 
+    Estado 
+</button> 
+
+
+<button 
+    class="detalles" 
+    onclick="verDetalles( 
+        ${cliente.id_usuario} 
+    )" 
+> 
+    Detalles 
+</button>
+
+
+<button 
+    class="editar" 
+    onclick="abrirEditar( 
+        ${cliente.id_usuario} 
+    )" 
+> 
+    Editar 
+</button>
+
+
+<button 
+    class="archivar" 
+    onclick="archivarCliente( 
+        ${cliente.id_usuario} 
+    )" 
+> 
+    Archivar 
+</button>
+
+
+<button 
+    class="eliminar" 
+    onclick="abrirModal( 
+        'eliminar', 
+        ${cliente.id_usuario} 
+    )" 
+> 
+    Eliminar 
+</button>
+
+
+                </td>
+
+            </tr>
+
+            `;
+
+        });
+
+
+
+        document.getElementById(
+            "tablaPedidos"
+        ).innerHTML =
+            html;
+
+
+    }catch(error){
+
+
+        console.error(
+            "Error cargando pedidos:",
+            error
+        );
+
+
+    }
+
+}
+
+
+
+/* =========================================================
+   ABRIR MODAL
+========================================================= */
+
+function abrirModal(
+    tipoOperacion,
+    idUsuario
+){
+
+
+    tipo =
+        tipoOperacion;
+
+
+    clienteSeleccionado =
+        idUsuario;
+
+
+    pedidoId =
+        null;
+
+
+    const cliente =
+        pedidosPorCliente[
+            idUsuario
+        ];
+
+
+    if(!cliente){
+
+        return;
+
+    }
+
+
+
+    const modal =
+        document.getElementById(
+            "modal"
+        );
+
+
+    const titulo =
+        document.getElementById(
+            "titulo"
+        );
+
+
+    const pedidoSelect =
+        document.getElementById(
+            "pedidoSelect"
+        );
+
+
+    const inputValor =
+        document.getElementById(
+            "inputValor"
+        );
+
+
+    const metodoPago =
+        document.getElementById(
+            "metodoPago"
+        );
+
+
+    const estadoSelect =
+        document.getElementById(
+            "estadoSelect"
+        );
+
+
+
+    modal.style.display =
+        "flex";
+
+
+    inputValor.value =
+        "";
+
+
+    metodoPago.value =
+        "";
+
+
+    estadoSelect.value =
+        "";
+
+
+
+    pedidoSelect.style.display =
+        "block";
+
+
+    inputValor.style.display =
+        "none";
+
+
+    metodoPago.style.display =
+        "none";
+
+
+    estadoSelect.style.display =
+        "none";
+
+
+
+    /* =====================================================
+       CARGAR ARTÍCULOS DEL CLIENTE
+    ===================================================== */
+
+    let opciones = `
+
+        <option value="">
+            Seleccione artículo
+        </option>
+
+    `;
+
+
+
+    cliente.pedidos.forEach(
+        pedido => {
+
+
+            opciones += `
+
+            <option
+                value="${pedido.id_pedido}"
+            >
+
+                ${pedido.articulo}
+                - Cantidad ${pedido.cantidad}
+
+            </option>
+
+            `;
+
+
+        }
+    );
+
+
+
+    pedidoSelect.innerHTML =
+        opciones;
+
+
+
+    /* =====================================================
+       PESO
+    ===================================================== */
+
+    if(tipo === "peso"){
+
+
+        titulo.innerText =
+            "Seleccione artículo e ingrese el peso";
+
+
+        inputValor.style.display =
+            "block";
+
+
+        inputValor.placeholder =
+            "Peso en gramos";
+
+
+    }
+
+
+
+    /* =====================================================
+       ABONO
+    ===================================================== */
+
+    if(tipo === "pago"){
+
+
+        titulo.innerText =
+            "Seleccione artículo e ingrese el abono";
+
+
+        inputValor.style.display =
+            "block";
+
+
+        metodoPago.style.display =
+            "block";
+
+
+        inputValor.placeholder =
+            "Monto del abono";
+
+
+    }
+
+
+
+    /* =====================================================
+       ESTADO
+    ===================================================== */
+
+    if(tipo === "estado"){
+
+
+        titulo.innerText =
+            "Cambie el estado";
+
+
+        pedidoSelect.style.display =
+            "none";
+
+
+        estadoSelect.style.display =
+            "block";
+
+
+    }
+
+
+
+    /* =====================================================
+       ELIMINAR
+    ===================================================== */
+
+    if(tipo === "eliminar"){
+
+
+        titulo.innerText =
+            "Seleccione el artículo que desea eliminar";
+
+
+    }
+
+
+}
+
+
+
+/* =========================================================
+   PEDIDO SELECCIONADO
+========================================================= */
+
+function actualizarPedidoSeleccionado(){
+
+
+    const valor =
+        document.getElementById(
+            "pedidoSelect"
+        ).value;
+
+
+    pedidoId =
+        valor
+        ? Number(valor)
+        : null;
+
+
+}
+
+
+
+/* =========================================================
+   CERRAR MODAL
+========================================================= */
+
+function cerrarModal(){
+
+
+    document.getElementById(
+        "modal"
+    ).style.display =
+        "none";
+
+
+    tipo =
+        "";
+
+
+    pedidoId =
+        null;
+
+
+    clienteSeleccionado =
+        null;
+
+
+}
+
+
+
+/* =========================================================
+   CONFIRMAR
+========================================================= */
+
+async function confirmar(){
+
+
+    if(tipo !== "estado" && !pedidoId){
+
+        return;
+
+    }
+
+
+
+    /* =====================================================
+       PESO
+    ===================================================== */
+
+    if(tipo === "peso"){
+
+
+        const valor =
+            Number(
+                document.getElementById(
+                    "inputValor"
+                ).value
+            );
+
+
+        if(
+            !valor ||
+            valor <= 0
+        ){
+
+            return;
+
+        }
+
+
+        await fetch(
+            "/update-weight",
+            {
+
+                method:
+                    "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body:
+                    JSON.stringify({
+
+                        id_pedido:
+                            pedidoId,
+
+                        peso_gramos:
+                            valor
+
+                    })
+
+            }
+        );
+
+
+    }
+
+
+
+    /* =====================================================
+   ABONO
+===================================================== */
+
+if(tipo === "pago"){
+
+    const valor =
+        Number(
+            document.getElementById(
+                "inputValor"
+            ).value
+        );
+
+    const metodo =
+        document.getElementById(
+            "metodoPago"
+        ).value;
+
+
+    if(
+        !valor ||
+        valor <= 0 ||
+        !metodo
+    ){
+        return;
+    }
+
+
+    /* BUSCAR EL PEDIDO SELECCIONADO */
+
+    const cliente =
+        pedidosPorCliente[
+            clienteSeleccionado
+        ];
+
+    const pedido =
+        cliente
+            ? cliente.pedidos.find(
+                p =>
+                    Number(p.id_pedido) ===
+                    Number(pedidoId)
+            )
+            : null;
+
+
+    if(!pedido){
+        return;
+    }
+
+
+    /* CALCULAR ENVÍO DE ESTE ARTÍCULO */
+
+    const peso =
+        Number(
+            pedido.peso_gramos
+        ) || 0;
+
+    const envio =
+        (peso / 1000) * 6000;
+
+
+    /* ABONOS QUE YA TIENE ESTE ARTÍCULO */
+
+    const abonado =
+        Number(
+            pedido.total_abonado
+        ) || 0;
+
+
+    /* SALDO PENDIENTE */
+
+    const saldoPendiente =
+        envio - abonado;
+
+
+    if(saldoPendiente <= 0){
+
+        mostrarMensaje(
+            "Este artículo ya está completamente pagado."
+        );
+
+        return;
+    }
+
+
+    /* NO PERMITIR ABONAR MÁS DEL SALDO */
+
+    if(valor > saldoPendiente){
+
+        mostrarMensaje(
+            `El saldo pendiente de este artículo es ${moneda(saldoPendiente)}. No puede ingresar un abono mayor.`
+        );
+
+        return;
+    }
+
+
+    /* GUARDAR ABONO */
+
+    const respuesta =
+        await fetch(
+            "/add-payment",
+            {
+                method:
+                    "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify({
+
+                        id_pedido:
+                            pedidoId,
+
+                        monto_abono:
+                            valor,
+
+                        metodo_pago:
+                            metodo
+
+                    })
+
+            }
+        );
+
+
+    if(!respuesta.ok){
+
+        console.error(
+            "No se pudo guardar el abono"
+        );
+
+        return;
+    }
+
+}
+
+
+
+    /* =====================================================
+       ESTADO
+    ===================================================== */
+
+    if(tipo === "estado"){
+
+
+        const estado =
+            document.getElementById(
+                "estadoSelect"
+            ).value;
+
+
+        if(!estado){
+
+            return;
+
+        }
+
+
+        const cliente =
+            pedidosPorCliente[
+                clienteSeleccionado
+            ];
+
+
+        if(!cliente){
+
+            return;
+
+        }
+
+
+        for(const pedido of cliente.pedidos){
+
+            await fetch(
+                "/update-status",
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            id_pedido:
+                                pedido.id_pedido,
+
+                            estado:
+                                estado
+
+                        })
+
+                }
+            );
+
+        }
+
+
+    }
+
+
+/* =====================================================
+   ELIMINAR
+===================================================== */
+
+if(tipo === "eliminar"){
+
+    const cliente =
+        pedidosPorCliente[
+            clienteSeleccionado
+        ];
+
+    const pedido =
+        cliente
+            ? cliente.pedidos.find(
+                p =>
+                    Number(p.id_pedido) ===
+                    Number(pedidoId)
+            )
+            : null;
+
+    if(!pedido){
+        return;
+    }
+
+    document.getElementById(
+        "modal"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "mensajeConfirmarEliminar"
+    ).textContent =
+        `¿Seguro que desea eliminar "${pedido.articulo}"?`;
+
+    document.getElementById(
+        "modalConfirmarEliminar"
+    ).style.display =
+        "flex";
+
+    return;
+
+}
+/* ACTUALIZAR LA TABLA DESPUÉS DE GUARDAR */
+
+cerrarModal();
+
+await cargarPedidos();
+
+}
+
+
+/* =========================================================
+   CONFIRMAR ELIMINACIÓN DE PEDIDO
+========================================================= */
+
+function cancelarEliminarPedido(){
+
+    document.getElementById(
+        "modalConfirmarEliminar"
+    ).style.display =
+        "none";
+
+    tipo = "";
+    pedidoId = null;
+    clienteSeleccionado = null;
+
+}
+
+
+async function eliminarPedidoConfirmado(){
+
+    if(!pedidoId){
+        return;
+    }
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/delete-order",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            id_pedido:
+                                pedidoId
+                        })
+                }
+            );
+
+
+        const resultado =
+            await respuesta.json();
+
+
+        if(
+            !respuesta.ok ||
+            !resultado.ok
+        ){
+
+            console.error(
+                resultado.mensaje ||
+                "No se pudo eliminar el pedido"
+            );
+
+            return;
+        }
+
+
+        document.getElementById(
+            "modalConfirmarEliminar"
+        ).style.display =
+            "none";
+
+
+        tipo = "";
+        pedidoId = null;
+        clienteSeleccionado = null;
+
+
+        await cargarPedidos();
+
+
+    }catch(error){
+
+        console.error(
+            "Error eliminando pedido:",
+            error
+        );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   DETALLES
+========================================================= */
+
+function verDetalles(
+    idUsuario
+){
+
+
+    window.location.href =
+        `/details.html?id=${idUsuario}`;
+
+
+}
+/* =========================================================
+   EDITAR PEDIDO
+========================================================= */
+
+let articulosEditar = [];
+
+
+async function abrirEditar(idUsuario){
+
+    clienteSeleccionado = idUsuario;
+
+    const cliente =
+        pedidosPorCliente[idUsuario];
+
+    const modalEditar =
+        document.getElementById("modalEditar");
+
+    const pedidoSelect =
+        document.getElementById("editarPedidoSelect");
+
+    const buscadorContenedor =
+        document.getElementById("editarBuscadorContenedor");
+
+    const buscarArticulo =
+        document.getElementById("editarBuscarArticulo");
+
+    const listaArticulos =
+        document.getElementById("editarListaArticulos");
+
+    const articuloSelect =
+        document.getElementById("editarArticuloSelect");
+
+    const cantidadInput =
+        document.getElementById("editarCantidad");
+
+
+    pedidoSelect.innerHTML = `
+        <option value="">
+            Seleccione el artículo a editar
+        </option>
+    `;
+
+    buscarArticulo.value = "";
+
+    articuloSelect.value = "";
+
+    cantidadInput.value = "";
+
+    listaArticulos.innerHTML = "";
+
+    pedidoSelect.style.display = "block";
+
+    buscadorContenedor.style.display = "none";
+
+    cantidadInput.style.display = "none";
+
+
+    if(!cliente){
+
+        alert("No se encontró el cliente");
+
+        return;
+
+    }
+
+
+    cliente.pedidos.forEach(pedido => {
+
+        pedidoSelect.innerHTML += `
+            <option value="${pedido.id_pedido}">
+                ${pedido.articulo} - Cantidad ${pedido.cantidad}
+            </option>
+        `;
+
+    });
+
+
+    try{
+
+        const respuesta =
+            await fetch("/articulos");
+
+
+        articulosEditar =
+            await respuesta.json();
+
+
+        modalEditar.style.display =
+            "flex";
+
+
+    }catch(error){
+
+        console.error(
+            "Error cargando artículos:",
+            error
+        );
+
+        alert(
+            "No se pudieron cargar los artículos"
+        );
+
+    }
+
+}
+
+
+
+function normalizarArticuloEditar(texto){
+
+    return String(texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+
+}
+
+
+
+function mostrarArticulosEditar(filtro = ""){
+
+    const listaArticulos =
+        document.getElementById(
+            "editarListaArticulos"
+        );
+
+    const buscar =
+        normalizarArticuloEditar(
+            filtro
+        );
+
+
+    const resultados =
+        articulosEditar.filter(
+            articulo =>
+
+                normalizarArticuloEditar(
+                    articulo.nombre
+                ).includes(buscar)
+        );
+
+
+    listaArticulos.innerHTML = "";
+
+
+    if(resultados.length === 0){
+
+        listaArticulos.innerHTML = `
+            <div class="sin-resultados">
+                No se encontraron artículos guardados.
+            </div>
+        `;
+
+        listaArticulos.classList.add(
+            "mostrar"
+        );
+
+        return;
+
+    }
+
+
+    resultados.forEach(articulo => {
+
+        const opcion =
+            document.createElement("div");
+
+
+        opcion.className =
+            "opcion-buscador";
+
+
+        const nombre =
+            document.createElement("div");
+
+
+        nombre.className =
+            "nombre-articulo-lista";
+
+
+        nombre.textContent =
+            articulo.nombre || "";
+
+
+        opcion.appendChild(nombre);
+
+
+        if(articulo.descripcion){
+
+            const descripcion =
+                document.createElement("div");
+
+
+            descripcion.className =
+                "descripcion-articulo-lista";
+
+
+            descripcion.textContent =
+                articulo.descripcion;
+
+
+            opcion.appendChild(
+                descripcion
+            );
+
+        }
+
+
+        opcion.addEventListener(
+            "mousedown",
+            (e) => {
+
+                e.preventDefault();
+
+                seleccionarArticuloEditar(
+                    articulo
+                );
+
+            }
+        );
+
+
+        listaArticulos.appendChild(
+            opcion
+        );
+
+    });
+
+
+    listaArticulos.classList.add(
+        "mostrar"
+    );
+
+}
+
+
+
+function seleccionarArticuloEditar(articulo){
+
+    const buscarArticulo =
+        document.getElementById(
+            "editarBuscarArticulo"
+        );
+
+    const listaArticulos =
+        document.getElementById(
+            "editarListaArticulos"
+        );
+
+    const articuloSelect =
+        document.getElementById(
+            "editarArticuloSelect"
+        );
+
+
+    buscarArticulo.value =
+        articulo.nombre || "";
+
+
+    articuloSelect.value =
+        articulo.id_articulo;
+
+
+    listaArticulos.classList.remove(
+        "mostrar"
+    );
+
+}
+
+
+
+function cargarPedidoEditar(){
+
+    const pedidoSelect =
+        document.getElementById(
+            "editarPedidoSelect"
+        );
+
+    const buscadorContenedor =
+        document.getElementById(
+            "editarBuscadorContenedor"
+        );
+
+    const buscarArticulo =
+        document.getElementById(
+            "editarBuscarArticulo"
+        );
+
+    const articuloSelect =
+        document.getElementById(
+            "editarArticuloSelect"
+        );
+
+    const cantidadInput =
+        document.getElementById(
+            "editarCantidad"
+        );
+
+
+    const idPedido =
+        Number(
+            pedidoSelect.value
+        );
+
+
+    const cliente =
+        pedidosPorCliente[
+            clienteSeleccionado
+        ];
+
+
+    if(!cliente){
+        return;
+    }
+
+
+    const pedido =
+        cliente.pedidos.find(
+            p =>
+                Number(p.id_pedido) ===
+                idPedido
+        );
+
+
+    if(!pedido){
+
+        buscadorContenedor.style.display =
+            "none";
+
+        cantidadInput.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    buscadorContenedor.style.display =
+        "block";
+
+    cantidadInput.style.display =
+        "block";
+
+
+    buscarArticulo.value =
+        pedido.articulo || "";
+
+
+    articuloSelect.value =
+        pedido.id_articulo || "";
+
+
+    cantidadInput.value =
+        pedido.cantidad;
+
+
+    mostrarArticulosEditar(
+        buscarArticulo.value
+    );
+
+
+    document.getElementById(
+        "editarListaArticulos"
+    ).classList.remove(
+        "mostrar"
+    );
+
+}
+
+
+
+document
+.getElementById(
+    "editarBuscarArticulo"
+)
+.addEventListener(
+    "focus",
+    () => {
+
+        mostrarArticulosEditar(
+            document.getElementById(
+                "editarBuscarArticulo"
+            ).value
+        );
+
+    }
+);
+
+
+
+document
+.getElementById(
+    "editarBuscarArticulo"
+)
+.addEventListener(
+    "input",
+    () => {
+
+        document.getElementById(
+            "editarArticuloSelect"
+        ).value = "";
+
+
+        mostrarArticulosEditar(
+            document.getElementById(
+                "editarBuscarArticulo"
+            ).value
+        );
+
+    }
+);
+
+
+
+document.addEventListener(
+    "mousedown",
+    (e) => {
+
+        const buscarArticulo =
+            document.getElementById(
+                "editarBuscarArticulo"
+            );
+
+        const listaArticulos =
+            document.getElementById(
+                "editarListaArticulos"
+            );
+
+
+        if(
+            buscarArticulo &&
+            listaArticulos &&
+            !buscarArticulo.contains(
+                e.target
+            ) &&
+            !listaArticulos.contains(
+                e.target
+            )
+        ){
+
+            listaArticulos
+                .classList
+                .remove(
+                    "mostrar"
+                );
+
+        }
+
+    }
+);
+
+
+
+async function guardarEdicionPedido(){
+
+    const idPedido =
+        Number(
+            document.getElementById(
+                "editarPedidoSelect"
+            ).value
+        );
+
+
+    const articuloSelect =
+        document.getElementById(
+            "editarArticuloSelect"
+        );
+
+
+    const buscarArticulo =
+        document.getElementById(
+            "editarBuscarArticulo"
+        );
+
+
+    let idArticulo =
+        Number(
+            articuloSelect.value
+        );
+
+
+    const cantidad =
+        Number(
+            document.getElementById(
+                "editarCantidad"
+            ).value
+        );
+
+
+    if(!idPedido){
+
+        alert(
+            "Seleccione el artículo que desea editar"
+        );
+
+        return;
+
+    }
+
+
+    if(!idArticulo){
+
+        const encontrado =
+            articulosEditar.find(
+                articulo =>
+
+                    normalizarArticuloEditar(
+                        articulo.nombre
+                    ) ===
+
+                    normalizarArticuloEditar(
+                        buscarArticulo.value
+                    )
+            );
+
+
+        if(encontrado){
+
+            idArticulo =
+                Number(
+                    encontrado.id_articulo
+                );
+
+        }
+
+    }
+
+
+    if(!idArticulo){
+
+        alert(
+            "Seleccione un artículo válido de la lista"
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !Number.isInteger(cantidad) ||
+        cantidad <= 0
+    ){
+
+        alert(
+            "Ingrese una cantidad válida"
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/update-order",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        id_pedido:
+                            idPedido,
+
+                        id_articulo:
+                            idArticulo,
+
+                        cantidad:
+                            cantidad
+                    })
+                }
+            );
+
+
+        const resultado =
+            await respuesta.json();
+
+
+        if(
+            !respuesta.ok ||
+            !resultado.ok
+        ){
+
+            alert(
+                resultado.mensaje ||
+                "No se pudo actualizar el pedido"
+            );
+
+            return;
+
+        }
+
+
+        cerrarEditar();
+
+
+        await cargarPedidos();
+
+
+    }catch(error){
+
+        console.error(
+            "Error actualizando pedido:",
+            error
+        );
+
+        alert(
+            "Error al actualizar el pedido"
+        );
+
+    }
+
+}
+
+
+
+function cerrarEditar(){
+
+    document.getElementById(
+        "modalEditar"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "editarPedidoSelect"
+    ).value =
+        "";
+
+
+    document.getElementById(
+        "editarBuscarArticulo"
+    ).value =
+        "";
+
+
+    document.getElementById(
+        "editarArticuloSelect"
+    ).value =
+        "";
+
+
+    document.getElementById(
+        "editarCantidad"
+    ).value =
+        "";
+
+
+    document.getElementById(
+        "editarPedidoSelect"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "editarBuscadorContenedor"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "editarCantidad"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "editarListaArticulos"
+    ).classList.remove(
+        "mostrar"
+    );
+
+}
+
+/* =========================================================
+   ARCHIVAR PEDIDOS DEL CLIENTE
+========================================================= */
+
+let clienteParaArchivar = null;
+
+
+function archivarCliente(idUsuario){
+
+    const cliente =
+        pedidosPorCliente[idUsuario];
+
+    if(!cliente){
+
+        alert("No se encontró el cliente");
+
+        return;
+    }
+
+
+    clienteParaArchivar = idUsuario;
+
+
+    document.getElementById(
+        "mensajeArchivar"
+    ).textContent =
+        `¿Desea archivar los pedidos de ${cliente.nombre} ${cliente.apellido}?`;
+
+
+    document.getElementById(
+        "modalArchivar"
+    ).style.display =
+        "flex";
+
+}
+
+
+
+function cancelarArchivar(){
+
+    clienteParaArchivar = null;
+
+
+    document.getElementById(
+        "modalArchivar"
+    ).style.display =
+        "none";
+
+}
+
+
+
+async function confirmarArchivar(){
+
+    if(!clienteParaArchivar){
+        return;
+    }
+
+
+    const idUsuario =
+        clienteParaArchivar;
+
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/archive-client-orders",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        id_usuario:
+                            idUsuario
+                    })
+                }
+            );
+
+
+        const resultado =
+            await respuesta.json();
+
+
+        if(
+            !respuesta.ok ||
+            !resultado.ok
+        ){
+
+            alert(
+                resultado.mensaje ||
+                "No se pudieron archivar los pedidos"
+            );
+
+            return;
+        }
+
+
+        cancelarArchivar();
+
+
+        await cargarPedidos();
+
+
+    }catch(error){
+
+        console.error(
+            "Error archivando pedidos:",
+            error
+        );
+
+        alert(
+            "Error al archivar los pedidos"
+        );
+
+    }
+
+}
+
+/* =========================================================
+   BUSCADOR
+========================================================= */
+
+function filtrar(){
+
+
+    const valor =
+        document.getElementById(
+            "buscar"
+        ).value
+        .toLowerCase();
+
+
+    document.querySelectorAll(
+        "#tablaPedidos tr"
+    ).forEach(
+        fila => {
+
+
+            const texto =
+                fila.innerText
+                .toLowerCase();
+
+
+            fila.style.display =
+                texto.includes(valor)
+                ? ""
+                : "none";
+
+
+        }
+    );
+
+
+}
+
+
+
+/* =========================================================
+   INICIAR
+========================================================= */
+
+cargarPedidos();
+
+
+</script>
+
+</body>
+</html>

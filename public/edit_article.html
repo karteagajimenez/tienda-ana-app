@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Editar artículo - Tienda Ana</title>
+
+<style>
+
+body{
+    font-family:Arial, sans-serif;
+    background:linear-gradient(to right,#f8e1e7,#fdf6f0);
+    margin:0;
+    padding:0;
+}
+
+
+/* ================================
+   HEADER
+================================ */
+
+.header{
+    display:flex;
+    align-items:center;
+    padding:15px 25px;
+    position:relative;
+}
+
+.header h1{
+    font-size:22px;
+    color:#c48b9f;
+    margin:0;
+}
+
+.logo-container{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+}
+
+.logo-header{
+    height:90px;
+}
+
+
+/* ================================
+   CONTENEDOR
+================================ */
+
+.contenedor{
+    width:92%;
+    max-width:650px;
+    margin:40px auto;
+}
+
+.tarjeta{
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 3px 15px rgba(0,0,0,0.12);
+}
+
+.tarjeta h2{
+    text-align:center;
+    color:#c48b9f;
+    margin-top:0;
+    margin-bottom:30px;
+}
+
+
+/* ================================
+   FORMULARIO
+================================ */
+
+.grupo{
+    margin-bottom:20px;
+}
+
+.grupo label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:bold;
+    color:#555;
+}
+
+.grupo input,
+.grupo textarea{
+    width:100%;
+    box-sizing:border-box;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:15px;
+    font-family:Arial, sans-serif;
+}
+
+.grupo textarea{
+    min-height:120px;
+    resize:vertical;
+}
+
+.grupo input:focus,
+.grupo textarea:focus{
+    outline:none;
+    border-color:#c48b9f;
+    box-shadow:0 0 0 3px rgba(196,139,159,0.15);
+}
+
+
+/* ================================
+   BOTONES
+================================ */
+
+.botones{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-top:30px;
+}
+
+.cancelar{
+    background:#888;
+    color:white;
+    border:none;
+    padding:11px 20px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.cancelar:hover{
+    opacity:0.85;
+}
+
+.guardar{
+    background:#c48b9f;
+    color:white;
+    border:none;
+    padding:11px 20px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.guardar:hover{
+    background:#b3748a;
+}
+
+.guardar:disabled{
+    opacity:0.6;
+    cursor:not-allowed;
+}
+
+
+/* ================================
+   TOAST
+================================ */
+
+.toast{
+    position:fixed;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    padding:12px 20px;
+    border-radius:8px;
+    color:white;
+    font-weight:bold;
+    z-index:9999;
+    box-shadow:0 3px 12px rgba(0,0,0,0.18);
+    display:none;
+}
+
+.toast.exito{
+    background:#4caf50;
+}
+
+.toast.error{
+    background:#e74c3c;
+}
+
+
+/* ================================
+   CARGANDO
+================================ */
+
+.cargando{
+    text-align:center;
+    color:#888;
+    margin-bottom:20px;
+    display:none;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media(max-width:700px){
+
+    .header h1{
+        display:none;
+    }
+
+    .logo-container{
+        position:static;
+        transform:none;
+        margin:auto;
+    }
+
+    .contenedor{
+        width:95%;
+    }
+
+    .tarjeta{
+        padding:20px;
+    }
+
+    .botones{
+        flex-direction:column;
+    }
+
+    .cancelar,
+    .guardar{
+        width:100%;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================================
+     TOAST
+================================ -->
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
+
+<!-- ================================
+     HEADER
+================================ -->
+
+<div class="header">
+
+    <h1>
+        ✏️ Editar artículo
+    </h1>
+
+    <div class="logo-container">
+
+        <img
+            src="logo.jpg"
+            class="logo-header"
+            alt="Tienda Ana"
+        >
+
+    </div>
+
+</div>
+
+
+
+<!-- ================================
+     CONTENIDO
+================================ -->
+
+<div class="contenedor">
+
+    <div class="tarjeta">
+
+        <h2>
+            Editar artículo
+        </h2>
+
+
+        <div
+            id="cargando"
+            class="cargando"
+        >
+            Cargando artículo...
+        </div>
+
+
+        <form id="formEditar">
+
+
+            <!-- NOMBRE -->
+
+            <div class="grupo">
+
+                <label for="nombre">
+                    Nombre del artículo
+                </label>
+
+                <input
+                    type="text"
+                    id="nombre"
+                    autocomplete="off"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- TASA -->
+
+            <div class="grupo">
+
+                <label for="tasa">
+                    Tasa
+                </label>
+
+                <input
+                    type="number"
+                    id="tasa"
+                    min="0"
+                    step="0.01"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- DESCRIPCIÓN -->
+
+            <div class="grupo">
+
+                <label for="descripcion">
+                    Descripción
+                </label>
+
+                <textarea
+                    id="descripcion"
+                    placeholder="Descripción del artículo"
+                ></textarea>
+
+            </div>
+
+
+
+            <!-- BOTONES -->
+
+            <div class="botones">
+
+                <button
+                    type="button"
+                    class="cancelar"
+                    onclick="cancelarEdicion()"
+                >
+                    Cancelar
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="guardar"
+                    id="btnGuardar"
+                >
+                    Guardar cambios
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+/* ================================
+   VARIABLES
+================================ */
+
+const parametros =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const idArticulo =
+    parametros.get("id");
+
+
+const nombreInput =
+    document.getElementById("nombre");
+
+const tasaInput =
+    document.getElementById("tasa");
+
+const descripcionInput =
+    document.getElementById("descripcion");
+
+const formulario =
+    document.getElementById("formEditar");
+
+const btnGuardar =
+    document.getElementById("btnGuardar");
+
+const cargando =
+    document.getElementById("cargando");
+
+
+
+/* ================================
+   CANCELAR EDICIÓN
+================================ */
+
+function cancelarEdicion(){
+
+    window.location.href =
+        "/articles.html";
+
+}
+
+
+
+/* ================================
+   MOSTRAR MENSAJE
+================================ */
+
+function mostrarToast(
+    mensaje,
+    tipo = "exito"
+){
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+    toast.textContent =
+        mensaje;
+
+    toast.className =
+        "toast " + tipo;
+
+    toast.style.display =
+        "block";
+
+
+    setTimeout(
+        () => {
+
+            toast.style.display =
+                "none";
+
+        },
+        2500
+    );
+
+}
+
+
+
+/* ================================
+   CARGAR ARTÍCULO
+================================ */
+
+async function cargarArticulo(){
+
+    if(!idArticulo){
+
+        mostrarToast(
+            "Artículo no encontrado",
+            "error"
+        );
+
+        btnGuardar.disabled =
+            true;
+
+        return;
+
+    }
+
+
+    cargando.style.display =
+        "block";
+
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/articulos"
+            );
+
+
+        if(!respuesta.ok){
+
+            throw new Error(
+                "No se pudieron cargar los artículos"
+            );
+
+        }
+
+
+        const articulos =
+            await respuesta.json();
+
+
+        const articulo =
+            articulos.find(
+                item =>
+                    Number(
+                        item.id_articulo
+                    ) ===
+                    Number(
+                        idArticulo
+                    )
+            );
+
+
+        if(!articulo){
+
+            cargando.style.display =
+                "none";
+
+            mostrarToast(
+                "Artículo no encontrado",
+                "error"
+            );
+
+            btnGuardar.disabled =
+                true;
+
+            return;
+
+        }
+
+
+        nombreInput.value =
+            articulo.nombre || "";
+
+        tasaInput.value =
+            articulo.tasa || 0;
+
+        descripcionInput.value =
+            articulo.descripcion || "";
+
+
+        cargando.style.display =
+            "none";
+
+
+    }catch(error){
+
+        console.error(
+            "Error cargando artículo:",
+            error
+        );
+
+        cargando.style.display =
+            "none";
+
+        mostrarToast(
+            "No se pudo cargar el artículo",
+            "error"
+        );
+
+        btnGuardar.disabled =
+            true;
+
+    }
+
+}
+
+
+
+/* ================================
+   GUARDAR CAMBIOS
+================================ */
+
+formulario.addEventListener(
+    "submit",
+    async function(event){
+
+        event.preventDefault();
+
+
+        const nombre =
+            nombreInput.value.trim();
+
+        const tasa =
+            Number(
+                tasaInput.value
+            );
+
+        const descripcion =
+            descripcionInput.value.trim();
+
+
+        if(!nombre){
+
+            mostrarToast(
+                "Escriba el nombre del artículo",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if(
+            !Number.isFinite(tasa) ||
+            tasa < 0
+        ){
+
+            mostrarToast(
+                "La tasa no es válida",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        btnGuardar.disabled =
+            true;
+
+        btnGuardar.textContent =
+            "Guardando...";
+
+
+        try{
+
+            const respuesta =
+                await fetch(
+                    "/update-article",
+                    {
+                        method:"POST",
+
+                        headers:{
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:JSON.stringify({
+
+                            id_articulo:
+                                idArticulo,
+
+                            nombre:
+                                nombre,
+
+                            tasa:
+                                tasa,
+
+                            descripcion:
+                                descripcion
+
+                        })
+
+                    }
+                );
+
+
+            const resultado =
+                await respuesta.json();
+
+
+            if(
+                !respuesta.ok ||
+                !resultado.ok
+            ){
+
+                throw new Error(
+                    resultado.mensaje ||
+                    "No se pudo actualizar el artículo"
+                );
+
+            }
+
+
+            mostrarToast(
+                "Artículo actualizado correctamente",
+                "exito"
+            );
+
+
+            setTimeout(
+                () => {
+
+                    window.location.href =
+                        "/articles.html";
+
+                },
+                1000
+            );
+
+
+        }catch(error){
+
+            console.error(
+                "Error actualizando artículo:",
+                error
+            );
+
+
+            mostrarToast(
+                error.message ||
+                "No se pudo actualizar el artículo",
+                "error"
+            );
+
+
+            btnGuardar.disabled =
+                false;
+
+            btnGuardar.textContent =
+                "Guardar cambios";
+
+        }
+
+    }
+);
+
+
+
+/* ================================
+   INICIO
+================================ */
+
+cargarArticulo();
+
+
+</script>
+
+
+</body>
+
+</html>

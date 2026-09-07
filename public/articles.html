@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Artículos - Tienda Ana</title>
+
+<style>
+
+body{
+    font-family:Arial, sans-serif;
+    background:linear-gradient(to right,#f8e1e7,#fdf6f0);
+    margin:0;
+    padding:0;
+}
+
+
+/* HEADER */
+
+.header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:15px 25px;
+    position:relative;
+}
+
+.header h1{
+    font-size:22px;
+    color:#c48b9f;
+    margin:0;
+}
+
+.logo-container{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+}
+
+.logo-header{
+    height:90px;
+}
+
+
+/* BOTÓN VOLVER */
+
+.volver{
+    background:#b76e8a;
+    color:white;
+    border:none;
+    padding:10px 16px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.volver:hover{
+    opacity:0.85;
+}
+
+
+/* CONTENEDOR */
+
+.contenedor{
+    width:92%;
+    max-width:1100px;
+    margin:40px auto;
+}
+
+.tarjeta{
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 3px 15px rgba(0,0,0,0.12);
+}
+
+.tarjeta h2{
+    text-align:center;
+    color:#c48b9f;
+    margin-top:0;
+    margin-bottom:25px;
+}
+
+
+/* BUSCADOR */
+
+.buscador{
+    margin-bottom:25px;
+}
+
+.buscador input{
+    width:100%;
+    box-sizing:border-box;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:15px;
+}
+
+.buscador input:focus{
+    outline:none;
+    border-color:#c48b9f;
+    box-shadow:0 0 0 3px rgba(196,139,159,0.15);
+}
+
+
+/* TABLA */
+
+.tabla-contenedor{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+}
+
+th,
+td{
+    padding:12px;
+    border-bottom:1px solid #eee;
+    text-align:left;
+}
+
+th{
+    background:#c48b9f;
+    color:white;
+}
+
+tbody tr:hover{
+    background:#fdf6f8;
+}
+
+
+/* COLUMNAS */
+
+.col-tasa{
+    text-align:right;
+    white-space:nowrap;
+}
+
+.col-accion{
+    text-align:center;
+    width:120px;
+}
+
+
+/* BOTÓN EDITAR */
+
+.editar{
+    background:#c48b9f;
+    color:white;
+    border:none;
+    padding:8px 14px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.editar:hover{
+    background:#b3748a;
+}
+
+
+/* SIN RESULTADOS */
+
+.sin-resultados{
+    text-align:center;
+    color:#888;
+    padding:30px;
+}
+
+
+/* RESPONSIVE */
+
+@media(max-width:700px){
+
+    .header h1{
+        display:none;
+    }
+
+    .logo-container{
+        position:static;
+        transform:none;
+    }
+
+    .contenedor{
+        width:95%;
+    }
+
+    .tarjeta{
+        padding:20px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="header">
+
+    <h1>
+        📦 Artículos
+    </h1>
+
+    <div class="logo-container">
+
+        <img
+            src="logo.jpg"
+            class="logo-header"
+            alt="Tienda Ana"
+        >
+
+    </div>
+
+
+    <button
+        class="volver"
+        onclick="volver()"
+    >
+        Volver
+    </button>
+
+</div>
+
+
+
+<div class="contenedor">
+
+    <div class="tarjeta">
+
+        <h2>
+            Lista de artículos
+        </h2>
+
+
+        <div class="buscador">
+
+            <input
+                type="text"
+                id="buscar"
+                placeholder="Buscar artículo..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div class="tabla-contenedor">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Nombre del artículo
+                        </th>
+
+                        <th>
+                            Tasa
+                        </th>
+
+                        <th>
+                            Descripción
+                        </th>
+
+                        <th class="col-accion">
+                            Acción
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="tablaArticulos">
+
+                    <tr>
+
+                        <td
+                            colspan="4"
+                            class="sin-resultados"
+                        >
+                            Cargando artículos...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+let articulos = [];
+
+
+
+/* ================================
+   VOLVER
+================================ */
+
+function volver(){
+
+    window.location.href =
+        "/dashboard.html";
+
+}
+
+
+
+/* ================================
+   FORMATEAR DINERO
+================================ */
+
+function moneda(valor){
+
+    return "₡" +
+        Number(valor || 0)
+        .toLocaleString(
+            "es-CR",
+            {
+                minimumFractionDigits:0,
+                maximumFractionDigits:2
+            }
+        );
+
+}
+
+
+
+/* ================================
+   NORMALIZAR TEXTO
+================================ */
+
+function normalizar(texto){
+
+    return String(texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"")
+        .toLowerCase()
+        .trim();
+
+}
+
+
+
+/* ================================
+   CARGAR ARTÍCULOS
+================================ */
+
+async function cargarArticulos(){
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/articulos"
+            );
+
+
+        articulos =
+            await respuesta.json();
+
+
+        mostrarArticulos(
+            articulos
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Error cargando artículos:",
+            error
+        );
+
+
+        document.getElementById(
+            "tablaArticulos"
+        ).innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="4"
+                    class="sin-resultados"
+                >
+                    No se pudieron cargar los artículos.
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+
+/* ================================
+   MOSTRAR ARTÍCULOS
+================================ */
+
+function mostrarArticulos(lista){
+
+    const tabla =
+        document.getElementById(
+            "tablaArticulos"
+        );
+
+
+    tabla.innerHTML = "";
+
+
+    if(lista.length === 0){
+
+        tabla.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="4"
+                    class="sin-resultados"
+                >
+                    No hay artículos registrados.
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    lista.forEach(
+        articulo => {
+
+
+            const fila =
+                document.createElement(
+                    "tr"
+                );
+
+
+            const tdNombre =
+                document.createElement(
+                    "td"
+                );
+
+            tdNombre.textContent =
+                articulo.nombre || "-";
+
+
+            const tdTasa =
+                document.createElement(
+                    "td"
+                );
+
+            tdTasa.className =
+                "col-tasa";
+
+            tdTasa.textContent =
+                moneda(
+                    articulo.tasa
+                );
+
+
+            const tdDescripcion =
+                document.createElement(
+                    "td"
+                );
+
+            tdDescripcion.textContent =
+                articulo.descripcion ||
+                "-";
+
+
+            const tdAccion =
+                document.createElement(
+                    "td"
+                );
+
+            tdAccion.className =
+                "col-accion";
+
+
+            const botonEditar =
+                document.createElement(
+                    "button"
+                );
+
+            botonEditar.className =
+                "editar";
+
+            botonEditar.textContent =
+                "Editar";
+
+            botonEditar.addEventListener(
+                "click",
+                () => {
+
+                    editarArticulo(
+                        articulo.id_articulo
+                    );
+
+                }
+            );
+
+
+            tdAccion.appendChild(
+                botonEditar
+            );
+
+
+            fila.appendChild(
+                tdNombre
+            );
+
+            fila.appendChild(
+                tdTasa
+            );
+
+            fila.appendChild(
+                tdDescripcion
+            );
+
+            fila.appendChild(
+                tdAccion
+            );
+
+
+            tabla.appendChild(
+                fila
+            );
+
+        }
+    );
+
+}
+
+
+
+/* ================================
+   BUSCADOR
+================================ */
+
+document.getElementById(
+    "buscar"
+).addEventListener(
+    "input",
+    function(){
+
+
+        const texto =
+            normalizar(
+                this.value
+            );
+
+
+        const resultados =
+            articulos.filter(
+                articulo => {
+
+
+                    const nombre =
+                        normalizar(
+                            articulo.nombre
+                        );
+
+
+                    const descripcion =
+                        normalizar(
+                            articulo.descripcion
+                        );
+
+
+                    return (
+                        nombre.includes(texto) ||
+                        descripcion.includes(texto)
+                    );
+
+                }
+            );
+
+
+        mostrarArticulos(
+            resultados
+        );
+
+    }
+);
+
+
+
+/* ================================
+   EDITAR ARTÍCULO
+================================ */
+
+function editarArticulo(
+    idArticulo
+){
+
+    window.location.href =
+        `/edit_article.html?id=${idArticulo}`;
+
+}
+
+
+
+/* ================================
+   INICIO
+================================ */
+
+cargarArticulos();
+
+
+</script>
+
+
+</body>
+
+</html>

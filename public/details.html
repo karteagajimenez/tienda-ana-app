@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Detalles del Cliente - Tienda Ana</title>
+
+<style>
+
+/* =========================================================
+   PÁGINA
+========================================================= */
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #f8e1e7, #fdf6f0);
+    margin: 0;
+    padding: 0;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 25px;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 22px;
+    color: #c48b9f;
+    margin: 0;
+}
+
+
+/* =========================================================
+   LOGO HEADER
+========================================================= */
+
+.logo-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.logo-header {
+    height: 90px;
+}
+
+
+/* =========================================================
+   BOTONES HEADER
+========================================================= */
+
+.header-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.header-buttons button {
+    border: none;
+    padding: 9px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.volver {
+    background: #b76e8a;
+    color: white;
+}
+
+.imprimir {
+    background: #2ecc71;
+    color: white;
+}
+
+.pdf {
+    background: #c48b9f;
+    color: white;
+}
+
+.header-buttons button:hover {
+    opacity: 0.85;
+}
+
+.header-buttons button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   CONTENEDOR
+========================================================= */
+
+.contenedor {
+    width: 90%;
+    max-width: 1000px;
+    margin: 30px auto;
+}
+
+
+/* =========================================================
+   FACTURA
+========================================================= */
+
+.factura {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+}
+
+
+/* =========================================================
+   ENCABEZADO FACTURA
+========================================================= */
+
+.encabezado-factura {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 25px;
+    border-bottom: 2px solid #c48b9f;
+}
+
+.logo-factura {
+    width: 150px;
+}
+
+.titulo-factura {
+    text-align: right;
+}
+
+.titulo-factura h2 {
+    margin: 0;
+    color: #c48b9f;
+    font-size: 28px;
+}
+
+.titulo-factura p {
+    margin-top: 7px;
+    color: #666;
+}
+
+
+/* =========================================================
+   INFORMACIÓN FACTURA
+========================================================= */
+
+.informacion-factura {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    gap: 30px;
+}
+
+
+/* =========================================================
+   CLIENTE
+========================================================= */
+
+.datos-cliente {
+    flex: 1;
+}
+
+.datos-cliente h3 {
+    color: #c48b9f;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.nombre-cliente {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.direccion-cliente {
+    color: #555;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   FECHA
+========================================================= */
+
+.datos-fecha {
+    min-width: 220px;
+    text-align: right;
+}
+
+.datos-fecha strong {
+    color: #555;
+}
+
+.fecha {
+    margin-top: 8px;
+    font-size: 17px;
+    color: #333;
+}
+
+
+/* =========================================================
+   TABLA
+========================================================= */
+
+.tabla-contenedor {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th {
+    background: #c48b9f;
+    color: white;
+    padding: 13px 10px;
+    text-align: center;
+}
+
+td {
+    padding: 14px 10px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.descripcion {
+    text-align: left;
+}
+
+
+/* =========================================================
+   NOMBRE Y DESCRIPCIÓN DEL ARTÍCULO
+========================================================= */
+
+.nombre-articulo {
+    font-weight: bold;
+    color: #333;
+}
+
+.detalle-articulo {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #777;
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   RESUMEN
+========================================================= */
+
+.resumen {
+    width: 400px;
+    max-width: 100%;
+    margin-left: auto;
+    margin-top: 30px;
+}
+
+.fila-resumen {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.fila-resumen strong {
+    color: #444;
+}
+
+.total {
+    font-size: 19px;
+    font-weight: bold;
+}
+
+
+/* =========================================================
+   SALDO
+========================================================= */
+
+.saldo-rojo {
+    color: #e74c3c;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.saldo-verde {
+    color: #2ecc71;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+/* =========================================================
+   MENSAJES
+========================================================= */
+
+.mensaje {
+    padding: 30px;
+    text-align: center;
+    color: #777;
+}
+
+.error {
+    color: #e74c3c;
+}
+
+
+/* =========================================================
+   PIE DE FACTURA
+========================================================= */
+
+.pie-factura {
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    text-align: center;
+    color: #888;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width: 700px) {
+
+    .informacion-factura {
+        flex-direction: column;
+    }
+
+    .datos-fecha {
+        text-align: left;
+    }
+
+    .header h1 {
+        display: none;
+    }
+
+    .logo-container {
+        position: static;
+        transform: none;
+    }
+
+}
+
+
+/* =========================================================
+   IMPRESIÓN
+========================================================= */
+
+@media print {
+
+    body {
+        background: white;
+    }
+
+    .header {
+        display: none;
+    }
+
+    .contenedor {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+    }
+
+    .factura {
+        box-shadow: none;
+        border-radius: 0;
+        padding: 20px;
+    }
+
+    @page {
+        margin: 15mm;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =======================================================
+     HEADER
+======================================================= -->
+
+<div class="header">
+
+    <h1>
+        📄 Detalles
+    </h1>
+
+
+    <div class="logo-container">
+
+        <img
+            src="logo.jpg"
+            class="logo-header"
+            alt="Tienda Ana"
+        >
+
+    </div>
+
+
+    <div class="header-buttons">
+
+        <button
+            class="volver"
+            onclick="volver()"
+        >
+            Volver
+        </button>
+
+
+        <button
+            class="imprimir"
+            onclick="imprimirFactura()"
+        >
+            Imprimir
+        </button>
+
+
+        <button
+            class="pdf"
+            id="btnPDF"
+            onclick="descargarPDF()"
+        >
+            Descargar PDF
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =======================================================
+     CONTENEDOR PRINCIPAL
+======================================================= -->
+
+<div class="contenedor">
+
+
+<div
+    class="factura"
+    id="factura"
+>
+
+
+<!-- =======================================================
+     ENCABEZADO
+======================================================= -->
+
+<div class="encabezado-factura">
+
+
+    <div>
+
+        <img
+            src="logo.jpg"
+            class="logo-factura"
+            alt="Tienda Ana"
+        >
+
+    </div>
+
+
+    <div class="titulo-factura">
+
+        <h2>
+            TIENDA ANA COMPRAS
+        </h2>
+
+        <p>
+            Detalle de compra
+        </p>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =======================================================
+     CLIENTE Y FECHA
+======================================================= -->
+
+<div class="informacion-factura">
+
+
+    <div class="datos-cliente">
+
+        <h3>
+            Cliente
+        </h3>
+
+
+        <div
+            id="nombreCliente"
+            class="nombre-cliente"
+        >
+            Cargando...
+        </div>
+
+
+        <div
+            id="direccionCliente"
+            class="direccion-cliente"
+        >
+        </div>
+
+    </div>
+
+
+
+    <div class="datos-fecha">
+
+        <strong>
+            Fecha:
+        </strong>
+
+        <div
+            id="fechaFactura"
+            class="fecha"
+        >
+            -
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =======================================================
+     TABLA
+======================================================= -->
+
+<div class="tabla-contenedor">
+
+<table>
+
+<thead>
+
+<tr>
+
+    <th style="width: 10%;">
+        #
+    </th>
+
+    <th style="width: 40%;">
+        Descripción
+    </th>
+
+    <th style="width: 12%;">
+        Cant.
+    </th>
+
+    <th style="width: 18%;">
+        Precio
+    </th>
+
+    <th style="width: 20%;">
+        Tarifa total
+    </th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="tablaArticulos">
+
+<tr>
+
+    <td colspan="5">
+        Cargando artículos...
+    </td>
+
+</tr>
+
+</tbody>
+
+
+</table>
+
+</div>
+
+
+
+<!-- =======================================================
+     RESUMEN
+======================================================= -->
+
+<div class="resumen">
+
+
+    <div class="fila-resumen">
+
+        <strong>
+            Subtotal
+        </strong>
+
+        <span id="subtotal">
+            ₡0
+        </span>
+
+    </div>
+
+
+    <div class="fila-resumen">
+
+        <strong>
+            Abonado
+        </strong>
+
+        <span id="totalAbonado">
+            ₡0
+        </span>
+
+    </div>
+
+
+    <div class="fila-resumen total">
+
+        <strong>
+            Total
+        </strong>
+
+        <span id="totalFactura">
+            ₡0
+        </span>
+
+    </div>
+
+
+    <div class="fila-resumen">
+
+        <strong>
+            Saldo adeudado
+        </strong>
+
+        <span
+            id="saldoPendiente"
+            class="saldo-rojo"
+        >
+            ₡0
+        </span>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =======================================================
+     PIE
+======================================================= -->
+
+<div class="pie-factura">
+
+    <strong>¡Gracias por preferirnos!</strong>
+    <br><br>
+    Tienda Ana Compras
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<!-- =======================================================
+     LIBRERÍAS PDF LOCALES
+======================================================= -->
+
+<script src="/libs/html2canvas.min.js"></script>
+<script src="/libs/jspdf.umd.min.js"></script>
+
+
+
+<script>
+
+
+/* =========================================================
+   OBTENER ID DEL CLIENTE
+========================================================= */
+
+const parametros =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const idUsuario =
+    parametros.get("id");
+
+
+const esArchivado =
+    parametros.get("archivado") === "1";
+
+/* =========================================================
+   FORMATEAR MONEDA
+========================================================= */
+
+function moneda(valor){
+
+    const numero =
+        Number(valor) || 0;
+
+
+    return "₡" +
+        numero.toLocaleString(
+            "es-CR",
+            {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }
+        );
+
+}
+
+
+
+/* =========================================================
+   FORMATEAR FECHA
+========================================================= */
+
+function formatearFecha(fecha){
+
+
+    if(!fecha){
+
+        return "-";
+
+    }
+
+
+    const partes =
+        fecha.split("-");
+
+
+    if(partes.length !== 3){
+
+        return fecha;
+
+    }
+
+
+    const anio =
+        partes[0];
+
+
+    const mes =
+        Number(partes[1]);
+
+
+    const dia =
+        partes[2];
+
+
+    const meses = [
+
+        "",
+        "ene",
+        "feb",
+        "mar",
+        "abr",
+        "may",
+        "jun",
+        "jul",
+        "ago",
+        "sep",
+        "oct",
+        "nov",
+        "dic"
+
+    ];
+
+
+    return `${dia} ${meses[mes]} ${anio}`;
+
+}
+
+
+
+/* =========================================================
+   CARGAR DETALLES
+========================================================= */
+
+async function cargarDetalles(){
+
+    try{
+
+
+        if(!idUsuario){
+
+            mostrarError(
+                "No se encontró el cliente."
+            );
+
+            return;
+
+        }
+
+
+
+        /* =================================================
+   OBTENER PEDIDOS
+================================================= */
+
+const respuestaPedidos =
+    await fetch(
+        esArchivado
+            ? "/archived-orders"
+            : "/orders"
+    );
+
+
+if(!respuestaPedidos.ok){
+
+    throw new Error(
+        "No se pudieron cargar los pedidos."
+    );
+
+}
+
+
+const pedidos =
+    await respuestaPedidos.json();
+
+
+        /* =================================================
+           FILTRAR PEDIDOS DEL CLIENTE
+        ================================================= */
+
+        const pedidosCliente =
+            pedidos.filter(
+                pedido =>
+                    Number(pedido.id_usuario) ===
+                    Number(idUsuario)
+            );
+
+
+
+        if(pedidosCliente.length === 0){
+
+            mostrarError(
+                "Este cliente no tiene pedidos registrados."
+            );
+
+            return;
+
+        }
+
+
+
+        /* =================================================
+           CLIENTE
+        ================================================= */
+
+        const primerPedido =
+            pedidosCliente[0];
+
+
+        document.getElementById(
+            "nombreCliente"
+        ).innerText =
+            `${primerPedido.nombre} ${primerPedido.apellido}`;
+
+
+
+        /* =================================================
+           DATOS COMPLETOS DEL CLIENTE
+        ================================================= */
+
+        try{
+
+
+            const respuestaUsuario =
+                await fetch(
+                    `/user/${idUsuario}`
+                );
+
+
+            if(respuestaUsuario.ok){
+
+
+                const usuario =
+                    await respuestaUsuario.json();
+
+
+                mostrarDireccion(
+                    usuario
+                );
+
+
+            }
+
+
+        }catch(errorUsuario){
+
+
+            console.error(
+                "No se pudo cargar la dirección:",
+                errorUsuario
+            );
+
+
+        }
+
+
+
+        /* =================================================
+           VARIABLES
+        ================================================= */
+
+        let html =
+            "";
+
+
+        /*
+            IMPORTANTE:
+
+            subtotal representa únicamente
+            el total del peso / envío.
+
+            El precio de los productos se muestra
+            en la tabla, pero NO se vuelve a cobrar.
+        */
+
+        let subtotal =
+            0;
+
+
+        let totalAbonado =
+            0;
+
+
+        let fechaMasReciente =
+            null;
+
+
+
+        /* =================================================
+           RECORRER ARTÍCULOS
+        ================================================= */
+
+        pedidosCliente.forEach(
+            (pedido, indice) => {
+
+
+                const cantidad =
+                    Number(
+                        pedido.cantidad
+                    ) || 0;
+
+
+                const precioUnitario =
+                    Number(
+                        pedido.precio_unidad
+                    ) || 0;
+
+
+                const peso =
+                    Number(
+                        pedido.peso_gramos
+                    ) || 0;
+
+
+
+                /* =========================================
+                   PRECIO TOTAL DEL PRODUCTO
+
+                   Este precio ya fue pagado cuando
+                   se realizó la compra.
+                ========================================= */
+
+                const precioArticulos =
+                    cantidad *
+                    precioUnitario;
+
+
+
+                /* =========================================
+                   VALOR DEL PESO / ENVÍO
+
+                   1000 gramos = ₡6000
+                ========================================= */
+
+                const envio =
+                    (peso / 1000) *
+                    6000;
+
+
+
+                /* =========================================
+                   TARIFA TOTAL
+
+                   Aquí mostramos únicamente el valor
+                   correspondiente al peso / envío.
+
+                   NO se suma nuevamente el precio
+                   del producto.
+                ========================================= */
+
+                const tarifaTotal =
+                    envio;
+
+
+
+                /* =========================================
+                   ABONOS
+                ========================================= */
+
+                const abonado =
+                    Number(
+                        pedido.total_abonado
+                    ) || 0;
+
+
+
+                /* =========================================
+                   ACUMULAR
+
+                   El subtotal de la factura corresponde
+                   únicamente al envío.
+                ========================================= */
+
+                subtotal +=
+                    tarifaTotal;
+
+
+                totalAbonado +=
+                    abonado;
+
+
+
+                /* =========================================
+                   FECHA MÁS RECIENTE
+                ========================================= */
+
+                if(pedido.fecha_abono){
+
+
+                    const fecha =
+                        pedido.fecha_abono
+                        .split("T")[0];
+
+
+                    if(
+                        !fechaMasReciente ||
+                        fecha > fechaMasReciente
+                    ){
+
+                        fechaMasReciente =
+                            fecha;
+
+                    }
+
+                }
+
+
+
+                /* =========================================
+                   FILA
+                ========================================= */
+
+                html += `
+
+                <tr>
+
+                    <td>
+                        ${indice + 1}
+                    </td>
+
+
+                    <td class="descripcion">
+                        
+                        <div class="nombre-articulo">
+                            ${pedido.articulo}
+                        </div>
+
+                        ${
+                            pedido.descripcion
+                                ? `
+                                    <div class="detalle-articulo">
+                                        ${pedido.descripcion}
+                                    </div>
+                                  `
+                                : ""
+                        }
+
+                    </td>
+
+
+                    <td>
+                        ${cantidad}
+                    </td>
+
+
+                    <td>
+                        ${moneda(precioArticulos)}
+                    </td>
+
+
+                    <td>
+                        ${moneda(tarifaTotal)}
+                    </td>
+
+                </tr>
+
+                `;
+
+
+            }
+        );
+
+
+
+        /* =================================================
+           MOSTRAR TABLA
+        ================================================= */
+
+        document.getElementById(
+            "tablaArticulos"
+        ).innerHTML =
+            html;
+
+
+
+        /* =================================================
+           CALCULAR SALDO
+
+           Saldo = envío total - abonos
+
+           El precio del producto NO entra aquí.
+        ================================================= */
+
+        let saldo =
+            subtotal -
+            totalAbonado;
+
+
+        if(saldo < 0){
+
+            saldo = 0;
+
+        }
+
+
+
+        /* =================================================
+           MOSTRAR RESUMEN
+        ================================================= */
+
+        document.getElementById(
+            "subtotal"
+        ).innerText =
+            moneda(subtotal);
+
+
+        document.getElementById(
+            "totalAbonado"
+        ).innerText =
+            moneda(totalAbonado);
+
+
+        document.getElementById(
+            "totalFactura"
+        ).innerText =
+            moneda(subtotal);
+
+
+
+        /* =================================================
+           SALDO
+        ================================================= */
+
+        const saldoElemento =
+            document.getElementById(
+                "saldoPendiente"
+            );
+
+
+        saldoElemento.innerText =
+            moneda(saldo);
+
+
+
+        if(saldo > 0){
+
+            saldoElemento.className =
+                "saldo-rojo";
+
+        }else{
+
+            saldoElemento.className =
+                "saldo-verde";
+
+        }
+
+
+
+        /* =================================================
+           FECHA
+        ================================================= */
+
+        if(fechaMasReciente){
+
+            document.getElementById(
+                "fechaFactura"
+            ).innerText =
+                formatearFecha(
+                    fechaMasReciente
+                );
+
+        }else{
+
+
+            const hoy =
+                new Date();
+
+
+            document.getElementById(
+                "fechaFactura"
+            ).innerText =
+                hoy.toLocaleDateString(
+                    "es-CR"
+                );
+
+        }
+
+
+    }catch(error){
+
+
+        console.error(
+            "Error cargando detalles:",
+            error
+        );
+
+
+        mostrarError(
+            "Ocurrió un error cargando los detalles."
+        );
+
+
+    }
+
+}
+
+
+
+/* =========================================================
+   MOSTRAR DIRECCIÓN
+========================================================= */
+
+function mostrarDireccion(usuario){
+
+
+    const direccion =
+        document.getElementById(
+            "direccionCliente"
+        );
+
+
+    const lineas =
+        [];
+
+
+
+    if(usuario.direccion_exacta){
+
+        lineas.push(
+            usuario.direccion_exacta
+        );
+
+    }
+
+
+
+    if(usuario.distrito){
+
+        lineas.push(
+            usuario.distrito
+        );
+
+    }
+
+
+
+    if(usuario.canton){
+
+        lineas.push(
+            usuario.canton
+        );
+
+    }
+
+
+
+    if(usuario.provincia){
+
+        lineas.push(
+            usuario.provincia
+        );
+
+    }
+
+
+
+    if(lineas.length === 0){
+
+        direccion.innerHTML =
+            "Dirección no registrada";
+
+        return;
+
+    }
+
+
+
+    direccion.innerHTML =
+        lineas.join("<br>");
+
+}
+
+
+
+/* =========================================================
+   MOSTRAR ERROR
+========================================================= */
+
+function mostrarError(mensaje){
+
+
+    document.getElementById(
+        "tablaArticulos"
+    ).innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="5"
+                class="mensaje error"
+            >
+
+                ${mensaje}
+
+            </td>
+
+        </tr>
+
+    `;
+
+}
+
+
+
+/* =========================================================
+   VOLVER
+========================================================= */
+
+function volver(){
+
+    window.location.href =
+        esArchivado
+            ? "/archived_orders.html"
+            : "/add_weight.html";
+
+}
+
+
+/* =========================================================
+   IMPRIMIR
+========================================================= */
+
+function imprimirFactura(){
+
+
+    window.print();
+
+}
+
+
+
+/* =========================================================
+   LIMPIAR NOMBRE PARA ARCHIVO PDF
+========================================================= */
+
+function limpiarNombreArchivo(texto){
+
+
+    return texto
+        .normalize("NFD")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .replace(
+            /[^a-zA-Z0-9_-]/g,
+            "_"
+        )
+        .replace(
+            /_+/g,
+            "_"
+        );
+
+}
+
+
+
+/* =========================================================
+   DESCARGAR PDF REAL
+========================================================= */
+
+async function descargarPDF(){
+
+
+    const botonPDF =
+        document.getElementById(
+            "btnPDF"
+        );
+
+
+    try{
+
+
+        /* ================================================
+           VERIFICAR LIBRERÍAS
+        ================================================ */
+
+        if(
+            typeof html2canvas === "undefined"
+        ){
+
+            alert(
+                "No se pudo cargar html2canvas."
+            );
+
+            return;
+
+        }
+
+
+        if(
+            typeof window.jspdf === "undefined"
+        ){
+
+            alert(
+                "No se pudo cargar jsPDF."
+            );
+
+            return;
+
+        }
+
+
+
+        /* ================================================
+           DESACTIVAR BOTÓN MIENTRAS GENERA
+        ================================================ */
+
+        botonPDF.disabled =
+            true;
+
+
+        botonPDF.innerText =
+            "Generando PDF...";
+
+
+
+        /* ================================================
+           OBTENER FACTURA
+        ================================================ */
+
+        const factura =
+            document.getElementById(
+                "factura"
+            );
+
+
+
+        /* ================================================
+           ESPERAR A QUE LAS IMÁGENES ESTÉN CARGADAS
+        ================================================ */
+
+        const imagenes =
+            factura.querySelectorAll(
+                "img"
+            );
+
+
+        await Promise.all(
+
+            Array.from(
+                imagenes
+            ).map(
+
+                imagen => {
+
+                    if(imagen.complete){
+
+                        return Promise.resolve();
+
+                    }
+
+
+                    return new Promise(
+                        resolve => {
+
+                            imagen.onload =
+                                resolve;
+
+
+                            imagen.onerror =
+                                resolve;
+
+                        }
+                    );
+
+                }
+
+            )
+
+        );
+
+
+
+        /* ================================================
+           CAPTURAR FACTURA COMO IMAGEN
+        ================================================ */
+
+        const canvas =
+            await html2canvas(
+                factura,
+                {
+
+                    scale: 2,
+
+                    useCORS: true,
+
+                    backgroundColor: "#ffffff",
+
+                    logging: false,
+
+                    scrollX: 0,
+
+                    scrollY: -window.scrollY
+
+                }
+            );
+
+
+
+        /* ================================================
+           CREAR PDF A4
+        ================================================ */
+
+        const {
+            jsPDF
+        } =
+            window.jspdf;
+
+
+        const pdf =
+            new jsPDF(
+                "p",
+                "mm",
+                "a4"
+            );
+
+
+
+        /* ================================================
+           TAMAÑO DEL PDF
+        ================================================ */
+
+        const anchoPagina =
+            pdf.internal.pageSize.getWidth();
+
+
+        const altoPagina =
+            pdf.internal.pageSize.getHeight();
+
+
+
+        /* ================================================
+           MÁRGENES
+        ================================================ */
+
+        const margen =
+            10;
+
+
+        const anchoDisponible =
+            anchoPagina -
+            (margen * 2);
+
+
+
+        /* ================================================
+           IMAGEN
+        ================================================ */
+
+        const imagen =
+            canvas.toDataURL(
+                "image/jpeg",
+                0.98
+            );
+
+
+
+        /* ================================================
+           CALCULAR ALTURA PROPORCIONAL
+        ================================================ */
+
+        const altoImagen =
+            (
+                canvas.height *
+                anchoDisponible
+            ) /
+            canvas.width;
+
+
+
+        /* ================================================
+           ESPACIO ÚTIL DE CADA PÁGINA
+        ================================================ */
+
+        const altoDisponible =
+            altoPagina -
+            (margen * 2);
+
+
+
+        /* ================================================
+           SI CABE EN UNA SOLA PÁGINA
+        ================================================ */
+
+        if(
+            altoImagen <=
+            altoDisponible
+        ){
+
+
+            pdf.addImage(
+
+                imagen,
+
+                "JPEG",
+
+                margen,
+
+                margen,
+
+                anchoDisponible,
+
+                altoImagen
+
+            );
+
+
+        }else{
+
+
+            /* ============================================
+               PDF DE VARIAS PÁGINAS
+            ============================================ */
+
+            let posicionY =
+                margen;
+
+
+            let alturaRestante =
+                altoImagen;
+
+
+
+            pdf.addImage(
+
+                imagen,
+
+                "JPEG",
+
+                margen,
+
+                posicionY,
+
+                anchoDisponible,
+
+                altoImagen
+
+            );
+
+
+            alturaRestante -=
+                altoDisponible;
+
+
+
+            while(
+                alturaRestante > 0
+            ){
+
+
+                pdf.addPage();
+
+
+                posicionY =
+                    margen -
+                    (
+                        altoImagen -
+                        alturaRestante
+                    );
+
+
+                pdf.addImage(
+
+                    imagen,
+
+                    "JPEG",
+
+                    margen,
+
+                    posicionY,
+
+                    anchoDisponible,
+
+                    altoImagen
+
+                );
+
+
+                alturaRestante -=
+                    altoDisponible;
+
+            }
+
+        }
+
+
+
+        /* ================================================
+           NOMBRE DEL CLIENTE
+        ================================================ */
+
+        const nombreCliente =
+            document.getElementById(
+                "nombreCliente"
+            ).innerText.trim();
+
+
+
+        const nombreLimpio =
+            limpiarNombreArchivo(
+                nombreCliente
+            );
+
+
+
+        /* ================================================
+           NOMBRE DEL PDF
+        ================================================ */
+
+        const nombrePDF =
+            nombreLimpio
+                ? `Factura_${nombreLimpio}.pdf`
+                : "Factura_Tienda_Ana.pdf";
+
+
+
+        /* ================================================
+           DESCARGAR
+        ================================================ */
+
+        pdf.save(
+            nombrePDF
+        );
+
+
+    }catch(error){
+
+
+        console.error(
+            "Error generando PDF:",
+            error
+        );
+
+
+        alert(
+            "No se pudo generar el PDF."
+        );
+
+
+    }finally{
+
+
+        botonPDF.disabled =
+            false;
+
+
+        botonPDF.innerText =
+            "Descargar PDF";
+
+    }
+
+}
+
+
+
+/* =========================================================
+   INICIAR
+========================================================= */
+
+cargarDetalles();
+
+
+</script>
+
+
+</body>
+
+</html>

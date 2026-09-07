@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #f8e1e7, #fdf6f0);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 25px 15px;
+            box-sizing: border-box;
+        }
+
+        /* 🔥 ENCABEZADO CON LOGO */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #c48b9f;
+            margin-bottom: 10px;
+        }
+
+        .header img {
+            width: 100px;
+        }
+
+        .container {
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            width: 350px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            color: #c48b9f;
+        }
+
+        input {
+            display: block;
+            margin: 12px auto;
+            padding: 12px;
+            width: 90%;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .botones {
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #c48b9f;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+            width: 120px;
+        }
+
+        button:hover {
+            background: #b3748a;
+        }
+
+        .cancelar {
+            background: #e57373;
+        }
+
+        #error {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+
+        p a {
+            color: #c48b9f;
+            text-decoration: none;
+        }
+
+
+        /* ================================================== */
+        /* 🔥 REDES SOCIALES */
+        /* ================================================== */
+
+        .redes-sociales {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .redes-sociales p {
+            margin: 0 0 10px 0;
+            color: #8a7b80;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .iconos-redes {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .iconos-redes a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.75);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.10);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .iconos-redes a:hover {
+            transform: translateY(-2px) scale(1.06);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+        }
+
+        .iconos-redes img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+
+        /* 🔥 MODAL PERFECTO */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .modal-content input {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .modal-content button {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* 🔥 MENSAJE BONITO */
+        .mensaje {
+            display: none;
+            position: fixed;
+            top: 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-weight: bold;
+            z-index: 9999;
+        }
+
+
+        /* ================================================== */
+        /* 🔹 RESPONSIVE */
+        /* ================================================== */
+
+        @media (max-width: 500px) {
+
+            .container {
+                width: calc(100% - 30px);
+                padding: 30px 20px;
+                box-sizing: border-box;
+            }
+
+            .header h1 {
+                font-size: 25px;
+            }
+
+            .redes-sociales {
+                margin-top: 18px;
+            }
+
+        }
+/* ======================================== */
+/* 🔹 OJO DE CONTRASEÑA */
+/* ======================================== */
+
+/* Correo y contraseña exactamente del mismo ancho */
+#formLogin > input,
+.campo-password {
+    width: 90%;
+    margin: 12px auto;
+    box-sizing: border-box;
+}
+
+#formLogin > input {
+    box-sizing: border-box;
+}
+
+.campo-password {
+    position: relative;
+}
+
+.campo-password input {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 12px 45px 12px 12px;
+    box-sizing: border-box;
+}
+
+.ver-password {
+    position: absolute !important;
+    right: 8px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+
+    width: 34px !important;
+    height: 34px !important;
+
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 6px !important;
+
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    cursor: pointer;
+    color: #714f5b;
+}
+
+.ver-password:hover {
+    background: transparent !important;
+    transform: translateY(-50%) !important;
+    opacity: 0.7;
+}
+
+.icono-ojo {
+    width: 22px;
+    height: 22px;
+    display: block;
+}
+    </style>
+</head>
+
+<body>
+
+<!-- 🔥 ENCABEZADO -->
+<div class="header">
+    <h1>Tienda Ana Compras 🛍️</h1>
+    <img src="logo.jpg" alt="Logo">
+</div>
+
+<div class="container">
+    <h2>🔐 Iniciar Sesión</h2>
+
+    <form id="formLogin">
+
+        <input
+            type="email"
+            name="correo"
+            placeholder="📧 Correo"
+            required
+        >
+
+ <div class="campo-password">
+
+    <input
+        type="password"
+        name="password"
+        id="passwordLogin"
+        placeholder="🔑 Contraseña"
+        required
+    >
+
+    <button
+        type="button"
+        class="ver-password"
+        onclick="mostrarPasswordLogin()"
+        aria-label="Mostrar contraseña"
+    >
+        <svg
+            class="icono-ojo"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+    </button>
+
+</div>
+
+        <div class="botones">
+
+            <button type="submit">
+                Ingresar
+            </button>
+
+            <button
+                type="button"
+                class="cancelar"
+                onclick="cancelar()"
+            >
+                Cancelar
+            </button>
+
+        </div>
+
+        <p>
+            <a href="#" id="olvido">
+                ¿Olvidaste tu contraseña?
+            </a>
+        </p>
+
+    </form>
+
+    <div id="error"></div>
+</div>
+
+
+<!-- ================================================== -->
+<!-- 🔥 REDES SOCIALES -->
+<!-- ================================================== -->
+
+<div class="redes-sociales">
+
+    <p>
+        Síguenos en nuestras redes
+    </p>
+
+    <div class="iconos-redes">
+
+        <!-- WHATSAPP -->
+        <a
+            href="https://wa.me/50685039316"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="WhatsApp"
+        >
+            <img
+                src="whatsapp.png"
+                alt="WhatsApp"
+            >
+        </a>
+
+
+        <!-- FACEBOOK -->
+        <a
+            href="https://www.facebook.com/share/18zRyz8dEo/"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Facebook"
+        >
+            <img
+                src="facebook.png"
+                alt="Facebook"
+            >
+        </a>
+
+
+        <!-- INSTAGRAM -->
+        <a
+            href="https://www.instagram.com/ana_decompras_?igsi=Y2c1emVvMGNwaDY4"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Instagram"
+        >
+            <img
+                src="instagram.png"
+                alt="Instagram"
+            >
+        </a>
+
+    </div>
+
+</div>
+
+
+
+<!-- 🔥 MODAL RECUPERAR CONTRASEÑA -->
+<div class="modal" id="modal">
+
+    <div class="modal-content">
+
+        <h3>
+            🔑 Recuperar contraseña
+        </h3>
+
+        <input
+            type="email"
+            id="emailReset"
+            placeholder="Correo electrónico"
+        >
+
+        <button
+            id="btnEnviarCorreo"
+            onclick="enviarCorreo()"
+        >
+            Enviar
+        </button>
+
+        <button
+            onclick="cerrarModal()"
+            style="background:#ccc;color:black;"
+        >
+            Cancelar
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- 🔥 MENSAJE BONITO -->
+<div
+    class="mensaje"
+    id="mensaje"
+></div>
+
+
+<script>
+
+// ========================================
+// 🔹 ABRIR MODAL
+// ========================================
+
+document.getElementById(
+    "olvido"
+).addEventListener(
+    "click",
+    (e) => {
+
+        e.preventDefault();
+
+        document.getElementById(
+            "modal"
+        ).style.display = "flex";
+
+    }
+);
+
+
+
+// ========================================
+// 🔹 CERRAR MODAL
+// ========================================
+
+function cerrarModal() {
+
+    document.getElementById(
+        "modal"
+    ).style.display = "none";
+
+}
+
+
+
+// ========================================
+// 🔹 MENSAJE BONITO
+// ========================================
+
+function mostrarMensaje(texto) {
+
+    const msg =
+        document.getElementById(
+            "mensaje"
+        );
+
+    msg.innerText =
+        texto;
+
+    msg.style.display =
+        "block";
+
+
+    setTimeout(() => {
+
+        msg.style.display =
+            "none";
+
+    }, 4000);
+
+}
+
+
+
+// ========================================
+// 🔹 ENVIAR CORREO DE RECUPERACIÓN
+// ========================================
+
+async function enviarCorreo() {
+
+    const email =
+        document.getElementById(
+            "emailReset"
+        ).value.trim();
+
+
+    const boton =
+        document.getElementById(
+            "btnEnviarCorreo"
+        );
+
+
+    // ========================================
+    // 🔹 VALIDAR CORREO
+    // ========================================
+
+    if(!email) {
+
+        mostrarMensaje(
+            "⚠️ Ingrese su correo"
+        );
+
+        return;
+    }
+
+
+    try {
+
+        // ========================================
+        // 🔹 EVITAR DOBLE CLIC
+        // ========================================
+
+        boton.disabled =
+            true;
+
+        boton.innerText =
+            "Enviando...";
+
+
+        // ========================================
+        // 🔹 ENVIAR AL SERVIDOR
+        // ========================================
+
+        const res =
+            await fetch(
+                "/forgot-password",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            correo: email
+                        })
+                }
+            );
+
+
+        // ========================================
+        // 🔹 LEER RESPUESTA DEL SERVIDOR
+        // ========================================
+
+        const mensajeServidor =
+            await res.text();
+
+
+        // ========================================
+        // 🔹 EL SERVIDOR RESPONDIÓ CON ERROR
+        // ========================================
+
+        if(!res.ok) {
+
+            mostrarMensaje(
+                "❌ " +
+                (
+                    mensajeServidor ||
+                    "Error al enviar el correo"
+                )
+            );
+
+            return;
+        }
+
+
+        // ========================================
+        // 🔹 CORREO ENVIADO
+        // ========================================
+
+        mostrarMensaje(
+            "📧 Si el correo está registrado, recibirá un enlace para recuperar su contraseña."
+        );
+
+
+        // ========================================
+        // 🔹 LIMPIAR INPUT
+        // ========================================
+
+        document.getElementById(
+            "emailReset"
+        ).value = "";
+
+
+        // ========================================
+        // 🔹 CERRAR MODAL
+        // ========================================
+
+        cerrarModal();
+
+
+    } catch (err) {
+
+        console.error(
+            "Error al recuperar contraseña:",
+            err
+        );
+
+
+        mostrarMensaje(
+            "❌ Error de conexión con el servidor"
+        );
+
+
+    } finally {
+
+        // ========================================
+        // 🔹 RESTAURAR BOTÓN
+        // ========================================
+
+        boton.disabled =
+            false;
+
+        boton.innerText =
+            "Enviar";
+
+    }
+
+}
+
+
+// ========================================
+// 🔹 LOGIN
+// ========================================
+
+document.getElementById(
+    "formLogin"
+).addEventListener(
+    "submit",
+    async function(e) {
+
+        e.preventDefault();
+
+
+        try {
+
+            const formData =
+                new FormData(
+                    this
+                );
+
+
+            const res =
+                await fetch(
+                    "/login",
+                    {
+                        method: "POST",
+
+                        body:
+                            new URLSearchParams(
+                                formData
+                            )
+                    }
+                );
+
+
+            // ========================================
+            // 🔹 REDIRECCIÓN CORRECTA
+            // ========================================
+
+            if(res.redirected) {
+
+                window.location.href =
+                    res.url;
+
+                return;
+            }
+
+
+            // ========================================
+            // 🔹 ERROR DE LOGIN
+            // ========================================
+
+            const texto =
+                await res.text();
+
+
+            const errorDiv =
+                document.getElementById(
+                    "error"
+                );
+
+
+            errorDiv.innerText =
+                texto;
+
+
+            errorDiv.style.display =
+                "block";
+
+
+            // ========================================
+            // 🔐 BORRAR CONTRASEÑA INCORRECTA
+            // ========================================
+
+            const passwordInput =
+                document.querySelector(
+                    'input[name="password"]'
+                );
+
+
+            passwordInput.value =
+                "";
+
+
+            passwordInput.focus();
+
+
+        } catch (error) {
+
+            console.error(
+                "Error en login:",
+                error
+            );
+
+
+            const errorDiv =
+                document.getElementById(
+                    "error"
+                );
+
+
+            errorDiv.innerText =
+                "Error de conexión ❌";
+
+
+            errorDiv.style.display =
+                "block";
+
+        }
+
+    }
+);
+
+// ========================================
+// 🔹 MOSTRAR / OCULTAR CONTRASEÑA LOGIN
+// ========================================
+
+function mostrarPasswordLogin() {
+
+    const campo =
+        document.getElementById(
+            "passwordLogin"
+        );
+
+    if (campo.type === "password") {
+
+        campo.type = "text";
+
+    } else {
+
+        campo.type = "password";
+
+    }
+
+}
+
+// ========================================
+// 🔹 CANCELAR LOGIN
+// ========================================
+
+function cancelar() {
+
+    window.location.href =
+        "/";
+
+}
+
+</script>
+
+</body>
+</html>

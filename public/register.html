@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Registro</title>
+
+    <style>
+
+        body {
+
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            background: linear-gradient(to right, #f8e1e7, #fdf6f0);
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            min-height: 100vh;
+
+            margin: 0;
+
+        }
+
+
+        .container {
+
+            background: white;
+
+            color: #333;
+
+            padding: 35px;
+
+            border-radius: 12px;
+
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+
+            width: 400px;
+
+            text-align: center;
+
+        }
+
+
+        /* 🔥 TÍTULO + LOGO EN LÍNEA */
+
+        .titulo {
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .titulo h2 {
+
+            margin: 0;
+
+            color: #c48b9f;
+
+        }
+
+
+        .titulo img {
+
+            width: 70px;
+
+        }
+
+
+        input,
+        select {
+
+            display: block;
+
+            margin: 10px auto;
+
+            padding: 12px;
+
+            width: 90%;
+
+            border-radius: 8px;
+
+            border: 1px solid #ddd;
+
+            font-size: 14px;
+
+            transition: 0.3s;
+
+            box-sizing: border-box;
+
+        }
+
+
+        input:focus,
+        select:focus {
+
+            border-color: #c48b9f;
+
+            box-shadow: 0 0 6px rgba(196,139,159,0.5);
+
+            outline: none;
+
+        }
+
+
+        /* ========================================
+           🔐 REQUISITOS DE CONTRASEÑA
+        ======================================== */
+
+        #passwordRequisitos {
+
+            display: none;
+
+            width: 90%;
+
+            margin: -2px auto 10px auto;
+
+            text-align: left;
+
+            color: #c62828;
+
+            font-size: 13px;
+
+            line-height: 1.4;
+
+        }
+
+
+        .botones {
+
+            margin-top: 20px;
+
+        }
+
+
+        button {
+
+            padding: 12px 20px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #c48b9f;
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            margin: 5px;
+
+            width: 140px;
+
+            transition: 0.3s;
+
+        }
+
+
+        button:hover {
+
+            background: #b3748a;
+
+        }
+
+
+        .cancelar {
+
+            background: #e57373;
+
+        }
+
+
+        .cancelar:hover {
+
+            background: #cc0000;
+
+        }
+
+
+        /* ========================================
+           🔹 MENSAJE DE REGISTRO
+        ======================================== */
+
+        #mensaje {
+
+            display: none;
+
+            margin-top: 20px;
+
+            padding: 13px 15px;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            line-height: 1.5;
+
+        }
+
+
+        #mensaje.exito {
+
+            display: block;
+
+            color: #2e7d32;
+
+            background-color: #e8f5e9;
+
+            border: 1px solid #a5d6a7;
+
+        }
+
+
+        #mensaje.error {
+
+            display: block;
+
+            color: #c62828;
+
+            background-color: #ffebee;
+
+            border: 1px solid #ef9a9a;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- 🔥 TÍTULO CON LOGO -->
+
+    <div class="titulo">
+
+        <h2>🧾 Registro Completo</h2>
+
+        <img src="logo.jpg" alt="Logo">
+
+    </div>
+
+
+    <form id="formRegistro">
+
+
+        <input
+            type="text"
+            id="nombre"
+            placeholder="👤 Nombre"
+            required
+        >
+
+
+        <input
+            type="text"
+            id="apellido"
+            placeholder="👤 Apellido"
+            required
+        >
+
+
+        <input
+            type="text"
+            id="telefono"
+            placeholder="📞 Teléfono"
+            required
+        >
+
+
+        <input
+            type="email"
+            id="correo"
+            placeholder="📧 Correo"
+            required
+        >
+
+
+        <input
+            type="password"
+            id="password"
+            placeholder="🔑 Contraseña"
+            minlength="8"
+            required
+        >
+
+
+        <!-- 🔐 MENSAJE DE REQUISITOS -->
+
+        <div id="passwordRequisitos">
+            ⚠️ La contraseña debe tener mínimo 8 caracteres,
+            al menos una letra y un número.
+        </div>
+
+
+        <select id="provincia" required>
+
+            <option value="">
+                🌍 Seleccione provincia
+            </option>
+
+            <option value="San José">
+                San José
+            </option>
+
+            <option value="Alajuela">
+                Alajuela
+            </option>
+
+            <option value="Cartago">
+                Cartago
+            </option>
+
+            <option value="Heredia">
+                Heredia
+            </option>
+
+            <option value="Guanacaste">
+                Guanacaste
+            </option>
+
+            <option value="Puntarenas">
+                Puntarenas
+            </option>
+
+            <option value="Limón">
+                Limón
+            </option>
+
+        </select>
+
+
+        <input
+            type="text"
+            id="canton"
+            placeholder="🏙️ Cantón"
+            required
+        >
+
+
+        <input
+            type="text"
+            id="distrito"
+            placeholder="📍 Distrito"
+            required
+        >
+
+
+        <input
+            type="text"
+            id="direccion"
+            placeholder="🏠 Dirección exacta"
+            required
+        >
+
+
+        <div class="botones">
+
+            <button type="submit">
+                Registrarse
+            </button>
+
+
+            <button
+                type="button"
+                class="cancelar"
+                onclick="cancelar()"
+            >
+                Cancelar
+            </button>
+
+        </div>
+
+
+    </form>
+
+
+    <div id="mensaje"></div>
+
+
+</div>
+
+
+
+<script>
+
+
+// ========================================
+// 🔐 VALIDAR CONTRASEÑA MIENTRAS ESCRIBE
+// ========================================
+
+const passwordInput =
+    document.getElementById('password');
+
+const passwordRequisitos =
+    document.getElementById('passwordRequisitos');
+
+
+function validarPassword(password) {
+
+    const tieneLongitud =
+        password.length >= 8;
+
+    const tieneLetra =
+        /[A-Za-z]/.test(password);
+
+    const tieneNumero =
+        /\d/.test(password);
+
+    return (
+        tieneLongitud &&
+        tieneLetra &&
+        tieneNumero
+    );
+
+}
+
+
+passwordInput.addEventListener(
+    'input',
+    () => {
+
+        const password =
+            passwordInput.value;
+
+        // Si todavía no ha escrito nada,
+        // no mostramos el mensaje.
+
+        if (password.length === 0) {
+
+            passwordRequisitos.style.display =
+                "none";
+
+            return;
+        }
+
+
+        // Si no cumple, mostramos el mensaje rojo.
+
+        if (!validarPassword(password)) {
+
+            passwordRequisitos.style.display =
+                "block";
+
+        } else {
+
+            // Ya cumple todos los requisitos.
+
+            passwordRequisitos.style.display =
+                "none";
+
+        }
+
+    }
+);
+
+
+
+// ========================================
+// 🔹 REGISTRAR USUARIO
+// ========================================
+
+document
+.getElementById('formRegistro')
+.addEventListener(
+    'submit',
+    async (e) => {
+
+        e.preventDefault();
+
+
+        const password =
+            document.getElementById('password').value;
+
+
+        // ========================================
+        // 🔐 COMPROBAR CONTRASEÑA ANTES DE ENVIAR
+        // ========================================
+
+        if (!validarPassword(password)) {
+
+            passwordRequisitos.style.display =
+                "block";
+
+            passwordInput.focus();
+
+            return;
+        }
+
+
+        const data = {
+
+            nombre:
+                document.getElementById('nombre').value,
+
+            apellido:
+                document.getElementById('apellido').value,
+
+            telefono:
+                document.getElementById('telefono').value,
+
+            correo:
+                document.getElementById('correo').value,
+
+            password:
+                password,
+
+            provincia:
+                document.getElementById('provincia').value,
+
+            canton:
+                document.getElementById('canton').value,
+
+            distrito:
+                document.getElementById('distrito').value,
+
+            direccion_exacta:
+                document.getElementById('direccion').value
+
+        };
+
+
+        const mensaje =
+            document.getElementById("mensaje");
+
+
+        try {
+
+
+            const res =
+                await fetch(
+                    '/register',
+                    {
+
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+
+                        body:
+                            JSON.stringify(data)
+
+                    }
+                );
+
+
+
+            // ========================================
+            // 🔹 REGISTRO EXITOSO
+            // ========================================
+
+            if(res.ok){
+
+
+                mensaje.className =
+                    "exito";
+
+
+                mensaje.innerHTML = `
+                    ✅ Registro guardado correctamente.<br>
+                    Serás enviado al inicio de sesión.
+                `;
+
+
+                // Limpiar formulario
+
+                document
+                    .getElementById(
+                        "formRegistro"
+                    )
+                    .reset();
+
+
+                passwordRequisitos.style.display =
+                    "none";
+
+
+
+                // Esperar 3 segundos antes de ir al login
+
+                setTimeout(
+                    () => {
+
+                        window.location.href =
+                            "/login.html";
+
+                    },
+                    3000
+                );
+
+
+            }else{
+
+
+                // ========================================
+                // 🔹 ERROR DEL SERVIDOR
+                // ========================================
+
+                const textoError =
+                await res.text();
+
+                mensaje.className =
+                    "error";
+
+
+                mensaje.innerText =
+                    "❌ " + (
+                   textoError ||
+                "No se pudo realizar el registro."  );
+            
+
+
+            }
+
+
+        }catch(error){
+
+
+            console.error(
+                "Error registrando usuario:",
+                error
+            );
+
+
+            mensaje.className =
+                "error";
+
+
+            mensaje.innerText =
+                "❌ Error de conexión. Inténtalo nuevamente.";
+
+
+        }
+
+
+    }
+);
+
+
+
+// ========================================
+// 🔹 CANCELAR
+// ========================================
+
+function cancelar(){
+
+    window.location.href =
+        "/";
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
