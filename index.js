@@ -6,8 +6,10 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const session = require('express-session');
 const rateLimit = require('express-rate-limit');
+const resend = new Resend(process.env.RESEND_API_KEY);
 const MySQLStore = require('express-mysql-session')(session);
 const sessionStore = new MySQLStore({
   host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
@@ -3072,85 +3074,88 @@ app.post('/forgot-password', forgotPasswordLimiter, (req, res) => {
                     );
 
                     try {
+const { data, error } =
+    await resend.emails.send({
 
-                        const info =
-                            await transporter.sendMail({
+        from:
+            'Tienda Ana <onboarding@resend.dev>',
 
-                                from:
-                                    'Tienda Ana <tiendaanacompras@gmail.com>',
+        to:
+            correo,
 
-                                to:
-                                    correo,
+        subject:
+            'Recuperar contraseña - Tienda Ana',
 
-                                subject:
-                                    'Recuperar contraseña - Tienda Ana',
+        html: `
+            <div style="
+                font-family: Arial, sans-serif;
+                max-width: 500px;
+                margin: auto;
+                padding: 25px;
+                border: 1px solid #eeeeee;
+                border-radius: 10px;
+            ">
 
-                                html: `
-                                    <div style="
-                                        font-family: Arial, sans-serif;
-                                        max-width: 500px;
-                                        margin: auto;
-                                        padding: 25px;
-                                        border: 1px solid #eeeeee;
-                                        border-radius: 10px;
-                                    ">
+                <h2 style="
+                    color: #c48b9f;
+                    text-align: center;
+                ">
+                    Tienda Ana Compras
+                </h2>
 
-                                        <h2 style="
-                                            color: #c48b9f;
-                                            text-align: center;
-                                        ">
-                                            Tienda Ana Compras
-                                        </h2>
+                <p>
+                    Recibimos una solicitud para cambiar tu contraseña.
+                </p>
 
-                                        <p>
-                                            Recibimos una solicitud para cambiar tu contraseña.
-                                        </p>
+                <p>
+                    Presiona el siguiente botón para crear una nueva contraseña:
+                </p>
 
-                                        <p>
-                                            Presiona el siguiente botón para crear una nueva contraseña:
-                                        </p>
+                <div style="
+                    text-align: center;
+                    margin: 30px 0;
+                ">
 
-                                        <div style="
-                                            text-align: center;
-                                            margin: 30px 0;
-                                        ">
+                    <a
+                        href="${link}"
+                        style="
+                            background: #c48b9f;
+                            color: white;
+                            padding: 12px 20px;
+                            text-decoration: none;
+                            border-radius: 8px;
+                            font-weight: bold;
+                        "
+                    >
+                        Cambiar contraseña
+                    </a>
 
-                                            <a
-                                                href="${link}"
-                                                style="
-                                                    background: #c48b9f;
-                                                    color: white;
-                                                    padding: 12px 20px;
-                                                    text-decoration: none;
-                                                    border-radius: 8px;
-                                                    font-weight: bold;
-                                                "
-                                            >
-                                                Cambiar contraseña
-                                            </a>
+                </div>
 
-                                        </div>
+                <p>
+                    Este enlace tiene una duración de 15 minutos.
+                </p>
 
-                                        <p>
-                                            Este enlace tiene una duración de 15 minutos.
-                                        </p>
+                <p style="
+                    color: #777777;
+                    font-size: 13px;
+                ">
+                    Si no solicitaste este cambio,
+                    puedes ignorar este correo.
+                </p>
 
-                                        <p style="
-                                            color: #777777;
-                                            font-size: 13px;
-                                        ">
-                                            Si no solicitaste este cambio,
-                                            puedes ignorar este correo.
-                                        </p>
+            </div>
+        `
+    });
 
-                                    </div>
-                                `
-                            });
+if (error) {
+    throw error;
+}
 
-                        console.log(
-                            "✅ CORREO DE RECUPERACIÓN ENVIADO:",
-                            info.messageId
-                        );
+console.log(
+    "✅ CORREO DE RECUPERACIÓN ENVIADO:",
+    data.id
+);
 
                         return res
                             .status(200)
