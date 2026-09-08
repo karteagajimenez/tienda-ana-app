@@ -242,7 +242,47 @@ app.post('/register', registerLimiter, async (req, res) => {
 
 
         // ============================================
-        // 🔐 VALIDAR NOMBRE Y APELLIDO
+        // 🔐 VALIDAR NOMBRE
+        // SOLO LETRAS
+        // ============================================
+
+        const nombreValido =
+            /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+$/.test(
+                nombreNormalizado
+            );
+
+
+        if (!nombreValido) {
+
+            return res.status(400).send(
+                "En el nombre solo se permiten letras."
+            );
+
+        }
+
+
+        // ============================================
+        // 🔐 VALIDAR APELLIDO
+        // SOLO LETRAS
+        // ============================================
+
+        const apellidoValido =
+            /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+$/.test(
+                apellidoNormalizado
+            );
+
+
+        if (!apellidoValido) {
+
+            return res.status(400).send(
+                "En el apellido solo se permiten letras."
+            );
+
+        }
+
+
+        // ============================================
+        // 🔐 VALIDAR LONGITUD NOMBRE Y APELLIDO
         // ============================================
 
         if (
@@ -259,17 +299,31 @@ app.post('/register', registerLimiter, async (req, res) => {
 
         // ============================================
         // 🔐 VALIDAR TELÉFONO
+        // SOLO NÚMEROS
+        // NO SE LIMITA A 8 DÍGITOS
         // ============================================
 
         const telefonoValido =
-            /^[0-9+\-\s()]{8,20}$/.test(
+            /^\d+$/.test(
                 telefonoNormalizado
             );
+
 
         if (!telefonoValido) {
 
             return res.status(400).send(
-                "Ingrese un número de teléfono válido."
+                "En el teléfono solo se permiten números."
+            );
+
+        }
+
+
+        // Evitar números excesivamente largos
+
+        if (telefonoNormalizado.length > 20) {
+
+            return res.status(400).send(
+                "El número de teléfono es demasiado largo."
             );
 
         }
@@ -283,6 +337,7 @@ app.post('/register', registerLimiter, async (req, res) => {
             /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
                 correoNormalizado
             );
+
 
         if (!correoValido) {
 
@@ -298,6 +353,7 @@ app.post('/register', registerLimiter, async (req, res) => {
         // ============================================
 
         const provinciasValidas = [
+
             "San José",
             "Alajuela",
             "Cartago",
@@ -305,7 +361,9 @@ app.post('/register', registerLimiter, async (req, res) => {
             "Guanacaste",
             "Puntarenas",
             "Limón"
+
         ];
+
 
         if (
             !provinciasValidas.includes(
@@ -343,7 +401,9 @@ app.post('/register', registerLimiter, async (req, res) => {
 
         const passwordValido =
             typeof password === 'string' &&
-            /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password);
+            /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(
+                password
+            );
 
 
         if (!passwordValido) {
@@ -366,8 +426,13 @@ app.post('/register', registerLimiter, async (req, res) => {
             WHERE LOWER(TRIM(correo)) = ?
             LIMIT 1
             `,
-            [correoNormalizado],
-            async (errorBuscar, resultados) => {
+            [
+                correoNormalizado
+            ],
+            async (
+                errorBuscar,
+                resultados
+            ) => {
 
 
                 if (errorBuscar) {
@@ -482,7 +547,6 @@ app.post('/register', registerLimiter, async (req, res) => {
                     );
 
                 }
-
 
             }
         );
@@ -846,14 +910,14 @@ app.post('/update-article',protegerAdmin, (req, res) => {
     });
 
 });
-
 // 🔹 EDITAR PEDIDO
 app.post('/update-order', protegerAdmin, (req, res) => {
 
     const {
         id_pedido,
         id_articulo,
-        cantidad
+        cantidad,
+        peso_gramos
     } = req.body;
 
     const idPedido =
@@ -865,11 +929,19 @@ app.post('/update-order', protegerAdmin, (req, res) => {
     const cantidadNumero =
         Number(cantidad);
 
+    const pesoNumero =
+        Number(peso_gramos);
+
+
     if (
-        !idPedido ||
-        !idArticulo ||
-        !cantidadNumero ||
-        cantidadNumero <= 0
+        !Number.isInteger(idPedido) ||
+        idPedido <= 0 ||
+        !Number.isInteger(idArticulo) ||
+        idArticulo <= 0 ||
+        !Number.isInteger(cantidadNumero) ||
+        cantidadNumero <= 0 ||
+        !Number.isFinite(pesoNumero) ||
+        pesoNumero <= 0
     ) {
 
         return res.status(400).json({
@@ -878,6 +950,7 @@ app.post('/update-order', protegerAdmin, (req, res) => {
         });
 
     }
+
 
     // Buscar el artículo seleccionado
     conexion.query(`
@@ -905,6 +978,7 @@ app.post('/update-order', protegerAdmin, (req, res) => {
 
         }
 
+
         if (resultados.length === 0) {
 
             return res.status(404).json({
@@ -913,6 +987,7 @@ app.post('/update-order', protegerAdmin, (req, res) => {
             });
 
         }
+
 
         const articulo =
             resultados[0];
@@ -923,7 +998,9 @@ app.post('/update-order', protegerAdmin, (req, res) => {
         const totalPrecio =
             cantidadNumero * precioUnidad;
 
+
         // Actualizar el pedido
+        // El nuevo peso REEMPLAZA el peso anterior.
         conexion.query(`
             UPDATE pedidos
             SET
@@ -932,7 +1009,8 @@ app.post('/update-order', protegerAdmin, (req, res) => {
                 descripcion = ?,
                 cantidad = ?,
                 precio_unidad = ?,
-                total_precio = ?
+                total_precio = ?,
+                peso_gramos = ?
             WHERE id_pedido = ?
         `, [
             articulo.id_articulo,
@@ -941,6 +1019,7 @@ app.post('/update-order', protegerAdmin, (req, res) => {
             cantidadNumero,
             precioUnidad,
             totalPrecio,
+            pesoNumero,
             idPedido
         ], (err, resultado) => {
 
@@ -958,6 +1037,7 @@ app.post('/update-order', protegerAdmin, (req, res) => {
 
             }
 
+
             if (resultado.affectedRows === 0) {
 
                 return res.status(404).json({
@@ -966,6 +1046,7 @@ app.post('/update-order', protegerAdmin, (req, res) => {
                 });
 
             }
+
 
             res.json({
                 ok: true,
@@ -1034,467 +1115,257 @@ app.get('/user/:id', (req, res) => {
 
     });
 });
+
+
 // ========================================
-// 🔹 ACTUALIZAR PERFIL DEL CLIENTE
+// 🔥 GRUPOS DE COMPRA / FACTURAS
 // ========================================
+
+
+/*
+    🔹 CREAR NUEVA COMPRA
+
+    Cada vez que Ana inicia una compra nueva
+    en EEUU o Colombia, se crea un grupo nuevo.
+
+    Ejemplo:
+    grupo 1 = EEUU
+    grupo 2 = Colombia
+    grupo 3 = EEUU
+/*
+    🔹 OBTENER O CREAR FACTURA ACTIVA
+
+    REGLA:
+
+    Un cliente puede tener solamente UNA factura
+    activa por país.
+
+    Ejemplo:
+
+    Justin + EEUU
+    → todos los artículos nuevos de EEUU
+      entran en la misma factura activa.
+
+    Justin + COLOMBIA
+    → todos los artículos nuevos de Colombia
+      entran en la misma factura activa.
+
+    Cuando una factura se archiva, deja de
+    considerarse activa para ese cliente y país.
+*/
 
 app.post(
-    '/update-profile',
-    protegerCliente,
-    async (req, res) => {
-
-        try {
-
-            const idUsuario =
-                req.session.usuario.id_usuario;
-
-            const {
-                nombre,
-                apellido,
-                telefono,
-                correo,
-                provincia,
-                canton,
-                distrito,
-                direccion_exacta,
-                passwordActual,
-                passwordNueva,
-                passwordConfirmar
-            } = req.body;
-
-
-            // ========================================
-            // 🔐 NORMALIZAR DATOS
-            // ========================================
-
-            const nombreNormalizado =
-                String(nombre || '').trim();
-
-            const apellidoNormalizado =
-                String(apellido || '').trim();
-
-            const telefonoNormalizado =
-                String(telefono || '').trim();
-
-            const correoNormalizado =
-                String(correo || '')
-                    .trim()
-                    .toLowerCase();
-
-            const provinciaNormalizada =
-                String(provincia || '').trim();
-
-            const cantonNormalizado =
-                String(canton || '').trim();
-
-            const distritoNormalizado =
-                String(distrito || '').trim();
-
-            const direccionNormalizada =
-                String(direccion_exacta || '').trim();
-
-
-            // ========================================
-            // 🔐 CAMPOS OBLIGATORIOS
-            // ========================================
-
-            if (
-                !nombreNormalizado ||
-                !apellidoNormalizado ||
-                !telefonoNormalizado ||
-                !correoNormalizado ||
-                !provinciaNormalizada ||
-                !cantonNormalizado ||
-                !distritoNormalizado ||
-                !direccionNormalizada
-            ) {
-
-                return res.status(400).send(
-                    'Complete todos los datos del perfil.'
-                );
-
-            }
-
-
-            // ========================================
-            // 🔐 VALIDAR TELÉFONO
-            // ========================================
-
-            const telefonoValido =
-                /^[0-9+\-\s()]{8,20}$/.test(
-                    telefonoNormalizado
-                );
-
-            if (!telefonoValido) {
-
-                return res.status(400).send(
-                    'Ingrese un número de teléfono válido.'
-                );
-
-            }
-
-
-            // ========================================
-            // 🔐 VALIDAR CORREO
-            // ========================================
-
-            const correoValido =
-                /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-                    correoNormalizado
-                );
-
-            if (!correoValido) {
-
-                return res.status(400).send(
-                    'Ingrese un correo electrónico válido.'
-                );
-
-            }
-
-
-            // ========================================
-            // 🔐 VALIDAR PROVINCIA
-            // ========================================
-
-            const provinciasValidas = [
-                'San José',
-                'Alajuela',
-                'Cartago',
-                'Heredia',
-                'Guanacaste',
-                'Puntarenas',
-                'Limón'
-            ];
-
-            if (
-                !provinciasValidas.includes(
-                    provinciaNormalizada
-                )
-            ) {
-
-                return res.status(400).send(
-                    'Seleccione una provincia válida.'
-                );
-
-            }
-
-
-            // ========================================
-            // 🔹 BUSCAR USUARIO ACTUAL
-            // ========================================
-
-            conexion.query(
-                `
-                SELECT
-                    correo,
-                    password
-                FROM usuarios
-                WHERE id_usuario = ?
-                LIMIT 1
-                `,
-                [idUsuario],
-                async (errorUsuario, resultados) => {
-
-                    if (
-                        errorUsuario ||
-                        resultados.length === 0
-                    ) {
-
-                        console.log(
-                            '❌ Error buscando usuario:',
-                            errorUsuario
-                        );
-
-                        return res.status(500).send(
-                            'No se pudo actualizar el perfil.'
-                        );
-
-                    }
-
-
-                    const usuarioActual =
-                        resultados[0];
-
-                    const correoActual =
-                        String(
-                            usuarioActual.correo || ''
-                        )
-                        .trim()
-                        .toLowerCase();
-
-                    const cambioCorreo =
-                        correoNormalizado !==
-                        correoActual;
-
-                    const quiereCambiarPassword =
-                        Boolean(
-                            passwordActual ||
-                            passwordNueva ||
-                            passwordConfirmar
-                        );
-
-
-                    // ========================================
-                    // 🔐 SI CAMBIA CORREO,
-                    // DEBE CAMBIAR CONTRASEÑA
-                    // ========================================
-
-                    if (
-                        cambioCorreo &&
-                        (
-                            !passwordActual ||
-                            !passwordNueva ||
-                            !passwordConfirmar
-                        )
-                    ) {
-
-                        return res.status(400).send(
-                            'Para cambiar el correo debe ingresar su contraseña actual y establecer una nueva contraseña.'
-                        );
-
-                    }
-
-
-                    // ========================================
-                    // 🔐 VALIDAR CAMBIO DE CONTRASEÑA
-                    // ========================================
-
-                    if (quiereCambiarPassword) {
-
-                        if (
-                            !passwordActual ||
-                            !passwordNueva ||
-                            !passwordConfirmar
-                        ) {
-
-                            return res.status(400).send(
-                                'Complete los tres campos de contraseña.'
-                            );
-
-                        }
-
-
-                        const coincide =
-                            await bcrypt.compare(
-                                passwordActual,
-                                usuarioActual.password
-                            );
-
-                        if (!coincide) {
-
-                            return res.status(400).send(
-                                'La contraseña actual no es correcta.'
-                            );
-
-                        }
-
-
-                        if (
-                            passwordNueva !==
-                            passwordConfirmar
-                        ) {
-
-                            return res.status(400).send(
-                                'Las nuevas contraseñas no coinciden.'
-                            );
-
-                        }
-
-
-                        const passwordValido =
-                            /^(?=.*[A-Za-z])(?=.*\d).{8,}$/
-                                .test(passwordNueva);
-
-                        if (!passwordValido) {
-
-                            return res.status(400).send(
-                                'La nueva contraseña debe tener mínimo 8 caracteres, al menos una letra y un número.'
-                            );
-
-                        }
-
-                    }
-
-
-                    // ========================================
-                    // 🔐 COMPROBAR CORREO REPETIDO
-                    // ========================================
-
-                    conexion.query(
-                        `
-                        SELECT id_usuario
-                        FROM usuarios
-                        WHERE LOWER(TRIM(correo)) = ?
-                        AND id_usuario <> ?
-                        LIMIT 1
-                        `,
-                        [
-                            correoNormalizado,
-                            idUsuario
-                        ],
-                        async (
-                            errorCorreo,
-                            resultadosCorreo
-                        ) => {
-
-                            if (errorCorreo) {
-
-                                console.log(
-                                    '❌ Error verificando correo:',
-                                    errorCorreo
-                                );
-
-                                return res.status(500).send(
-                                    'No se pudo actualizar el perfil.'
-                                );
-
-                            }
-
-
-                            if (
-                                resultadosCorreo.length > 0
-                            ) {
-
-                                return res.status(409).send(
-                                    'Este correo ya está registrado por otra cuenta.'
-                                );
-
-                            }
-
-
-                            let passwordFinal =
-                                usuarioActual.password;
-
-
-                            if (quiereCambiarPassword) {
-
-                                passwordFinal =
-                                    await bcrypt.hash(
-                                        passwordNueva,
-                                        10
-                                    );
-
-                            }
-
-                            // ========================================
-                            // 🔹 ACTUALIZAR MISMO USUARIO
-                            // ========================================
-
-                            conexion.query(
-                                `
-                                UPDATE usuarios
-                                SET
-                                    nombre = ?,
-                                    apellido = ?,
-                                    telefono = ?,
-                                    correo = ?,
-                                    password = ?,
-                                    provincia = ?,
-                                    canton = ?,
-                                    distrito = ?,
-                                    direccion_exacta = ?
-                                WHERE id_usuario = ?
-                                `,
-                                [
-                                    nombreNormalizado,
-                                    apellidoNormalizado,
-                                    telefonoNormalizado,
-                                    correoNormalizado,
-                                    passwordFinal,
-                                    provinciaNormalizada,
-                                    cantonNormalizado,
-                                    distritoNormalizado,
-                                    direccionNormalizada,
-                                    idUsuario
-                                ],
-                                (errorActualizar) => {
-
-                                    if (
-                                        errorActualizar
-                                    ) {
-
-                                        console.log(
-                                            '❌ Error actualizando perfil:',
-                                            errorActualizar
-                                        );
-
-                                        return res
-                                            .status(500)
-                                            .send(
-                                                'No se pudo actualizar el perfil.'
-                                            );
-
-                                    }
-
-
-                                    // ========================================
-                                    // 🔐 SI CAMBIÓ CORREO O CONTRASEÑA,
-                                    // CERRAR LA SESIÓN
-                                    // ========================================
-
-                                    if (
-                                        cambioCorreo ||
-                                        quiereCambiarPassword
-                                    ) {
-
-                                        const mensajeSesion =
-                                            cambioCorreo
-                                                ? 'Perfil actualizado. Inicie sesión con su nuevo correo y contraseña.'
-                                                : 'Contraseña actualizada correctamente. Inicie sesión nuevamente.';
-
-                                        return req.session
-                                            .destroy(() => {
-
-                                                res.clearCookie(
-                                                    'connect.sid'
-                                                );
-
-                                                return res.json({
-                                                    ok: true,
-                                                    cerrarSesion: true,
-                                                    mensaje:
-                                                        mensajeSesion
-                                                });
-
-                                            });
-
-                                    }
-
-
-                                    return res.json({
-                                        ok: true,
-                                        cerrarSesion: false,
-                                        mensaje:
-                                            'Perfil actualizado correctamente.'
-                                    });
-
-                                }
-                            );
-
-                        }
-                    );
-
-                }
+    '/create-purchase-group',
+    protegerAdmin,
+    (req, res) => {
+
+        const idUsuario =
+            Number(
+                req.body.id_usuario
             );
 
-        } catch (error) {
 
-            console.log(
-                '❌ Error actualizando perfil:',
-                error
-            );
+        const paisOrigen =
+            String(
+                req.body.pais_origen || ''
+            )
+            .trim()
+            .toUpperCase();
 
-            return res.status(500).send(
-                'No se pudo actualizar el perfil.'
-            );
+
+        const paisesValidos = [
+            'EEUU',
+            'COLOMBIA'
+        ];
+
+
+        /* =============================================
+           VALIDAR CLIENTE
+        ============================================= */
+
+        if(
+            !Number.isInteger(idUsuario) ||
+            idUsuario <= 0
+        ){
+
+            return res.status(400).json({
+                ok: false,
+                mensaje:
+                    'Cliente inválido'
+            });
 
         }
+
+
+        /* =============================================
+           VALIDAR PAÍS
+        ============================================= */
+
+        if(
+            !paisesValidos.includes(
+                paisOrigen
+            )
+        ){
+
+            return res.status(400).json({
+                ok: false,
+                mensaje:
+                    'País de origen inválido'
+            });
+
+        }
+
+
+        /*
+            =============================================
+            BUSCAR FACTURA ACTIVA DEL CLIENTE + PAÍS
+
+            Una factura se considera disponible si
+            todavía tiene al menos un pedido NO
+            archivado de ese cliente y ese país.
+            =============================================
+        */
+
+        conexion.query(`
+            SELECT
+                p.grupo_compra
+
+            FROM pedidos p
+
+            INNER JOIN grupos_compra g
+                ON g.id_grupo = p.grupo_compra
+
+            WHERE p.id_usuario = ?
+            AND p.pais_origen = ?
+            AND p.archivado = 0
+            AND p.grupo_compra IS NOT NULL
+            AND g.activo = 1
+
+            ORDER BY
+                p.id_pedido DESC
+
+            LIMIT 1
+        `, [
+            idUsuario,
+            paisOrigen
+        ], (errorBuscar, resultados) => {
+
+
+            if(errorBuscar){
+
+                console.log(
+                    '❌ ERROR BUSCANDO FACTURA ACTIVA:',
+                    errorBuscar
+                );
+
+
+                return res.status(500).json({
+                    ok: false,
+                    mensaje:
+                        'No se pudo buscar la factura activa'
+                });
+
+            }
+
+
+            /*
+                =========================================
+                YA EXISTE FACTURA ACTIVA
+
+                NO creamos otra.
+                Devolvemos el grupo existente.
+                =========================================
+            */
+
+            if(
+                resultados &&
+                resultados.length > 0
+            ){
+
+                const grupoExistente =
+                    Number(
+                        resultados[0]
+                            .grupo_compra
+                    );
+
+
+                return res.json({
+                    ok: true,
+
+                    grupo_compra:
+                        grupoExistente,
+
+                    pais_origen:
+                        paisOrigen,
+
+                    existente:
+                        true
+                });
+
+            }
+
+
+            /*
+                =========================================
+                NO EXISTE FACTURA ACTIVA
+
+                Ahora sí creamos un grupo nuevo.
+                =========================================
+            */
+
+            conexion.query(`
+                INSERT INTO grupos_compra
+                (
+                    pais_origen,
+                    activo
+                )
+                VALUES (?, 1)
+            `, [
+                paisOrigen
+            ], (errorCrear, resultado) => {
+
+
+                if(errorCrear){
+
+                    console.log(
+                        '❌ ERROR CREANDO GRUPO DE COMPRA:',
+                        errorCrear
+                    );
+
+
+                    return res.status(500).json({
+                        ok: false,
+                        mensaje:
+                            'No se pudo crear la factura'
+                    });
+
+                }
+
+
+                return res.json({
+                    ok: true,
+
+                    grupo_compra:
+                        resultado.insertId,
+
+                    pais_origen:
+                        paisOrigen,
+
+                    existente:
+                        false
+                });
+
+            });
+
+        });
 
     }
 );
 
+// ======================================================
+// 🔹 CREAR PEDIDO
+// ======================================================
 
-// 🔥 CREAR PEDIDO
 app.post('/create-order', protegerAdmin, (req, res) => {
 
     const {
@@ -1504,68 +1375,446 @@ app.post('/create-order', protegerAdmin, (req, res) => {
         descripcion,
         cantidad,
         precio_unidad,
-        estado
+        estado,
+        pais_origen,
+        grupo_compra
     } = req.body;
 
-    const peso_gramos = 0;
 
-    const subtotal =
-        Number(cantidad) *
+    // ======================================================
+    // 🔐 NORMALIZAR DATOS
+    // ======================================================
+
+    const idUsuario =
+        Number(id_usuario);
+
+    const idArticulo =
+        id_articulo
+            ? Number(id_articulo)
+            : null;
+
+    const cantidadNumero =
+        Number(cantidad);
+
+    const precioUnidad =
         Number(precio_unidad);
 
-    const total =
-        subtotal;
+    const grupoCompra =
+        Number(grupo_compra);
 
-    const estadosInicialesValidos = [
-        'En_EEUU',
+    const articuloLimpio =
+        String(articulo || '').trim();
+
+    const descripcionLimpia =
+        String(descripcion || '').trim();
+
+
+    // ======================================================
+    // 🔐 VALIDAR CLIENTE
+    // ======================================================
+
+    if(
+        !Number.isInteger(idUsuario) ||
+        idUsuario <= 0
+    ){
+
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'Cliente inválido'
+        });
+
+    }
+
+
+    // ======================================================
+    // 🔐 VALIDAR ARTÍCULO
+    // ======================================================
+
+    if(
+        !articuloLimpio
+    ){
+
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'Artículo inválido'
+        });
+
+    }
+
+
+    // ======================================================
+    // 🔐 VALIDAR CANTIDAD
+    // ======================================================
+
+    if(
+        !Number.isFinite(cantidadNumero) ||
+        cantidadNumero <= 0
+    ){
+
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'Cantidad inválida'
+        });
+
+    }
+
+
+    // ======================================================
+    // 🔐 VALIDAR PRECIO
+    // ======================================================
+
+    if(
+        !Number.isFinite(precioUnidad) ||
+        precioUnidad < 0
+    ){
+
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'Precio inválido'
+        });
+
+    }
+
+
+    // ======================================================
+    // 🔐 VALIDAR GRUPO / FACTURA
+    // ======================================================
+
+    if(
+        !Number.isInteger(grupoCompra) ||
+        grupoCompra <= 0
+    ){
+
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'Factura inválida'
+        });
+
+    }
+
+
+    // ======================================================
+    // 🔐 NORMALIZAR PAÍS
+    // ======================================================
+
+    let paisOrigen =
+        String(
+            pais_origen || ''
+        )
+        .trim()
+        .toUpperCase();
+
+
+    /*
+        También aceptamos el valor antiguo
+        que utiliza el botón del dashboard.
+    */
+
+    if(
+        paisOrigen === 'EN_EEUU'
+    ){
+
+        paisOrigen =
+            'EEUU';
+
+    }
+
+
+    const paisesValidos = [
+        'EEUU',
         'COLOMBIA'
     ];
 
+
+    if(
+        !paisesValidos.includes(
+            paisOrigen
+        )
+    ){
+
+        return res.status(400).json({
+            ok: false,
+            mensaje:
+                'País de origen inválido'
+        });
+
+    }
+
+
+    // ======================================================
+    // 🔹 ESTADO INICIAL SEGÚN PAÍS
+    // ======================================================
+
     const estadoInicial =
-        estadosInicialesValidos.includes(estado)
-            ? estado
+        paisOrigen === 'COLOMBIA'
+            ? 'COLOMBIA'
             : 'En_EEUU';
 
-    conexion.query(`
-        INSERT INTO pedidos
-        (
-            id_usuario,
-            id_articulo,
-            articulo,
-            descripcion,
-            cantidad,
-            precio_unidad,
-            peso_gramos,
-            total_precio,
-            estado
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, [
-        id_usuario,
-        id_articulo || null,
-        articulo,
-        descripcion || null,
-        cantidad,
-        precio_unidad,
-        peso_gramos,
-        total,
-        estadoInicial
-    ], (err) => {
 
-        if (err) {
+    // ======================================================
+    // 🔐 COMPROBAR QUE EL CLIENTE EXISTE
+    // ======================================================
+
+    conexion.query(`
+        SELECT
+            id_usuario
+        FROM usuarios
+        WHERE id_usuario = ?
+        AND tipo_usuario = 'cliente'
+        LIMIT 1
+    `, [
+        idUsuario
+    ], (errorCliente, clientes) => {
+
+
+        if(errorCliente){
 
             console.log(
-                "❌ ERROR SQL:",
-                err
+                '❌ Error verificando cliente:',
+                errorCliente
             );
 
-            return res.status(500)
-                .send("Error ❌");
+            return res.status(500).json({
+                ok: false,
+                mensaje:
+                    'No se pudo verificar el cliente'
+            });
 
         }
 
-        res.json({
-            ok: true
+
+        if(
+            !clientes ||
+            clientes.length === 0
+        ){
+
+            return res.status(404).json({
+                ok: false,
+                mensaje:
+                    'Cliente no encontrado'
+            });
+
+        }
+
+
+        // ==================================================
+        // 🔐 COMPROBAR GRUPO / FACTURA
+        // ==================================================
+
+        conexion.query(`
+            SELECT
+                id_grupo,
+                pais_origen,
+                activo
+            FROM grupos_compra
+            WHERE id_grupo = ?
+            LIMIT 1
+        `, [
+            grupoCompra
+        ], (errorGrupo, grupos) => {
+
+
+            if(errorGrupo){
+
+                console.log(
+                    '❌ Error verificando factura:',
+                    errorGrupo
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    mensaje:
+                        'No se pudo verificar la factura'
+                });
+
+            }
+
+
+            if(
+                !grupos ||
+                grupos.length === 0
+            ){
+
+                return res.status(404).json({
+                    ok: false,
+                    mensaje:
+                        'Factura no encontrada'
+                });
+
+            }
+
+
+            const grupo =
+                grupos[0];
+
+
+            // ==================================================
+            // 🔐 FACTURA DEBE ESTAR ACTIVA
+            // ==================================================
+
+            if(
+                Number(grupo.activo) !== 1
+            ){
+
+                return res.status(400).json({
+                    ok: false,
+                    mensaje:
+                        'La factura ya no está activa'
+                });
+
+            }
+
+
+            // ==================================================
+            // 🔐 PAÍS DE FACTURA DEBE COINCIDIR
+            // ==================================================
+
+            if(
+                String(
+                    grupo.pais_origen
+                ).toUpperCase() !==
+                paisOrigen
+            ){
+
+                return res.status(400).json({
+                    ok: false,
+                    mensaje:
+                        'El país de la factura no coincide con el pedido'
+                });
+
+            }
+
+
+            /*
+                ==================================================
+                🔐 EVITAR MEZCLAR CLIENTES EN UNA FACTURA
+
+                Si el grupo ya tiene pedidos activos,
+                todos deben pertenecer al mismo cliente.
+                ==================================================
+            */
+
+            conexion.query(`
+                SELECT
+                    id_usuario
+                FROM pedidos
+                WHERE grupo_compra = ?
+                AND archivado = 0
+                LIMIT 1
+            `, [
+                grupoCompra
+            ], (errorPedidoGrupo, pedidosGrupo) => {
+
+
+                if(errorPedidoGrupo){
+
+                    console.log(
+                        '❌ Error verificando pedidos de la factura:',
+                        errorPedidoGrupo
+                    );
+
+                    return res.status(500).json({
+                        ok: false,
+                        mensaje:
+                            'No se pudo verificar la factura'
+                    });
+
+                }
+
+
+                if(
+                    pedidosGrupo &&
+                    pedidosGrupo.length > 0 &&
+                    Number(
+                        pedidosGrupo[0].id_usuario
+                    ) !== idUsuario
+                ){
+
+                    return res.status(400).json({
+                        ok: false,
+                        mensaje:
+                            'Esta factura pertenece a otro cliente'
+                    });
+
+                }
+
+
+                // ==============================================
+                // 🔹 CALCULAR TOTAL DEL PRODUCTO
+                // ==============================================
+
+                const totalPrecio =
+                    cantidadNumero *
+                    precioUnidad;
+
+
+                // ==============================================
+                // 🔹 GUARDAR PEDIDO
+                // ==============================================
+
+                conexion.query(`
+                    INSERT INTO pedidos
+                    (
+                        id_usuario,
+                        id_articulo,
+                        articulo,
+                        descripcion,
+                        cantidad,
+                        precio_unidad,
+                        peso_gramos,
+                        total_precio,
+                        estado,
+                        pais_origen,
+                        grupo_compra,
+                        archivado
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, 0)
+                `, [
+                    idUsuario,
+                    idArticulo,
+                    articuloLimpio,
+                    descripcionLimpia || null,
+                    cantidadNumero,
+                    precioUnidad,
+                    totalPrecio,
+                    estadoInicial,
+                    paisOrigen,
+                    grupoCompra
+                ], (errorInsertar, resultado) => {
+
+
+                    if(errorInsertar){
+
+                        console.log(
+                            '❌ Error creando pedido:',
+                            errorInsertar
+                        );
+
+                        return res.status(500).json({
+                            ok: false,
+                            mensaje:
+                                'No se pudo crear el pedido'
+                        });
+
+                    }
+
+
+                    return res.json({
+                        ok: true,
+                        mensaje:
+                            'Pedido creado correctamente',
+                        id_pedido:
+                            resultado.insertId,
+                        grupo_compra:
+                            grupoCompra,
+                        pais_origen:
+                            paisOrigen
+                    });
+
+                });
+
+            });
+
         });
 
     });
@@ -1608,6 +1857,12 @@ app.get('/orders', protegerAdmin, (req, res) => {
         WHERE p.archivado = 0
 
         GROUP BY p.id_pedido
+
+        ORDER BY
+            u.nombre ASC,
+            u.apellido ASC,
+            p.grupo_compra ASC,
+            p.id_pedido ASC
 
     `, (err, results) => {
 
@@ -1676,14 +1931,26 @@ app.get('/archived-orders', protegerAdmin, (req, res) => {
 });
 
 // ======================================================
-// 🔹 ARCHIVAR PEDIDOS ACTIVOS DE UN CLIENTE
+// 🔹 ARCHIVAR PEDIDOS ACTIVOS DE UNA FACTURA DEL CLIENTE
 // ======================================================
 
 app.post('/archive-client-orders', protegerAdmin, (req, res) => {
 
-    const idUsuario = Number(req.body.id_usuario);
+    const idUsuario =
+        Number(req.body.id_usuario);
 
-    if (!idUsuario) {
+    const grupoCompra =
+        Number(req.body.grupo_compra);
+
+
+    // ======================================================
+    // 🔐 VALIDAR CLIENTE
+    // ======================================================
+
+    if(
+        !Number.isInteger(idUsuario) ||
+        idUsuario <= 0
+    ){
 
         return res.status(400).json({
             ok: false,
@@ -1692,41 +1959,79 @@ app.post('/archive-client-orders', protegerAdmin, (req, res) => {
 
     }
 
+
+    // ======================================================
+    // 🔐 VALIDAR GRUPO / FACTURA
+    // ======================================================
+
+    if(
+        !Number.isInteger(grupoCompra) ||
+        grupoCompra <= 0
+    ){
+
+        return res.status(400).json({
+            ok: false,
+            mensaje: "Factura inválida"
+        });
+
+    }
+
+
+    // ======================================================
+    // 🔹 ARCHIVAR SOLO ESA FACTURA DEL CLIENTE
+    // ======================================================
+
     conexion.query(`
         UPDATE pedidos
+
         SET
             archivado = 1,
             fecha_archivado = NOW()
-        WHERE id_usuario = ?
-        AND archivado = 0
-    `, [idUsuario], (err, resultado) => {
 
-        if (err) {
+        WHERE id_usuario = ?
+        AND grupo_compra = ?
+        AND archivado = 0
+
+    `, [
+        idUsuario,
+        grupoCompra
+    ], (err, resultado) => {
+
+        if(err){
 
             console.log(
-                "❌ Error archivando pedidos:",
+                "❌ Error archivando factura:",
                 err
             );
 
             return res.status(500).json({
                 ok: false,
-                mensaje: "No se pudieron archivar los pedidos"
+                mensaje:
+                    "No se pudo archivar la factura"
             });
 
         }
 
-        if (resultado.affectedRows === 0) {
+
+        if(
+            resultado.affectedRows === 0
+        ){
 
             return res.status(404).json({
                 ok: false,
-                mensaje: "No hay pedidos activos para archivar"
+                mensaje:
+                    "No hay pedidos activos en esta factura para archivar"
             });
 
         }
 
+
         return res.json({
             ok: true,
-            mensaje: "Pedidos archivados correctamente"
+            mensaje:
+                "Factura archivada correctamente",
+            pedidos_archivados:
+                resultado.affectedRows
         });
 
     });
@@ -2214,23 +2519,65 @@ app.post('/delete-order', protegerAdmin, (req, res) => {
 });
 
 // ======================================================
-// 🔹 ELIMINAR PEDIDOS ARCHIVADOS DE UN CLIENTE
+// 🔹 ELIMINAR UNA FACTURA ARCHIVADA ESPECÍFICA
 // ======================================================
 
 app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
 
     const idUsuario = Number(req.body.id_usuario);
 
-    if (!idUsuario) {
+    const grupoCompra =
+        req.body.grupo_compra !== undefined &&
+        req.body.grupo_compra !== null
+            ? Number(req.body.grupo_compra)
+            : null;
+
+    const idPedido =
+        req.body.id_pedido !== undefined &&
+        req.body.id_pedido !== null
+            ? Number(req.body.id_pedido)
+            : null;
+
+
+    if (
+        !Number.isInteger(idUsuario) ||
+        idUsuario <= 0
+    ) {
         return res.status(400).json({
             ok: false,
             mensaje: "Cliente inválido"
         });
     }
 
+
+    /*
+        Debe venir:
+        - grupo_compra para una factura normal
+        O
+        - id_pedido para un pedido antiguo sin grupo
+    */
+
+    if (
+        (
+            !Number.isInteger(grupoCompra) ||
+            grupoCompra <= 0
+        ) &&
+        (
+            !Number.isInteger(idPedido) ||
+            idPedido <= 0
+        )
+    ) {
+        return res.status(400).json({
+            ok: false,
+            mensaje: "Factura o pedido inválido"
+        });
+    }
+
+
     conexion.beginTransaction((errorTransaccion) => {
 
         if (errorTransaccion) {
+
             console.log(
                 "❌ Error iniciando transacción:",
                 errorTransaccion
@@ -2242,124 +2589,290 @@ app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
             });
         }
 
-        conexion.query(`
-            SELECT id_pedido
-            FROM pedidos
-            WHERE id_usuario = ?
-            AND archivado = 1
-        `, [idUsuario], (errorBuscar, pedidos) => {
 
-            if (errorBuscar) {
+        let consultaBuscar = "";
+        let parametrosBuscar = [];
 
-                return conexion.rollback(() => {
 
-                    console.log(
-                        "❌ Error buscando pedidos archivados:",
-                        errorBuscar
-                    );
+        /*
+            =====================================================
+            FACTURA NORMAL CON GRUPO
+            =====================================================
+        */
 
-                    return res.status(500).json({
-                        ok: false,
-                        mensaje: "No se pudieron buscar los pedidos archivados"
-                    });
+        if (
+            Number.isInteger(grupoCompra) &&
+            grupoCompra > 0
+        ) {
 
-                });
-            }
+            consultaBuscar = `
+                SELECT id_pedido
+                FROM pedidos
+                WHERE id_usuario = ?
+                AND grupo_compra = ?
+                AND archivado = 1
+            `;
 
-            if (pedidos.length === 0) {
+            parametrosBuscar = [
+                idUsuario,
+                grupoCompra
+            ];
 
-                return conexion.rollback(() => {
+        }
 
-                    return res.status(404).json({
-                        ok: false,
-                        mensaje: "No hay pedidos archivados para eliminar"
-                    });
+        /*
+            =====================================================
+            PEDIDO ANTIGUO SIN GRUPO
+            =====================================================
+        */
 
-                });
-            }
+        else {
 
-            const idsPedidos =
-                pedidos.map(
-                    pedido => pedido.id_pedido
-                );
+            consultaBuscar = `
+                SELECT id_pedido
+                FROM pedidos
+                WHERE id_usuario = ?
+                AND id_pedido = ?
+                AND grupo_compra IS NULL
+                AND archivado = 1
+            `;
 
-            conexion.query(`
-                DELETE FROM abonos
-                WHERE id_pedido IN (?)
-            `, [idsPedidos], (errorAbonos) => {
+            parametrosBuscar = [
+                idUsuario,
+                idPedido
+            ];
+        }
 
-                if (errorAbonos) {
+
+        conexion.query(
+            consultaBuscar,
+            parametrosBuscar,
+            (errorBuscar, pedidos) => {
+
+                if (errorBuscar) {
 
                     return conexion.rollback(() => {
 
                         console.log(
-                            "❌ Error eliminando abonos:",
-                            errorAbonos
+                            "❌ Error buscando factura archivada:",
+                            errorBuscar
                         );
 
                         return res.status(500).json({
                             ok: false,
-                            mensaje: "No se pudieron eliminar los abonos"
+                            mensaje: "No se pudo buscar la factura archivada"
                         });
 
                     });
                 }
 
-                conexion.query(`
-                    DELETE FROM pedidos
-                    WHERE id_usuario = ?
-                    AND archivado = 1
-                `, [idUsuario], (errorPedidos, resultado) => {
 
-                    if (errorPedidos) {
+                if (!pedidos || pedidos.length === 0) {
 
-                        return conexion.rollback(() => {
+                    return conexion.rollback(() => {
 
-                            console.log(
-                                "❌ Error eliminando pedidos archivados:",
-                                errorPedidos
-                            );
-
-                            return res.status(500).json({
-                                ok: false,
-                                mensaje: "No se pudieron eliminar los pedidos archivados"
-                            });
-
+                        return res.status(404).json({
+                            ok: false,
+                            mensaje: "No se encontró la factura archivada seleccionada"
                         });
-                    }
 
-                    conexion.commit((errorCommit) => {
+                    });
+                }
 
-                        if (errorCommit) {
+
+                const idsPedidos =
+                    pedidos.map(
+                        pedido => pedido.id_pedido
+                    );
+
+
+                conexion.query(
+                    `
+                        DELETE FROM abonos
+                        WHERE id_pedido IN (?)
+                    `,
+                    [idsPedidos],
+                    (errorAbonos) => {
+
+                        if (errorAbonos) {
 
                             return conexion.rollback(() => {
 
                                 console.log(
-                                    "❌ Error confirmando eliminación:",
-                                    errorCommit
+                                    "❌ Error eliminando abonos:",
+                                    errorAbonos
                                 );
 
                                 return res.status(500).json({
                                     ok: false,
-                                    mensaje: "No se pudo completar la eliminación"
+                                    mensaje: "No se pudieron eliminar los abonos"
                                 });
 
                             });
                         }
 
-                        return res.json({
-                            ok: true,
-                            eliminados: resultado.affectedRows,
-                            mensaje: "Pedidos archivados eliminados correctamente"
-                        });
 
-                    });
+                        conexion.query(
+                            `
+                                DELETE FROM pedidos
+                                WHERE id_pedido IN (?)
+                                AND archivado = 1
+                            `,
+                            [idsPedidos],
+                            (errorPedidos, resultadoPedidos) => {
 
-                });
+                                if (errorPedidos) {
 
-            });
+                                    return conexion.rollback(() => {
 
-        });
+                                        console.log(
+                                            "❌ Error eliminando pedidos:",
+                                            errorPedidos
+                                        );
+
+                                        return res.status(500).json({
+                                            ok: false,
+                                            mensaje: "No se pudieron eliminar los pedidos"
+                                        });
+
+                                    });
+                                }
+
+
+                                /*
+                                    Si era una factura con grupo,
+                                    revisamos si el grupo quedó sin pedidos.
+                                */
+
+                                if (
+                                    Number.isInteger(grupoCompra) &&
+                                    grupoCompra > 0
+                                ) {
+
+                                    conexion.query(
+                                        `
+                                            SELECT COUNT(*) AS total
+                                            FROM pedidos
+                                            WHERE grupo_compra = ?
+                                        `,
+                                        [grupoCompra],
+                                        (errorContar, resultadoContar) => {
+
+                                            if (errorContar) {
+
+                                                return conexion.rollback(() => {
+
+                                                    console.log(
+                                                        "❌ Error revisando grupo:",
+                                                        errorContar
+                                                    );
+
+                                                    return res.status(500).json({
+                                                        ok: false,
+                                                        mensaje: "No se pudo verificar el grupo"
+                                                    });
+
+                                                });
+                                            }
+
+
+                                            const totalRestante =
+                                                Number(
+                                                    resultadoContar[0].total
+                                                ) || 0;
+
+
+                                            if (totalRestante === 0) {
+
+                                                conexion.query(
+                                                    `
+                                                        DELETE FROM grupos_compra
+                                                        WHERE id_grupo = ?
+                                                    `,
+                                                    [grupoCompra],
+                                                    (errorGrupo) => {
+
+                                                        if (errorGrupo) {
+
+                                                            return conexion.rollback(() => {
+
+                                                                console.log(
+                                                                    "❌ Error eliminando grupo:",
+                                                                    errorGrupo
+                                                                );
+
+                                                                return res.status(500).json({
+                                                                    ok: false,
+                                                                    mensaje: "No se pudo eliminar el grupo"
+                                                                });
+
+                                                            });
+                                                        }
+
+
+                                                        finalizarEliminacion();
+
+                                                    }
+                                                );
+
+                                            } else {
+
+                                                finalizarEliminacion();
+
+                                            }
+
+                                        }
+                                    );
+
+                                } else {
+
+                                    finalizarEliminacion();
+
+                                }
+
+
+                                function finalizarEliminacion() {
+
+                                    conexion.commit((errorCommit) => {
+
+                                        if (errorCommit) {
+
+                                            return conexion.rollback(() => {
+
+                                                console.log(
+                                                    "❌ Error confirmando eliminación:",
+                                                    errorCommit
+                                                );
+
+                                                return res.status(500).json({
+                                                    ok: false,
+                                                    mensaje: "No se pudo completar la eliminación"
+                                                });
+
+                                            });
+                                        }
+
+
+                                        return res.json({
+                                            ok: true,
+                                            eliminados:
+                                                resultadoPedidos.affectedRows,
+                                            mensaje:
+                                                "Factura archivada eliminada correctamente"
+                                        });
+
+                                    });
+
+                                }
+
+                            }
+                        );
+
+                    }
+                );
+
+            }
+        );
 
     });
 
@@ -2602,6 +3115,8 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
     <html lang="es">
 
     <head>
+
+     
 
         <meta charset="UTF-8">
 
