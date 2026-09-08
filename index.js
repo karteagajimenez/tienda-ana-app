@@ -3735,32 +3735,43 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
             );
 
 
-            // ========================================
-            // 🔐 IMPEDIR ENVÍO SI NO CUMPLE
-            // ========================================
-
             formNuevaPassword.addEventListener(
-                "submit",
-                (e) => {
+    "submit",
+    (e) => {
 
-                    if (
-                        !validarPassword(
-                            passwordInput.value
-                        )
-                    ) {
+        if (
+            !validarPassword(
+                passwordInput.value
+            )
+        ) {
 
-                        e.preventDefault();
+            e.preventDefault();
 
-                        passwordRequisitos.style.display =
-                            "block";
+            passwordRequisitos.style.display =
+                "block";
 
-                        passwordInput.focus();
+            passwordInput.focus();
 
-                    }
+            return;
+        }
 
-                }
+
+        const confirmarCambio =
+            window.confirm(
+                "🔐 Confirmar cambio de contraseña\n\n" +
+                "Por seguridad, solo puede cambiar su contraseña una vez cada 24 horas.\n\n" +
+                "¿Está seguro de que desea guardar esta nueva contraseña?"
             );
 
+
+        if (!confirmarCambio) {
+
+            e.preventDefault();
+
+        }
+
+    }
+);
         </script>
 
 
@@ -4018,7 +4029,9 @@ app.post('/reset-password/:token', (req, res) => {
     // ============================================
 
     conexion.query(`
-        SELECT id_usuario
+        SELECT
+            id_usuario,
+             ultimo_cambio_password
 
         FROM usuarios
 
@@ -4075,7 +4088,58 @@ app.post('/reset-password/:token', (req, res) => {
             );
         }
 
+// ============================================
+// 🔐 LIMITAR CAMBIO DE CONTRASEÑA A 1 CADA 24 HORAS
+// ============================================
 
+const ultimoCambio = results[0].ultimo_cambio_password;
+
+if (ultimoCambio) {
+
+    const ahora = new Date();
+    const ultimoCambioFecha = new Date(ultimoCambio);
+
+    const diferencia =
+        ahora.getTime() - ultimoCambioFecha.getTime();
+
+    const veinticuatroHoras =
+        24 * 60 * 60 * 1000;
+
+    if (diferencia < veinticuatroHoras) {
+
+        const tiempoRestante =
+            veinticuatroHoras - diferencia;
+
+        const horasRestantes =
+            Math.ceil(
+                tiempoRestante / (60 * 60 * 1000)
+            );
+
+        return res.send(
+            paginaNuevaPassword(
+                "",
+                `
+                🔒 Por seguridad, solo puede cambiar
+                su contraseña una vez cada 24 horas.
+
+                <br><br>
+
+                Podrá volver a cambiarla
+                aproximadamente en
+                <strong>${horasRestantes} hora(s)</strong>.
+
+                <br><br>
+
+                Puede volver al
+                <a href="/login.html">
+                    inicio
+                </a>.
+                `,
+                "error"
+            )
+        );
+    }
+}
 
         try {
 
@@ -4103,6 +4167,7 @@ app.post('/reset-password/:token', (req, res) => {
                     password = ?,
                     reset_token = NULL,
                     reset_expiration = NULL
+                    ultimo_cambio_password = NOW()
 
                 WHERE reset_token = ?
                 AND reset_expiration > ?
