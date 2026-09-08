@@ -303,8 +303,8 @@ td button {
 
     <div class="header-buttons">
 
-        <button onclick="location.href='/dashboard.html'">
-            Volver
+        <button onclick="volverGestion()">
+           Volver
         </button>
 
         <button onclick="location.href='/archived_orders.html'">
@@ -579,6 +579,17 @@ td button {
             placeholder="Cantidad"
             style="display:none;"  
         >  
+
+
+        <!-- PESO -->
+        <input
+            type="number"
+            id="editarPeso"
+            min="1"
+            placeholder="Peso en gramos"
+            style="display:none;"
+        >
+
   
         <br>  
   
@@ -634,7 +645,7 @@ td button {
 function cerrarSesion(){
 
     window.location.href =
-        "/login.html";
+        "/logout";
 
 }
 
@@ -649,6 +660,10 @@ let tipo = "";
 let pedidoId = null;
 
 let clienteSeleccionado = null;
+
+let grupoSeleccionado = null;
+
+let clienteVistaActual = null;
 
 let pedidosGlobales = [];
 
@@ -665,10 +680,8 @@ function traducirEstado(estado){
     switch(estado){
 
         case "En_EEUU":
-            return "Estados Unidos";
-
         case "COLOMBIA":
-            return "Colombia";
+            return "En origen";
 
         case "EN_CAMINO":
             return "En camino";
@@ -689,6 +702,31 @@ function traducirEstado(estado){
 
 }
 
+
+
+/* =========================================================
+   PAÍS DE ORIGEN
+========================================================= */
+
+function traducirPaisOrigen(pais){
+
+    switch(pais){
+
+        case "EEUU":
+            return "Estados Unidos";
+
+        case "COLOMBIA":
+            return "Colombia";
+
+        default:
+            return pais || "-";
+
+    }
+
+}
+
+
+
 /* =========================================================
    FORMATEAR DINERO
 ========================================================= */
@@ -704,6 +742,45 @@ function moneda(valor){
                 maximumFractionDigits: 2
             }
         );
+
+}
+
+
+
+/* =========================================================
+   OBTENER CLAVE DEL GRUPO
+========================================================= */
+
+function obtenerClaveGrupo(pedido){
+
+    /*
+        PEDIDOS NUEVOS
+
+        Utilizan grupo_compra real.
+    */
+
+    if(
+        pedido.grupo_compra !== null &&
+        pedido.grupo_compra !== undefined &&
+        Number(pedido.grupo_compra) > 0
+    ){
+
+        return String(
+            pedido.grupo_compra
+        );
+
+    }
+
+
+    /*
+        PEDIDOS ANTIGUOS
+
+        Si todavía no tienen grupo_compra,
+        los dejamos separados para evitar
+        mezclar facturas antiguas por accidente.
+    */
+
+    return `legacy-${pedido.id_pedido}`;
 
 }
 
@@ -736,14 +813,17 @@ async function cargarPedidos(){
 
 
         /* =================================================
-           AGRUPAR PEDIDOS POR CLIENTE
+           AGRUPAR PRIMERO POR CLIENTE
+           Y DESPUÉS POR FACTURA / GRUPO
         ================================================= */
 
         data.forEach(p => {
 
 
             const idUsuario =
-                p.id_usuario;
+                Number(
+                    p.id_usuario
+                );
 
 
             if(!pedidosPorCliente[idUsuario]){
@@ -759,6 +839,55 @@ async function cargarPedidos(){
 
                     apellido:
                         p.apellido,
+
+                    grupos:
+                        {}
+
+                };
+
+            }
+
+
+
+            const cliente =
+                pedidosPorCliente[
+                    idUsuario
+                ];
+
+
+
+            const claveGrupo =
+                obtenerClaveGrupo(p);
+
+
+
+            if(!cliente.grupos[claveGrupo]){
+
+
+                cliente.grupos[
+                    claveGrupo
+                ] = {
+
+                    clave:
+                        claveGrupo,
+
+                    grupo_compra:
+                        Number(
+                            p.grupo_compra
+                        ) > 0
+                            ? Number(
+                                p.grupo_compra
+                            )
+                            : null,
+
+                    pais_origen:
+                        p.pais_origen ||
+                        (
+                            p.estado ===
+                            "COLOMBIA"
+                                ? "COLOMBIA"
+                                : "EEUU"
+                        ),
 
                     peso_total:
                         0,
@@ -784,17 +913,26 @@ async function cargarPedidos(){
 
 
 
-            const cliente =
-                pedidosPorCliente[idUsuario];
-
-
-            /* GUARDAR PEDIDO */
-
-            cliente.pedidos.push(p);
+            const grupo =
+                cliente.grupos[
+                    claveGrupo
+                ];
 
 
 
-            /* PESO */
+            /* =================================================
+               GUARDAR PEDIDO
+            ================================================= */
+
+            grupo.pedidos.push(
+                p
+            );
+
+
+
+            /* =================================================
+               PESO
+            ================================================= */
 
             const peso =
                 Number(
@@ -802,37 +940,43 @@ async function cargarPedidos(){
                 ) || 0;
 
 
-            cliente.peso_total +=
+            grupo.peso_total +=
                 peso;
 
 
 
-            /* ENVÍO */
+            /* =================================================
+               ENVÍO
+            ================================================= */
 
             const envio =
                 (peso / 1000) *
                 6000;
 
 
-            cliente.envio_total +=
+            grupo.envio_total +=
                 envio;
 
 
 
-            /* ABONOS */
+            /* =================================================
+               ABONOS
+            ================================================= */
 
-            cliente.total_abonado +=
+            grupo.total_abonado +=
                 Number(
                     p.total_abonado
                 ) || 0;
 
 
 
-            /* ESTADO */
+            /* =================================================
+               ESTADO
+            ================================================= */
 
             if(p.estado){
 
-                cliente.estados.add(
+                grupo.estados.add(
                     p.estado
                 );
 
@@ -840,7 +984,9 @@ async function cargarPedidos(){
 
 
 
-            /* FECHA MÁS RECIENTE */
+            /* =================================================
+               FECHA MÁS RECIENTE
+            ================================================= */
 
             if(p.fecha_abono){
 
@@ -851,12 +997,12 @@ async function cargarPedidos(){
 
 
                 if(
-                    !cliente.fecha_abono ||
+                    !grupo.fecha_abono ||
                     fecha >
-                    cliente.fecha_abono
+                    grupo.fecha_abono
                 ){
 
-                    cliente.fecha_abono =
+                    grupo.fecha_abono =
                         fecha;
 
                 }
@@ -869,24 +1015,444 @@ async function cargarPedidos(){
 
 
         /* =================================================
-           CREAR TABLA
+           SI ESTAMOS VIENDO UN CLIENTE
+           Y YA NO TIENE PEDIDOS ACTIVOS,
+           VOLVER A LA LISTA DE CLIENTES
         ================================================= */
 
-        let html = "";
+        if(
+            clienteVistaActual &&
+            !pedidosPorCliente[
+                clienteVistaActual
+            ]
+        ){
+
+            clienteVistaActual =
+                null;
+
+        }
+/* =================================================
+   ABRIR CLIENTE INDICADO EN LA URL
+
+   Esto se utiliza cuando regresamos desde
+   Detalles para volver directamente a las
+   facturas del mismo cliente.
+================================================= */
+
+const parametrosURL =
+    new URLSearchParams(
+        window.location.search
+    );
 
 
+const idClienteURL =
+    Number(
+        parametrosURL.get("id")
+    );
+
+
+if(
+    !clienteVistaActual &&
+    Number.isInteger(idClienteURL) &&
+    idClienteURL > 0 &&
+    pedidosPorCliente[idClienteURL]
+){
+
+    clienteVistaActual =
+        idClienteURL;
+
+
+    /*
+        Limpiar el parámetro de la URL
+        después de recuperar el cliente.
+
+        Así, si después actualizamos datos
+        dentro de Gestión, no vuelve a
+        forzar innecesariamente la vista.
+    */
+
+    window.history.replaceState(
+        {},
+        "",
+        "/add_weight.html"
+    );
+
+}
+
+
+        /* =================================================
+           RENDERIZAR VISTA
+        ================================================= */
+
+        renderizarVista();
+
+
+    }catch(error){
+
+
+        console.error(
+            "Error cargando pedidos:",
+            error
+        );
+
+
+        document.getElementById(
+            "tablaPedidos"
+        ).innerHTML = `
+
+            <tr>
+
+                <td colspan="9">
+                    No se pudieron cargar los pedidos.
+                </td>
+
+            </tr>
+
+        `;
+
+
+    }
+
+}
+
+
+
+/* =========================================================
+   RENDERIZAR VISTA ACTUAL
+========================================================= */
+
+function renderizarVista(){
+
+    if(clienteVistaActual){
+
+        mostrarFacturasCliente(
+            clienteVistaActual
+        );
+
+        return;
+
+    }
+
+
+    mostrarListaClientes();
+
+}
+
+
+
+/* =========================================================
+   MOSTRAR LISTA DE CLIENTES
+========================================================= */
+
+function mostrarListaClientes(){
+
+    const tabla =
+        document.querySelector(
+            "table"
+        );
+
+
+    const encabezado =
+        tabla.querySelector(
+            "thead"
+        );
+
+
+    encabezado.innerHTML = `
+
+        <tr>
+
+            <th>
+                Cliente
+            </th>
+
+        </tr>
+
+    `;
+
+
+
+    let html = "";
+
+
+
+    const clientes =
         Object.values(
             pedidosPorCliente
-        ).forEach(cliente => {
+        )
+        .sort(
+            (a, b) =>
+                `${a.nombre} ${a.apellido}`
+                .localeCompare(
+                    `${b.nombre} ${b.apellido}`,
+                    "es"
+                )
+        );
 
 
-            /* =============================================
-               ESTADO
-            ============================================= */
+
+    if(clientes.length === 0){
+
+        html = `
+
+            <tr>
+
+                <td>
+                    No hay pedidos activos.
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+
+
+    clientes.forEach(
+        cliente => {
+
+
+            html += `
+
+                <tr
+                    style="cursor:pointer;"
+                    onclick="abrirCliente(
+                        ${cliente.id_usuario}
+                    )"
+                >
+
+                    <td>
+
+                        <strong>
+                            ${cliente.nombre}
+                            ${cliente.apellido}
+                        </strong>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+
+
+    document.getElementById(
+        "tablaPedidos"
+    ).innerHTML =
+        html;
+
+
+    document.getElementById(
+        "buscar"
+    ).placeholder =
+        "Buscar cliente...";
+
+}
+
+
+
+/* =========================================================
+   ABRIR CLIENTE
+========================================================= */
+
+function abrirCliente(idUsuario){
+
+    const cliente =
+        pedidosPorCliente[
+            idUsuario
+        ];
+
+
+    if(!cliente){
+
+        return;
+
+    }
+
+
+    clienteVistaActual =
+        Number(
+            idUsuario
+        );
+
+
+    document.getElementById(
+        "buscar"
+    ).value =
+        "";
+
+
+    mostrarFacturasCliente(
+        clienteVistaActual
+    );
+
+}
+
+
+function volverGestion(){
+
+    /*
+        Si estamos dentro de las facturas
+        de un cliente, volvemos a la lista
+        de clientes.
+    */
+
+    if(clienteVistaActual){
+
+        volverAClientes();
+
+        return;
+
+    }
+
+
+    /*
+        Si ya estamos en la lista de clientes,
+        entonces sí volvemos a Crear Pedido.
+    */
+
+    window.location.href =
+        "/dashboard.html";
+
+}
+
+
+/* =========================================================
+   VOLVER A LISTA DE CLIENTES
+========================================================= */
+
+function volverAClientes(){
+
+    clienteVistaActual =
+        null;
+
+
+    document.getElementById(
+        "buscar"
+    ).value =
+        "";
+
+
+    mostrarListaClientes();
+
+}
+
+
+
+/* =========================================================
+   MOSTRAR FACTURAS DE UN CLIENTE
+========================================================= */
+
+function mostrarFacturasCliente(
+    idUsuario
+){
+
+    const cliente =
+        pedidosPorCliente[
+            idUsuario
+        ];
+
+
+    if(!cliente){
+
+        volverAClientes();
+
+        return;
+
+    }
+
+
+
+    const tabla =
+        document.querySelector(
+            "table"
+        );
+
+
+    const encabezado =
+        tabla.querySelector(
+            "thead"
+        );
+
+
+    encabezado.innerHTML = `
+
+        <tr>
+
+            <th>
+                Cliente
+            </th>
+
+            <th>
+                País de origen
+            </th>
+
+            <th>
+                Peso
+            </th>
+
+            <th>
+                Valor del Peso
+            </th>
+
+            <th>
+                Estado
+            </th>
+
+            <th>
+                Abono
+            </th>
+
+            <th>
+                Saldo
+            </th>
+
+            <th>
+                Fecha
+            </th>
+
+            <th>
+                Acción
+            </th>
+
+        </tr>
+
+    `;
+
+let html = "";
+
+    const grupos =
+        Object.values(
+            cliente.grupos
+        )
+        .sort(
+            (a, b) => {
+
+                const grupoA =
+                    a.grupo_compra || 0;
+
+                const grupoB =
+                    b.grupo_compra || 0;
+
+                return grupoA -
+                    grupoB;
+
+            }
+        );
+
+
+
+    grupos.forEach(
+        grupo => {
+
 
             const estados =
                 Array.from(
-                    cliente.estados
+                    grupo.estados
                 );
 
 
@@ -908,21 +1474,23 @@ async function cargarPedidos(){
 
                 estadoMostrar =
                     estados
-                        .map(estado =>
-                            traducirEstado(estado)
-                        )
-                        .join(" / ");
+                    .map(
+                        estado =>
+                            traducirEstado(
+                                estado
+                            )
+                    )
+                    .join(
+                        " / "
+                    );
 
             }
 
 
-            /* =============================================
-               SALDO
-            ============================================= */
 
             let saldo =
-                cliente.envio_total -
-                cliente.total_abonado;
+                grupo.envio_total -
+                grupo.total_abonado;
 
 
             if(saldo < 0){
@@ -932,167 +1500,228 @@ async function cargarPedidos(){
             }
 
 
+
             const claseSaldo =
                 saldo > 0
-                ? "saldo-pendiente"
-                : "saldo-pagado";
+                    ? "saldo-pendiente"
+                    : "saldo-pagado";
 
 
 
-            /* =============================================
-               FILA
-            ============================================= */
+            /*
+                Para pedidos antiguos sin grupo,
+                usamos la clave interna únicamente
+                para poder mostrarlos sin mezclarlos.
+
+                Las acciones por factura nueva
+                requieren grupo_compra real.
+            */
+
+            const grupoAccion =
+                grupo.grupo_compra
+                    ? grupo.grupo_compra
+                    : `'${grupo.clave}'`;
+
+
 
             html += `
 
-            <tr>
+                <tr>
 
-                <td>
-                    ${cliente.nombre}
-                    ${cliente.apellido}
-                </td>
+                    <td>
 
+                        ${cliente.nombre}
+                        ${cliente.apellido}
 
-                <td>
-                    ${cliente.peso_total} g
-                </td>
+                    </td>
 
 
-                <td>
-                    ${moneda(
-                        cliente.envio_total
-                    )}
-                </td>
+                    <td>
+
+                        ${traducirPaisOrigen(
+                            grupo.pais_origen
+                        )}
+
+                    </td>
 
 
-                <td>
-                    ${estadoMostrar}
-                </td>
+                    <td>
+
+                        ${grupo.peso_total} g
+
+                    </td>
 
 
-                <td>
-                    ${moneda(
-                        cliente.total_abonado
-                    )}
-                </td>
+                    <td>
+
+                        ${moneda(
+                            grupo.envio_total
+                        )}
+
+                    </td>
 
 
-                <td class="${claseSaldo}">
-                    ${moneda(saldo)}
-                </td>
+                    <td>
+
+                        ${estadoMostrar}
+
+                    </td>
 
 
-                <td>
-                    ${
-                        cliente.fecha_abono
-                        ? cliente.fecha_abono
-                        : "-"
-                    }
-                </td>
+                    <td>
+
+                        ${moneda(
+                            grupo.total_abonado
+                        )}
+
+                    </td>
 
 
-                <td>
+                    <td
+                        class="${claseSaldo}"
+                    >
 
-<button 
-    class="peso" 
-    onclick="abrirModal( 
-        'peso', 
-        ${cliente.id_usuario} 
-    )" 
-> 
-    Peso 
-</button> 
+                        ${moneda(
+                            saldo
+                        )}
+
+                    </td>
 
 
-<button 
-    class="pago" 
-    onclick="abrirModal( 
-        'pago', 
-        ${cliente.id_usuario} 
-    )" 
-> 
-    Abono 
-</button> 
+                    <td>
+
+                        ${
+                            grupo.fecha_abono
+                                ? grupo.fecha_abono
+                                : "-"
+                        }
+
+                    </td>
 
 
-<button 
-    class="estado" 
-    onclick="abrirModal( 
-        'estado', 
-        ${cliente.id_usuario} 
-    )" 
-> 
-    Estado 
-</button> 
+                    <td>
+
+                        ${
+                            grupo.grupo_compra
+                                ? `
+
+                                    <button
+                                        class="peso"
+                                        onclick="abrirModal(
+                                            'peso',
+                                            ${cliente.id_usuario},
+                                            ${grupo.grupo_compra}
+                                        )"
+                                    >
+                                        Peso
+                                    </button>
 
 
-<button 
-    class="detalles" 
-    onclick="verDetalles( 
-        ${cliente.id_usuario} 
-    )" 
-> 
-    Detalles 
-</button>
+                                    <button
+                                        class="pago"
+                                        onclick="abrirModal(
+                                            'pago',
+                                            ${cliente.id_usuario},
+                                            ${grupo.grupo_compra}
+                                        )"
+                                    >
+                                        Abono
+                                    </button>
 
 
-<button 
-    class="editar" 
-    onclick="abrirEditar( 
-        ${cliente.id_usuario} 
-    )" 
-> 
-    Editar 
-</button>
+                                    <button
+                                        class="estado"
+                                        onclick="abrirModal(
+                                            'estado',
+                                            ${cliente.id_usuario},
+                                            ${grupo.grupo_compra}
+                                        )"
+                                    >
+                                        Estado
+                                    </button>
 
 
-<button 
-    class="archivar" 
-    onclick="archivarCliente( 
-        ${cliente.id_usuario} 
-    )" 
-> 
-    Archivar 
-</button>
+                                    <button
+                                        class="detalles"
+                                        onclick="verDetalles(
+                                            ${cliente.id_usuario},
+                                            ${grupo.grupo_compra}
+                                        )"
+                                    >
+                                        Detalles
+                                    </button>
 
 
-<button 
-    class="eliminar" 
-    onclick="abrirModal( 
-        'eliminar', 
-        ${cliente.id_usuario} 
-    )" 
-> 
-    Eliminar 
-</button>
+                                    <button
+                                        class="editar"
+                                        onclick="abrirEditar(
+                                            ${cliente.id_usuario},
+                                            ${grupo.grupo_compra}
+                                        )"
+                                    >
+                                        Editar
+                                    </button>
 
 
-                </td>
+                                    <button
+                                        class="archivar"
+                                        onclick="archivarCliente(
+                                            ${cliente.id_usuario},
+                                            ${grupo.grupo_compra}
+                                        )"
+                                    >
+                                        Archivar
+                                    </button>
 
-            </tr>
+
+                                    <button
+                                        class="eliminar"
+                                        onclick="abrirModal(
+                                            'eliminar',
+                                            ${cliente.id_usuario},
+                                            ${grupo.grupo_compra}
+                                        )"
+                                    >
+                                        Eliminar
+                                    </button>
+
+                                `
+                                : `
+
+                                    <span
+                                        style="
+                                            color:#888;
+                                            font-size:12px;
+                                        "
+                                    >
+                                        Pedido antiguo sin factura asignada
+                                    </span>
+
+                                `
+                        }
+
+                    </td>
+
+                </tr>
 
             `;
 
-        });
+
+        }
+    );
 
 
 
-        document.getElementById(
-            "tablaPedidos"
-        ).innerHTML =
-            html;
+    document.getElementById(
+        "tablaPedidos"
+    ).innerHTML =
+        html;
 
 
-    }catch(error){
-
-
-        console.error(
-            "Error cargando pedidos:",
-            error
-        );
-
-
-    }
+    document.getElementById(
+        "buscar"
+    ).placeholder =
+        "Buscar dentro del cliente...";
 
 }
 
@@ -1104,16 +1733,20 @@ async function cargarPedidos(){
 
 function abrirModal(
     tipoOperacion,
-    idUsuario
+    idUsuario,
+    grupoCompra
 ){
-
 
     tipo =
         tipoOperacion;
 
 
     clienteSeleccionado =
-        idUsuario;
+        Number(idUsuario);
+
+
+    grupoSeleccionado =
+        Number(grupoCompra);
 
 
     pedidoId =
@@ -1122,16 +1755,36 @@ function abrirModal(
 
     const cliente =
         pedidosPorCliente[
-            idUsuario
+            clienteSeleccionado
         ];
 
 
     if(!cliente){
 
+        mostrarMensaje(
+            "No se encontró el cliente"
+        );
+
         return;
 
     }
 
+
+    const grupo =
+        cliente.grupos[
+            String(grupoSeleccionado)
+        ];
+
+
+    if(!grupo){
+
+        mostrarMensaje(
+            "No se encontró la factura seleccionada"
+        );
+
+        return;
+
+    }
 
 
     const modal =
@@ -1170,7 +1823,6 @@ function abrirModal(
         );
 
 
-
     modal.style.display =
         "flex";
 
@@ -1185,7 +1837,6 @@ function abrirModal(
 
     estadoSelect.value =
         "";
-
 
 
     pedidoSelect.style.display =
@@ -1204,9 +1855,8 @@ function abrirModal(
         "none";
 
 
-
     /* =====================================================
-       CARGAR ARTÍCULOS DEL CLIENTE
+       CARGAR SOLO ARTÍCULOS DE ESTA FACTURA
     ===================================================== */
 
     let opciones = `
@@ -1218,33 +1868,28 @@ function abrirModal(
     `;
 
 
-
-    cliente.pedidos.forEach(
+    grupo.pedidos.forEach(
         pedido => {
-
 
             opciones += `
 
-            <option
-                value="${pedido.id_pedido}"
-            >
+                <option
+                    value="${pedido.id_pedido}"
+                >
 
-                ${pedido.articulo}
-                - Cantidad ${pedido.cantidad}
+                    ${pedido.articulo}
+                    - Cantidad ${pedido.cantidad}
 
-            </option>
+                </option>
 
             `;
-
 
         }
     );
 
 
-
     pedidoSelect.innerHTML =
         opciones;
-
 
 
     /* =====================================================
@@ -1252,7 +1897,6 @@ function abrirModal(
     ===================================================== */
 
     if(tipo === "peso"){
-
 
         titulo.innerText =
             "Seleccione artículo e ingrese el peso";
@@ -1265,9 +1909,7 @@ function abrirModal(
         inputValor.placeholder =
             "Peso en gramos";
 
-
     }
-
 
 
     /* =====================================================
@@ -1275,7 +1917,6 @@ function abrirModal(
     ===================================================== */
 
     if(tipo === "pago"){
-
 
         titulo.innerText =
             "Seleccione artículo e ingrese el abono";
@@ -1292,9 +1933,7 @@ function abrirModal(
         inputValor.placeholder =
             "Monto del abono";
 
-
     }
-
 
 
     /* =====================================================
@@ -1303,9 +1942,8 @@ function abrirModal(
 
     if(tipo === "estado"){
 
-
         titulo.innerText =
-            "Cambie el estado";
+            "Cambie el estado de esta factura";
 
 
         pedidoSelect.style.display =
@@ -1315,9 +1953,7 @@ function abrirModal(
         estadoSelect.style.display =
             "block";
 
-
     }
-
 
 
     /* =====================================================
@@ -1326,16 +1962,12 @@ function abrirModal(
 
     if(tipo === "eliminar"){
 
-
         titulo.innerText =
             "Seleccione el artículo que desea eliminar";
 
-
     }
 
-
 }
-
 
 
 /* =========================================================
@@ -1367,7 +1999,6 @@ function actualizarPedidoSeleccionado(){
 
 function cerrarModal(){
 
-
     document.getElementById(
         "modal"
     ).style.display =
@@ -1386,6 +2017,9 @@ function cerrarModal(){
         null;
 
 
+    grupoSeleccionado =
+        null;
+
 }
 
 
@@ -1396,13 +2030,40 @@ function cerrarModal(){
 
 async function confirmar(){
 
-
-    if(tipo !== "estado" && !pedidoId){
+    if(
+        tipo !== "estado" &&
+        !pedidoId
+    ){
 
         return;
 
     }
 
+
+    const cliente =
+        pedidosPorCliente[
+            clienteSeleccionado
+        ];
+
+
+    if(!cliente){
+
+        return;
+
+    }
+
+
+    const grupo =
+        cliente.grupos[
+            String(grupoSeleccionado)
+        ];
+
+
+    if(!grupo){
+
+        return;
+
+    }
 
 
     /* =====================================================
@@ -1410,7 +2071,6 @@ async function confirmar(){
     ===================================================== */
 
     if(tipo === "peso"){
-
 
         const valor =
             Number(
@@ -1430,218 +2090,9 @@ async function confirmar(){
         }
 
 
-        await fetch(
-            "/update-weight",
-            {
-
-                method:
-                    "POST",
-
-                headers: {
-
-                    "Content-Type":
-                        "application/json"
-
-                },
-
-                body:
-                    JSON.stringify({
-
-                        id_pedido:
-                            pedidoId,
-
-                        peso_gramos:
-                            valor
-
-                    })
-
-            }
-        );
-
-
-    }
-
-
-
-    /* =====================================================
-   ABONO
-===================================================== */
-
-if(tipo === "pago"){
-
-    const valor =
-        Number(
-            document.getElementById(
-                "inputValor"
-            ).value
-        );
-
-    const metodo =
-        document.getElementById(
-            "metodoPago"
-        ).value;
-
-
-    if(
-        !valor ||
-        valor <= 0 ||
-        !metodo
-    ){
-        return;
-    }
-
-
-    /* BUSCAR EL PEDIDO SELECCIONADO */
-
-    const cliente =
-        pedidosPorCliente[
-            clienteSeleccionado
-        ];
-
-    const pedido =
-        cliente
-            ? cliente.pedidos.find(
-                p =>
-                    Number(p.id_pedido) ===
-                    Number(pedidoId)
-            )
-            : null;
-
-
-    if(!pedido){
-        return;
-    }
-
-
-    /* CALCULAR ENVÍO DE ESTE ARTÍCULO */
-
-    const peso =
-        Number(
-            pedido.peso_gramos
-        ) || 0;
-
-    const envio =
-        (peso / 1000) * 6000;
-
-
-    /* ABONOS QUE YA TIENE ESTE ARTÍCULO */
-
-    const abonado =
-        Number(
-            pedido.total_abonado
-        ) || 0;
-
-
-    /* SALDO PENDIENTE */
-
-    const saldoPendiente =
-        envio - abonado;
-
-
-    if(saldoPendiente <= 0){
-
-        mostrarMensaje(
-            "Este artículo ya está completamente pagado."
-        );
-
-        return;
-    }
-
-
-    /* NO PERMITIR ABONAR MÁS DEL SALDO */
-
-    if(valor > saldoPendiente){
-
-        mostrarMensaje(
-            `El saldo pendiente de este artículo es ${moneda(saldoPendiente)}. No puede ingresar un abono mayor.`
-        );
-
-        return;
-    }
-
-
-    /* GUARDAR ABONO */
-
-    const respuesta =
-        await fetch(
-            "/add-payment",
-            {
-                method:
-                    "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:
-                    JSON.stringify({
-
-                        id_pedido:
-                            pedidoId,
-
-                        monto_abono:
-                            valor,
-
-                        metodo_pago:
-                            metodo
-
-                    })
-
-            }
-        );
-
-
-    if(!respuesta.ok){
-
-        console.error(
-            "No se pudo guardar el abono"
-        );
-
-        return;
-    }
-
-}
-
-
-
-    /* =====================================================
-       ESTADO
-    ===================================================== */
-
-    if(tipo === "estado"){
-
-
-        const estado =
-            document.getElementById(
-                "estadoSelect"
-            ).value;
-
-
-        if(!estado){
-
-            return;
-
-        }
-
-
-        const cliente =
-            pedidosPorCliente[
-                clienteSeleccionado
-            ];
-
-
-        if(!cliente){
-
-            return;
-
-        }
-
-
-        for(const pedido of cliente.pedidos){
-
+        const respuesta =
             await fetch(
-                "/update-status",
+                "/update-weight",
                 {
 
                     method:
@@ -1658,77 +2109,313 @@ if(tipo === "pago"){
                         JSON.stringify({
 
                             id_pedido:
-                                pedido.id_pedido,
+                                pedidoId,
 
-                            estado:
-                                estado
+                            peso_gramos:
+                                valor
 
                         })
 
                 }
             );
 
+
+        if(!respuesta.ok){
+
+            mostrarMensaje(
+                "No se pudo actualizar el peso"
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       ABONO
+    ===================================================== */
+
+    if(tipo === "pago"){
+
+        const valor =
+            Number(
+                document.getElementById(
+                    "inputValor"
+                ).value
+            );
+
+
+        const metodo =
+            document.getElementById(
+                "metodoPago"
+            ).value;
+
+
+        if(
+            !valor ||
+            valor <= 0 ||
+            !metodo
+        ){
+
+            return;
+
         }
 
 
-    }
+        /* BUSCAR SOLO DENTRO DE ESTA FACTURA */
 
-
-/* =====================================================
-   ELIMINAR
-===================================================== */
-
-if(tipo === "eliminar"){
-
-    const cliente =
-        pedidosPorCliente[
-            clienteSeleccionado
-        ];
-
-    const pedido =
-        cliente
-            ? cliente.pedidos.find(
+        const pedido =
+            grupo.pedidos.find(
                 p =>
-                    Number(p.id_pedido) ===
-                    Number(pedidoId)
-            )
-            : null;
+                    Number(
+                        p.id_pedido
+                    ) ===
+                    Number(
+                        pedidoId
+                    )
+            );
 
-    if(!pedido){
-        return;
+
+        if(!pedido){
+
+            return;
+
+        }
+
+
+        /* CALCULAR ENVÍO DE ESTE ARTÍCULO */
+
+        const peso =
+            Number(
+                pedido.peso_gramos
+            ) || 0;
+
+
+        const envio =
+            (peso / 1000) *
+            6000;
+
+
+        /* ABONOS ACTUALES DEL ARTÍCULO */
+
+        const abonado =
+            Number(
+                pedido.total_abonado
+            ) || 0;
+
+
+        /* SALDO PENDIENTE */
+
+        const saldoPendiente =
+            envio -
+            abonado;
+
+
+        if(saldoPendiente <= 0){
+
+            mostrarMensaje(
+                "Este artículo ya está completamente pagado."
+            );
+
+            return;
+
+        }
+
+
+        if(valor > saldoPendiente){
+
+            mostrarMensaje(
+                `El saldo pendiente de este artículo es ${moneda(saldoPendiente)}. No puede ingresar un abono mayor.`
+            );
+
+            return;
+
+        }
+
+
+        const respuesta =
+            await fetch(
+                "/add-payment",
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            id_pedido:
+                                pedidoId,
+
+                            monto_abono:
+                                valor,
+
+                            metodo_pago:
+                                metodo
+
+                        })
+
+                }
+            );
+
+
+        if(!respuesta.ok){
+
+            console.error(
+                "No se pudo guardar el abono"
+            );
+
+            return;
+
+        }
+
     }
 
-    document.getElementById(
-        "modal"
-    ).style.display =
-        "none";
 
-    document.getElementById(
-        "mensajeConfirmarEliminar"
-    ).textContent =
-        `¿Seguro que desea eliminar "${pedido.articulo}"?`;
+    /* =====================================================
+       ESTADO DE LA FACTURA
+    ===================================================== */
 
-    document.getElementById(
-        "modalConfirmarEliminar"
-    ).style.display =
-        "flex";
+    if(tipo === "estado"){
 
-    return;
+        const estado =
+            document.getElementById(
+                "estadoSelect"
+            ).value;
+
+
+        if(!estado){
+
+            return;
+
+        }
+
+
+        /*
+            Cambiamos únicamente los pedidos
+            pertenecientes a esta factura.
+        */
+
+        for(
+            const pedido of
+            grupo.pedidos
+        ){
+
+            const respuesta =
+                await fetch(
+                    "/update-status",
+                    {
+
+                        method:
+                            "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                id_pedido:
+                                    pedido.id_pedido,
+
+                                estado:
+                                    estado
+
+                            })
+
+                    }
+                );
+
+
+            if(!respuesta.ok){
+
+                mostrarMensaje(
+                    "No se pudo actualizar el estado de la factura"
+                );
+
+                return;
+
+            }
+
+        }
+
+    }
+
+
+    /* =====================================================
+       ELIMINAR
+    ===================================================== */
+
+    if(tipo === "eliminar"){
+
+        const pedido =
+            grupo.pedidos.find(
+                p =>
+                    Number(
+                        p.id_pedido
+                    ) ===
+                    Number(
+                        pedidoId
+                    )
+            );
+
+
+        if(!pedido){
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "modal"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "mensajeConfirmarEliminar"
+        ).textContent =
+            `¿Seguro que desea eliminar "${pedido.articulo}"?`;
+
+
+        document.getElementById(
+            "modalConfirmarEliminar"
+        ).style.display =
+            "flex";
+
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       ACTUALIZAR TABLA
+    ===================================================== */
+
+    cerrarModal();
+
+    await cargarPedidos();
 
 }
-/* ACTUALIZAR LA TABLA DESPUÉS DE GUARDAR */
-
-cerrarModal();
-
-await cargarPedidos();
-
-}
-
 
 /* =========================================================
    CONFIRMAR ELIMINACIÓN DE PEDIDO
 ========================================================= */
-
 function cancelarEliminarPedido(){
 
     document.getElementById(
@@ -1737,11 +2424,14 @@ function cancelarEliminarPedido(){
         "none";
 
     tipo = "";
+
     pedidoId = null;
+
     clienteSeleccionado = null;
 
-}
+    grupoSeleccionado = null;
 
+}
 
 async function eliminarPedidoConfirmado(){
 
@@ -1796,8 +2486,12 @@ async function eliminarPedidoConfirmado(){
 
 
         tipo = "";
+
         pedidoId = null;
+
         clienteSeleccionado = null;
+
+        grupoSeleccionado = null;
 
 
         await cargarPedidos();
@@ -1814,22 +2508,43 @@ async function eliminarPedidoConfirmado(){
 
 }
 
-
-
 /* =========================================================
    DETALLES
 ========================================================= */
 
 function verDetalles(
-    idUsuario
+    idUsuario,
+    grupoCompra
 ){
+
+    const idCliente =
+        Number(idUsuario);
+
+    const idGrupo =
+        Number(grupoCompra);
+
+
+    if(
+        !Number.isInteger(idCliente) ||
+        idCliente <= 0 ||
+        !Number.isInteger(idGrupo) ||
+        idGrupo <= 0
+    ){
+
+        mostrarMensaje(
+            "No se encontró la factura seleccionada"
+        );
+
+        return;
+
+    }
 
 
     window.location.href =
-        `/details.html?id=${idUsuario}`;
-
+        `/details.html?id=${idCliente}&grupo=${idGrupo}`;
 
 }
+
 /* =========================================================
    EDITAR PEDIDO
 ========================================================= */
@@ -1837,80 +2552,189 @@ function verDetalles(
 let articulosEditar = [];
 
 
-async function abrirEditar(idUsuario){
+async function abrirEditar(
+    idUsuario,
+    grupoCompra
+){
 
-    clienteSeleccionado = idUsuario;
+    clienteSeleccionado =
+        Number(idUsuario);
+
+    grupoSeleccionado =
+        Number(grupoCompra);
+
 
     const cliente =
-        pedidosPorCliente[idUsuario];
-
-    const modalEditar =
-        document.getElementById("modalEditar");
-
-    const pedidoSelect =
-        document.getElementById("editarPedidoSelect");
-
-    const buscadorContenedor =
-        document.getElementById("editarBuscadorContenedor");
-
-    const buscarArticulo =
-        document.getElementById("editarBuscarArticulo");
-
-    const listaArticulos =
-        document.getElementById("editarListaArticulos");
-
-    const articuloSelect =
-        document.getElementById("editarArticuloSelect");
-
-    const cantidadInput =
-        document.getElementById("editarCantidad");
-
-
-    pedidoSelect.innerHTML = `
-        <option value="">
-            Seleccione el artículo a editar
-        </option>
-    `;
-
-    buscarArticulo.value = "";
-
-    articuloSelect.value = "";
-
-    cantidadInput.value = "";
-
-    listaArticulos.innerHTML = "";
-
-    pedidoSelect.style.display = "block";
-
-    buscadorContenedor.style.display = "none";
-
-    cantidadInput.style.display = "none";
+        pedidosPorCliente[
+            clienteSeleccionado
+        ];
 
 
     if(!cliente){
 
-        alert("No se encontró el cliente");
+        mostrarMensaje(
+            "No se encontró el cliente"
+        );
 
         return;
 
     }
 
 
-    cliente.pedidos.forEach(pedido => {
+    const grupo =
+        cliente.grupos[
+            String(grupoSeleccionado)
+        ];
 
-        pedidoSelect.innerHTML += `
-            <option value="${pedido.id_pedido}">
-                ${pedido.articulo} - Cantidad ${pedido.cantidad}
-            </option>
-        `;
 
-    });
+    if(!grupo){
 
+        mostrarMensaje(
+            "No se encontró la factura seleccionada"
+        );
+
+        return;
+
+    }
+
+
+    const modalEditar =
+        document.getElementById(
+            "modalEditar"
+        );
+
+
+    const pedidoSelect =
+        document.getElementById(
+            "editarPedidoSelect"
+        );
+
+
+    const buscadorContenedor =
+        document.getElementById(
+            "editarBuscadorContenedor"
+        );
+
+
+    const buscarArticulo =
+        document.getElementById(
+            "editarBuscarArticulo"
+        );
+
+
+    const listaArticulos =
+        document.getElementById(
+            "editarListaArticulos"
+        );
+
+
+    const articuloSelect =
+        document.getElementById(
+            "editarArticuloSelect"
+        );
+
+
+ const cantidadInput =
+    document.getElementById(
+        "editarCantidad"
+    );
+
+
+const pesoInput =
+    document.getElementById(
+        "editarPeso"
+    );
+
+    /* =====================================================
+       LIMPIAR MODAL
+    ===================================================== */
+
+    pedidoSelect.innerHTML = `
+
+        <option value="">
+            Seleccione el artículo a editar
+        </option>
+
+    `;
+
+
+    buscarArticulo.value =
+        "";
+
+
+    articuloSelect.value =
+        "";
+
+
+    cantidadInput.value =
+        "";
+
+    pesoInput.value =
+       "";
+
+
+    listaArticulos.innerHTML =
+        "";
+
+
+    pedidoSelect.style.display =
+        "block";
+
+
+    buscadorContenedor.style.display =
+        "none";
+
+
+    cantidadInput.style.display =
+        "none";
+
+    pesoInput.style.display =
+        "none";
+
+
+    /* =====================================================
+       CARGAR SOLO ARTÍCULOS DE ESTA FACTURA
+    ===================================================== */
+
+    grupo.pedidos.forEach(
+        pedido => {
+
+            pedidoSelect.innerHTML += `
+
+                <option
+                    value="${pedido.id_pedido}"
+                >
+                    ${pedido.articulo}
+                    - Cantidad ${pedido.cantidad}
+                </option>
+
+            `;
+
+        }
+    );
+
+
+    /* =====================================================
+       CARGAR CATÁLOGO DE ARTÍCULOS
+    ===================================================== */
 
     try{
 
         const respuesta =
-            await fetch("/articulos");
+            await fetch(
+                "/articulos"
+            );
+
+
+        if(!respuesta.ok){
+
+            mostrarMensaje(
+                "No se pudieron cargar los artículos"
+            );
+
+            return;
+
+        }
 
 
         articulosEditar =
@@ -1928,7 +2752,8 @@ async function abrirEditar(idUsuario){
             error
         );
 
-        alert(
+
+        mostrarMensaje(
             "No se pudieron cargar los artículos"
         );
 
@@ -1936,19 +2761,20 @@ async function abrirEditar(idUsuario){
 
 }
 
-
-
 function normalizarArticuloEditar(texto){
 
-    return String(texto || "")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .trim();
+    return String(
+        texto || ""
+    )
+    .normalize("NFD")
+    .replace(
+        /[\u0300-\u036f]/g,
+        ""
+    )
+    .toLowerCase()
+    .trim();
 
 }
-
-
 
 function mostrarArticulosEditar(filtro = ""){
 
@@ -2099,9 +2925,6 @@ function seleccionarArticuloEditar(articulo){
     );
 
 }
-
-
-
 function cargarPedidoEditar(){
 
     const pedidoSelect =
@@ -2109,24 +2932,33 @@ function cargarPedidoEditar(){
             "editarPedidoSelect"
         );
 
+
     const buscadorContenedor =
         document.getElementById(
             "editarBuscadorContenedor"
         );
+
 
     const buscarArticulo =
         document.getElementById(
             "editarBuscarArticulo"
         );
 
+
     const articuloSelect =
         document.getElementById(
             "editarArticuloSelect"
         );
 
+
     const cantidadInput =
         document.getElementById(
             "editarCantidad"
+        );
+
+    const pesoInput =
+        document.getElementById(
+         "editarPeso"
         );
 
 
@@ -2143,14 +2975,31 @@ function cargarPedidoEditar(){
 
 
     if(!cliente){
+
         return;
+
+    }
+
+
+    const grupo =
+        cliente.grupos[
+            String(grupoSeleccionado)
+        ];
+
+
+    if(!grupo){
+
+        return;
+
     }
 
 
     const pedido =
-        cliente.pedidos.find(
+        grupo.pedidos.find(
             p =>
-                Number(p.id_pedido) ===
+                Number(
+                    p.id_pedido
+                ) ===
                 idPedido
         );
 
@@ -2160,43 +3009,117 @@ function cargarPedidoEditar(){
         buscadorContenedor.style.display =
             "none";
 
+
         cantidadInput.style.display =
             "none";
+        
+        pesoInput.style.display =
+            "none";
+
+
+        buscarArticulo.value =
+            "";
+
+
+        articuloSelect.value =
+            "";
+
+
+        cantidadInput.value =
+            "";
+        pesoInput.value =
+            "";
+
+
+        document.getElementById(
+            "editarListaArticulos"
+        ).classList.remove(
+            "mostrar"
+        );
+
 
         return;
 
     }
 
 
+    /*
+        Mostrar buscador y cantidad
+        después de elegir cuál pedido
+        se desea editar.
+    */
+
     buscadorContenedor.style.display =
         "block";
+
 
     cantidadInput.style.display =
         "block";
 
+    pesoInput.style.display =
+        "block";
+
+
+    /*
+        IMPORTANTE:
+
+        El artículo nuevo queda vacío.
+
+        No colocamos automáticamente
+        el artículo actual porque aquí
+        Ana debe escoger cuál será el
+        artículo correcto del catálogo.
+    */
 
     buscarArticulo.value =
-        pedido.articulo || "";
+        "";
 
 
     articuloSelect.value =
-        pedido.id_articulo || "";
+        "";
 
+
+    /*
+        La cantidad sí conserva
+        la cantidad actual.
+
+        Si era 1 puede quedarse en 1.
+        Si necesita 2, 3, etc.,
+        se modifica manualmente.
+    */
 
     cantidadInput.value =
         pedido.cantidad;
+    
+    pesoInput.value =
+     Number(
+        pedido.peso_gramos
+       ) || "";
 
+
+    /*
+        Mostrar todos los artículos
+        disponibles en el catálogo.
+    */
 
     mostrarArticulosEditar(
-        buscarArticulo.value
+        ""
     );
 
 
     document.getElementById(
         "editarListaArticulos"
-    ).classList.remove(
+    ).classList.add(
         "mostrar"
     );
+
+
+    /*
+        Colocar el cursor directamente
+        en el buscador del nuevo artículo.
+    */
+
+    buscarArticulo.focus();
 
 }
 
@@ -2283,7 +3206,6 @@ document.addEventListener(
 );
 
 
-
 async function guardarEdicionPedido(){
 
     const idPedido =
@@ -2318,11 +3240,18 @@ async function guardarEdicionPedido(){
                 "editarCantidad"
             ).value
         );
+    
+    const peso =
+        Number(
+            document.getElementById(
+                "editarPeso"
+            ).value
+        );
 
 
     if(!idPedido){
 
-        alert(
+        mostrarMensaje(
             "Seleccione el artículo que desea editar"
         );
 
@@ -2361,7 +3290,7 @@ async function guardarEdicionPedido(){
 
     if(!idArticulo){
 
-        alert(
+        mostrarMensaje(
             "Seleccione un artículo válido de la lista"
         );
 
@@ -2375,13 +3304,26 @@ async function guardarEdicionPedido(){
         cantidad <= 0
     ){
 
-        alert(
+        mostrarMensaje(
             "Ingrese una cantidad válida"
         );
 
         return;
 
     }
+
+    if(
+    !Number.isFinite(peso) ||
+    peso <= 0
+){
+
+    mostrarMensaje(
+        "Ingrese un peso válido en gramos"
+    );
+
+    return;
+
+}
 
 
     try{
@@ -2405,7 +3347,10 @@ async function guardarEdicionPedido(){
                             idArticulo,
 
                         cantidad:
-                            cantidad
+                            cantidad,
+
+                        peso_gramos:
+                            peso
                     })
                 }
             );
@@ -2420,7 +3365,7 @@ async function guardarEdicionPedido(){
             !resultado.ok
         ){
 
-            alert(
+            mostrarMensaje(
                 resultado.mensaje ||
                 "No se pudo actualizar el pedido"
             );
@@ -2430,10 +3375,78 @@ async function guardarEdicionPedido(){
         }
 
 
-        cerrarEditar();
-
+        /*
+            Actualizar la tabla principal
+            sin cerrar la ventana de edición.
+        */
 
         await cargarPedidos();
+
+
+        /*
+            Mostrar mensaje bonito.
+        */
+
+        mostrarMensaje(
+            "Pedido actualizado exitosamente"
+        );
+
+
+        /*
+            Limpiar el formulario de edición
+            para poder editar otro pedido.
+        */
+
+        document.getElementById(
+            "editarPedidoSelect"
+        ).value =
+            "";
+
+
+        document.getElementById(
+            "editarBuscarArticulo"
+        ).value =
+            "";
+
+
+        document.getElementById(
+            "editarArticuloSelect"
+        ).value =
+            "";
+
+
+        document.getElementById(
+            "editarCantidad"
+        ).value =
+            "";
+        document.getElementById(
+           "editarPeso"
+        ).value =
+            "";
+
+
+        document.getElementById(
+            "editarBuscadorContenedor"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "editarCantidad"
+        ).style.display =
+            "none";
+        
+        document.getElementById(
+            "editarPeso"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "editarListaArticulos"
+        ).classList.remove(
+            "mostrar"
+        );
 
 
     }catch(error){
@@ -2443,14 +3456,14 @@ async function guardarEdicionPedido(){
             error
         );
 
-        alert(
+
+        mostrarMensaje(
             "Error al actualizar el pedido"
         );
 
     }
 
 }
-
 
 
 function cerrarEditar(){
@@ -2484,6 +3497,11 @@ function cerrarEditar(){
     ).value =
         "";
 
+    document.getElementById(
+        "editarPeso"
+    ).value =
+        "";
+
 
     document.getElementById(
         "editarPedidoSelect"
@@ -2502,6 +3520,11 @@ function cerrarEditar(){
     ).style.display =
         "none";
 
+    document.getElementById(
+       "editarPeso"
+    ).style.display =
+        "none";
+
 
     document.getElementById(
         "editarListaArticulos"
@@ -2509,35 +3532,77 @@ function cerrarEditar(){
         "mostrar"
     );
 
+
+    clienteSeleccionado =
+        null;
+
+
+    grupoSeleccionado =
+        null;
+
 }
 
+
 /* =========================================================
-   ARCHIVAR PEDIDOS DEL CLIENTE
+   ARCHIVAR FACTURA DEL CLIENTE
 ========================================================= */
-
 let clienteParaArchivar = null;
+let grupoParaArchivar = null;
 
 
-function archivarCliente(idUsuario){
+function archivarCliente(
+    idUsuario,
+    grupoCompra
+){
 
     const cliente =
-        pedidosPorCliente[idUsuario];
+        pedidosPorCliente[
+            Number(idUsuario)
+        ];
+
 
     if(!cliente){
 
-        alert("No se encontró el cliente");
+        mostrarMensaje(
+            "No se encontró el cliente"
+        );
 
         return;
+
     }
 
 
-    clienteParaArchivar = idUsuario;
+    const grupo =
+        cliente.grupos[
+            String(
+                Number(grupoCompra)
+            )
+        ];
+
+
+    if(!grupo){
+
+        mostrarMensaje(
+            "No se encontró la factura seleccionada"
+        );
+
+        return;
+
+    }
+
+
+    clienteParaArchivar =
+        Number(idUsuario);
+
+
+    grupoParaArchivar =
+        Number(grupoCompra);
 
 
     document.getElementById(
         "mensajeArchivar"
     ).textContent =
-        `¿Desea archivar los pedidos de ${cliente.nombre} ${cliente.apellido}?`;
+        `¿Desea archivar esta factura de ${cliente.nombre} ${cliente.apellido}?`;
 
 
     document.getElementById(
@@ -2551,7 +3616,12 @@ function archivarCliente(idUsuario){
 
 function cancelarArchivar(){
 
-    clienteParaArchivar = null;
+    clienteParaArchivar =
+        null;
+
+
+    grupoParaArchivar =
+        null;
 
 
     document.getElementById(
@@ -2565,13 +3635,22 @@ function cancelarArchivar(){
 
 async function confirmarArchivar(){
 
-    if(!clienteParaArchivar){
+    if(
+        !clienteParaArchivar ||
+        !grupoParaArchivar
+    ){
+
         return;
+
     }
 
 
     const idUsuario =
         clienteParaArchivar;
+
+
+    const grupoCompra =
+        grupoParaArchivar;
 
 
     try{
@@ -2588,8 +3667,13 @@ async function confirmarArchivar(){
                     },
 
                     body: JSON.stringify({
+
                         id_usuario:
-                            idUsuario
+                            idUsuario,
+
+                        grupo_compra:
+                            grupoCompra
+
                     })
                 }
             );
@@ -2604,12 +3688,13 @@ async function confirmarArchivar(){
             !resultado.ok
         ){
 
-            alert(
+            mostrarMensaje(
                 resultado.mensaje ||
-                "No se pudieron archivar los pedidos"
+                "No se pudo archivar la factura"
             );
 
             return;
+
         }
 
 
@@ -2622,18 +3707,18 @@ async function confirmarArchivar(){
     }catch(error){
 
         console.error(
-            "Error archivando pedidos:",
+            "Error archivando factura:",
             error
         );
 
-        alert(
-            "Error al archivar los pedidos"
+
+        mostrarMensaje(
+            "Error al archivar la factura"
         );
 
     }
 
 }
-
 /* =========================================================
    BUSCADOR
 ========================================================= */

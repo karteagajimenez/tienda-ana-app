@@ -652,6 +652,10 @@
                 </th>
 
                 <th>
+                    País de origen
+                </th>
+
+                <th>
                     Estado del paquete
                 </th>
 
@@ -669,7 +673,6 @@
     </table>
 
 </div>
-
 
 
 <!-- ========================================
@@ -807,6 +810,27 @@ const id =
 
 
 // ========================================
+// 🔹 TRADUCIR PAÍS DE ORIGEN
+// ========================================
+
+function traducirPaisOrigen(pais){
+
+    switch(pais){
+
+        case "EEUU":
+            return "Estados Unidos";
+
+        case "COLOMBIA":
+            return "Colombia";
+
+        default:
+            return "-";
+
+    }
+
+}
+
+// ========================================
 // 🔹 TRADUCIR ESTADO
 // ========================================
 
@@ -864,7 +888,6 @@ function traducirEstado(e){
     }
 
 }
-
 
 
 // ========================================
@@ -932,7 +955,6 @@ async function cargarNombreCliente(){
 }
 
 
-
 // ========================================
 // 🔹 CARGAR PEDIDOS
 // ========================================
@@ -961,7 +983,7 @@ async function cargar(){
                 <tr>
 
                     <td
-                        colspan="6"
+                        colspan="7"
                         class="sin-pedidos"
                     >
 
@@ -1019,6 +1041,29 @@ async function cargar(){
                 * 6000;
 
 
+
+            /* ========================================
+               🔹 PAÍS DE ORIGEN
+
+               Este valor es fijo.
+               No cambia cuando cambia el estado.
+            ======================================== */
+
+            const paisOrigen =
+                traducirPaisOrigen(
+                    p.pais_origen
+                );
+
+
+
+            /* ========================================
+               🔹 ESTADO DEL PAQUETE
+
+               Este valor sí cambia:
+               En origen, En camino,
+               Costa Rica, Empacado, Entregado.
+            ======================================== */
+
             const estado =
                 traducirEstado(
                     p.estado
@@ -1074,6 +1119,13 @@ async function cargar(){
 
                     <td>
 
+                        ${paisOrigen}
+
+                    </td>
+
+
+                    <td>
+
                         <span
                             class="estado ${estado.clase}"
                         >
@@ -1112,7 +1164,7 @@ async function cargar(){
             <tr>
 
                 <td
-                    colspan="6"
+                    colspan="7"
                     class="sin-pedidos"
                 >
 
@@ -1127,7 +1179,6 @@ async function cargar(){
     }
 
 }
-
 
 
 // ========================================
@@ -1158,7 +1209,7 @@ document.getElementById(
     () => {
 
         window.location.href =
-            "/";
+            "/logout";
 
     }
 );
@@ -1172,7 +1223,7 @@ setTimeout(
     () => {
 
         window.location.href =
-            "/";
+            "/logout";
 
     },
     600000

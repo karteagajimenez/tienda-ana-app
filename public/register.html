@@ -114,7 +114,81 @@
             outline: none;
 
         }
+/* ========================================
+   CAMPO CONTRASEÑA + OJO
+======================================== */
 
+.password-container {
+
+    position: relative;
+
+    width: 90%;
+
+    margin: 10px auto;
+
+}
+
+
+.password-container input {
+
+    width: 100%;
+
+    margin: 0;
+
+    padding-right: 48px;
+
+}
+
+
+.toggle-password {
+
+    position: absolute;
+
+    top: 50%;
+
+    right: 10px;
+
+    transform: translateY(-50%);
+
+    width: 38px;
+
+    height: 38px;
+
+    margin: 0;
+
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: #777;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+
+}
+
+
+.toggle-password:hover {
+
+    background: transparent;
+
+    color: #c7547d;
+
+}
+
+
+.toggle-password:focus {
+
+    outline: none;
+
+}
 
         /* ========================================
            🔐 REQUISITOS DE CONTRASEÑA
@@ -145,51 +219,82 @@
 
         }
 
+button {
 
-        button {
+    padding: 12px 20px;
 
-            padding: 12px 20px;
+    border: none;
 
-            border: none;
+    border-radius: 8px;
 
-            border-radius: 8px;
+    background: #c7547d;
 
-            background: #c48b9f;
+    color: white;
 
-            color: white;
+    font-weight: bold;
 
-            font-weight: bold;
+    cursor: pointer;
 
-            cursor: pointer;
+    margin: 5px;
 
-            margin: 5px;
+    width: 140px;
 
-            width: 140px;
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
 
-            transition: 0.3s;
-
-        }
-
-
-        button:hover {
-
-            background: #b3748a;
-
-        }
+}
 
 
-        .cancelar {
+button:hover {
 
-            background: #e57373;
+    background: #b94770;
 
-        }
+}
 
 
-        .cancelar:hover {
+.cancelar {
 
-            background: #cc0000;
+    background: #e74c4c;
 
-        }
+}
+
+
+.cancelar:hover {
+
+    background: #d94343;
+
+}
+
+/* ========================================
+   MENSAJE DE VALIDACIÓN DE CAMPOS
+======================================== */
+
+#mensajeValidacion {
+
+    display: none;
+
+    width: 90%;
+
+    margin: 0 auto 12px auto;
+
+    padding: 10px 12px;
+
+    box-sizing: border-box;
+
+    border-radius: 7px;
+
+    background: #ffebee;
+
+    border: 1px solid #ef9a9a;
+
+    color: #c62828;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
 
 
         /* ========================================
@@ -265,45 +370,80 @@
     <form id="formRegistro">
 
 
-        <input
-            type="text"
-            id="nombre"
-            placeholder="👤 Nombre"
-            required
+    <!-- MENSAJE DE VALIDACIÓN -->
+    <div id="mensajeValidacion"></div>
+
+
+    <input
+        type="text"
+        id="nombre"
+        placeholder="👤 Nombre"
+        autocomplete="given-name"
+        required
+    >
+
+
+    <input
+        type="text"
+        id="apellido"
+        placeholder="👤 Apellido"
+        autocomplete="family-name"
+        required
+    >
+
+
+    <input
+        type="text"
+        id="telefono"
+        placeholder="📞 Teléfono"
+        inputmode="numeric"
+        autocomplete="tel"
+        required
+    >
+
+
+    <input
+        type="email"
+        id="correo"
+        placeholder="📧 Correo"
+        required
+    >
+
+<div class="password-container">
+
+    <input
+        type="password"
+        id="password"
+        placeholder="🔑 Contraseña"
+        minlength="8"
+        required
+    >
+
+    <button
+        type="button"
+        class="toggle-password"
+        onclick="togglePassword()"
+        aria-label="Mostrar u ocultar contraseña"
+    >
+
+        <svg
+            id="iconoOjo"
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
         >
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+        </svg>
 
+    </button>
 
-        <input
-            type="text"
-            id="apellido"
-            placeholder="👤 Apellido"
-            required
-        >
-
-
-        <input
-            type="text"
-            id="telefono"
-            placeholder="📞 Teléfono"
-            required
-        >
-
-
-        <input
-            type="email"
-            id="correo"
-            placeholder="📧 Correo"
-            required
-        >
-
-
-        <input
-            type="password"
-            id="password"
-            placeholder="🔑 Contraseña"
-            minlength="8"
-            required
-        >
+</div>
 
 
         <!-- 🔐 MENSAJE DE REQUISITOS -->
@@ -351,20 +491,29 @@
         </select>
 
 
-        <input
-            type="text"
-            id="canton"
-            placeholder="🏙️ Cantón"
-            required
-        >
+        <select
+    id="canton"
+    required
+    disabled
+>
 
+    <option value="">
+        🏙️ Seleccione cantón
+    </option>
 
-        <input
-            type="text"
-            id="distrito"
-            placeholder="📍 Distrito"
-            required
-        >
+</select>
+
+<select
+    id="distrito"
+    required
+    disabled
+>
+
+    <option value="">
+        📍 Seleccione distrito
+    </option>
+
+</select>
 
 
         <input
@@ -401,23 +550,26 @@
 
 </div>
 
-
+<script src="ubicaciones-cr.js"></script>
 
 <script>
 
-
 // ========================================
-// 🔐 VALIDAR CONTRASEÑA MIENTRAS ESCRIBE
+// CONTRASEÑA + OJO
 // ========================================
 
 const passwordInput =
-    document.getElementById('password');
+    document.getElementById(
+        "password"
+    );
 
 const passwordRequisitos =
-    document.getElementById('passwordRequisitos');
+    document.getElementById(
+        "passwordRequisitos"
+    );
 
 
-function validarPassword(password) {
+function validarPassword(password){
 
     const tieneLongitud =
         password.length >= 8;
@@ -437,35 +589,48 @@ function validarPassword(password) {
 }
 
 
+function togglePassword(){
+
+    if(
+        passwordInput.type ===
+        "password"
+    ){
+
+        passwordInput.type =
+            "text";
+
+    }else{
+
+        passwordInput.type =
+            "password";
+
+    }
+
+}
+
+
 passwordInput.addEventListener(
-    'input',
+    "input",
     () => {
 
         const password =
             passwordInput.value;
 
-        // Si todavía no ha escrito nada,
-        // no mostramos el mensaje.
-
-        if (password.length === 0) {
+        if(password.length === 0){
 
             passwordRequisitos.style.display =
                 "none";
 
             return;
+
         }
 
-
-        // Si no cumple, mostramos el mensaje rojo.
-
-        if (!validarPassword(password)) {
+        if(!validarPassword(password)){
 
             passwordRequisitos.style.display =
                 "block";
 
-        } else {
-
-            // Ya cumple todos los requisitos.
+        }else{
 
             passwordRequisitos.style.display =
                 "none";
@@ -475,8 +640,128 @@ passwordInput.addEventListener(
     }
 );
 
+// ========================================
+// VALIDAR NOMBRE, APELLIDO Y TELÉFONO
+// ========================================
+
+const nombreInput =
+    document.getElementById("nombre");
+
+const apellidoInput =
+    document.getElementById("apellido");
+
+const telefonoInput =
+    document.getElementById("telefono");
 
 
+function mostrarMensajeCampo(texto){
+
+    const mensaje =
+        document.getElementById(
+            "mensajeValidacion"
+        );
+
+    mensaje.textContent =
+        texto;
+
+    mensaje.style.display =
+        "block";
+
+}
+
+
+function ocultarMensajeCampo(){
+
+    const mensaje =
+        document.getElementById(
+            "mensajeValidacion"
+        );
+
+    mensaje.textContent =
+        "";
+
+    mensaje.style.display =
+        "none";
+
+}
+
+
+function soloLetras(valor){
+
+    return /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]*$/.test(
+        valor
+    );
+
+}
+
+
+function soloNumeros(valor){
+
+    return /^\d*$/.test(
+        valor
+    );
+
+}
+
+
+nombreInput.addEventListener(
+    "input",
+    function(){
+
+        if(!soloLetras(this.value)){
+
+            mostrarMensajeCampo(
+                "En el nombre solo se permiten letras."
+            );
+
+        }else{
+
+            ocultarMensajeCampo();
+
+        }
+
+    }
+);
+
+
+apellidoInput.addEventListener(
+    "input",
+    function(){
+
+        if(!soloLetras(this.value)){
+
+            mostrarMensajeCampo(
+                "En el apellido solo se permiten letras."
+            );
+
+        }else{
+
+            ocultarMensajeCampo();
+
+        }
+
+    }
+);
+
+
+telefonoInput.addEventListener(
+    "input",
+    function(){
+
+        if(!soloNumeros(this.value)){
+
+            mostrarMensajeCampo(
+                "En el teléfono solo se permiten números."
+            );
+
+        }else{
+
+            ocultarMensajeCampo();
+
+        }
+
+    }
+);
 // ========================================
 // 🔹 REGISTRAR USUARIO
 // ========================================
@@ -488,6 +773,60 @@ document
     async (e) => {
 
         e.preventDefault();
+
+        const nombre =
+    document.getElementById(
+        "nombre"
+    ).value.trim();
+
+const apellido =
+    document.getElementById(
+        "apellido"
+    ).value.trim();
+
+const telefono =
+    document.getElementById(
+        "telefono"
+    ).value.trim();
+
+
+if(!soloLetras(nombre)){
+
+    mostrarMensajeCampo(
+        "En el nombre solo se permiten letras."
+    );
+
+    nombreInput.focus();
+
+    return;
+
+}
+
+
+if(!soloLetras(apellido)){
+
+    mostrarMensajeCampo(
+        "En el apellido solo se permiten letras."
+    );
+
+    apellidoInput.focus();
+
+    return;
+
+}
+
+
+if(!soloNumeros(telefono)){
+
+    mostrarMensajeCampo(
+        "En el teléfono solo se permiten números."
+    );
+
+    telefonoInput.focus();
+
+    return;
+
+}
 
 
         const password =

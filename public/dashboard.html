@@ -358,7 +358,12 @@ let articulos = [];
 let clienteSeleccionado = null;
 let articuloSeleccionado = null;
 let precioUnitarioSeleccionado = null;
+
 let paisOrigen = 'En_EEUU';
+
+let grupoCompraActual = null;
+let paisGrupoActual = null;
+
 
 const clienteInput =
     document.getElementById('clienteInput');
@@ -378,28 +383,186 @@ const precioInput =
 const cantidadInput =
     document.getElementById('cantidad');
 
- const btnPaisOrigen =
+const btnPaisOrigen =
     document.getElementById('btnPaisOrigen');
+
+
+
+/*
+    🔥 OBTENER PAÍS PARA LA BASE DE DATOS
+
+    En pantalla seguimos usando:
+    En_EEUU
+    COLOMBIA
+
+    Pero pais_origen se guarda como:
+    EEUU
+    COLOMBIA
+*/
+
+function obtenerPaisBase(){
+
+    return paisOrigen === 'COLOMBIA'
+        ? 'COLOMBIA'
+        : 'EEUU';
+
+}
+
+
+/*
+    🔥 OBTENER O CREAR FACTURA ACTIVA
+
+    Busca la factura activa correspondiente a:
+
+    CLIENTE + PAÍS
+
+    Si ya existe, la reutiliza.
+    Si no existe, el servidor crea una nueva.
+*/
+
+async function crearGrupoCompra(){
+
+    const paisBase =
+        obtenerPaisBase();
+
+
+    if(
+        !clienteSeleccionado ||
+        !clienteSeleccionado.id_usuario
+    ){
+
+        mostrarMensaje(
+            'Seleccione un cliente válido',
+            'error'
+        );
+
+        return null;
+
+    }
+
+
+    try{
+
+        const res =
+            await fetch(
+                '/create-purchase-group',
+                {
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
+
+                    body: JSON.stringify({
+
+                        id_usuario:
+                            clienteSeleccionado
+                                .id_usuario,
+
+                        pais_origen:
+                            paisBase
+
+                    })
+                }
+            );
+
+
+        const data =
+            await res.json();
+
+
+        if(
+            !res.ok ||
+            !data.ok
+        ){
+
+            mostrarMensaje(
+                data.mensaje ||
+                'No se pudo obtener la factura',
+                'error'
+            );
+
+            return null;
+
+        }
+
+
+        grupoCompraActual =
+            Number(
+                data.grupo_compra
+            );
+
+
+        paisGrupoActual =
+            data.pais_origen;
+
+
+        return grupoCompraActual;
+
+
+    }catch(error){
+
+        console.error(
+            'Error obteniendo factura:',
+            error
+        );
+
+
+        mostrarMensaje(
+            'No se pudo obtener la factura',
+            'error'
+        );
+
+
+        return null;
+
+    }
+
+}
+
+
+/*
+    🔥 CAMBIAR PAÍS
+
+    Al cambiar de país,
+    el grupo actual se limpia.
+
+    El siguiente pedido creará
+    automáticamente una compra nueva.
+*/
 
 btnPaisOrigen.addEventListener(
     'click',
     () => {
 
-        if(paisOrigen === 'En_EEUU'){
+        if(
+            paisOrigen ===
+            'En_EEUU'
+        ){
 
-            paisOrigen = 'COLOMBIA';
+            paisOrigen =
+                'COLOMBIA';
 
             btnPaisOrigen.textContent =
                 'País: Colombia';
 
         }else{
 
-            paisOrigen = 'En_EEUU';
+            paisOrigen =
+                'En_EEUU';
 
             btnPaisOrigen.textContent =
                 'País: EEUU';
 
         }
+
+
+        grupoCompraActual =
+            null;
+
+        paisGrupoActual =
+            null;
 
     }
 );
@@ -558,21 +721,60 @@ function mostrarClientes(filtro = ''){
 
 }
 
-
 // 🔥 SELECCIONAR CLIENTE
 function seleccionarCliente(cliente){
+
+    const clienteAnterior =
+        clienteSeleccionado
+            ? Number(
+                clienteSeleccionado.id_usuario
+            )
+            : null;
+
+
+    const clienteNuevo =
+        Number(
+            cliente.id_usuario
+        );
+
 
     clienteSeleccionado =
         cliente;
 
+
     clienteInput.value =
         `${cliente.nombre} ${cliente.apellido}`;
 
-    listaClientes.classList.remove('mostrar');
+
+    listaClientes.classList.remove(
+        'mostrar'
+    );
+
+
+    /*
+        🔥 SI CAMBIAMOS DE CLIENTE
+
+        Limpiamos la factura que estaba
+        guardada temporalmente.
+
+        Después el servidor buscará la factura
+        activa correcta del nuevo cliente + país.
+    */
+
+    if(
+        clienteAnterior !==
+        clienteNuevo
+    ){
+
+        grupoCompraActual =
+            null;
+
+        paisGrupoActual =
+            null;
+
+    }
 
 }
-
-
 // 🔥 AL ENTRAR AL CLIENTE
 clienteInput.addEventListener(
     'focus',
@@ -835,7 +1037,6 @@ function buscarCliente(nombreCompleto){
 
 }
 
-
 // 🔥 GUARDAR PEDIDO
 document
 .getElementById('formPedido')
@@ -880,6 +1081,7 @@ document
             .getElementById('cantidad')
             .value;
 
+
         if(!articulo){
 
             mostrarMensaje(
@@ -919,8 +1121,10 @@ document
 
         /*
             🔥 PRECIO A GUARDAR
+
             SI EL ARTÍCULO VIENE DEL CATÁLOGO,
             SE GUARDA EL PRECIO UNITARIO.
+
             EL CAMPO VISIBLE MUESTRA EL TOTAL
             SEGÚN LA CANTIDAD.
         */
@@ -931,9 +1135,11 @@ document
                 : precioInput.value;
 
 
-                /*
+        /*
             🔥 DESCRIPCIÓN
+
             NO SE MUESTRA EN EL DASHBOARD.
+
             SE OBTIENE DEL ARTÍCULO GUARDADO.
         */
         const descripcion =
@@ -942,6 +1148,31 @@ document
                 : null;
 
 
+         /*
+            🔥 OBTENER SIEMPRE LA FACTURA CORRECTA
+
+            Antes de guardar cada pedido,
+            el servidor busca la factura activa
+            correspondiente al CLIENTE + PAÍS.
+
+            Si ya existe, la reutiliza.
+            Si no existe, crea una nueva.
+        */
+
+        const grupoCorrecto =
+            await crearGrupoCompra();
+
+
+        if(!grupoCorrecto){
+
+            return;
+
+        }
+
+
+        /*
+            🔥 DATOS DEL PEDIDO
+        */
         const data = {
 
             id_usuario:
@@ -965,7 +1196,13 @@ document
                 precio,
 
             estado:
-                paisOrigen
+                paisOrigen,
+
+            pais_origen:
+                obtenerPaisBase(),
+
+            grupo_compra:
+                grupoCompraActual
 
         };
 
@@ -995,6 +1232,21 @@ document
                 );
 
 
+            let respuesta = null;
+
+
+            try{
+
+                respuesta =
+                    await res.json();
+
+            }catch(error){
+
+                respuesta = null;
+
+            }
+
+
             if(res.ok){
 
                 mostrarMensaje(
@@ -1010,6 +1262,7 @@ document
                 clienteSeleccionado = null;
 
                 articuloSeleccionado = null;
+
                 precioUnitarioSeleccionado = null;
 
 
@@ -1023,13 +1276,53 @@ document
                     .remove('mostrar');
 
 
+                /*
+                    🔥 IMPORTANTE
+
+                    NO reiniciamos:
+
+                    grupoCompraActual
+                    paisGrupoActual
+                    paisOrigen
+
+                    Así los siguientes pedidos
+                    continúan dentro de la misma
+                    compra/factura.
+                */
+
+
+                /*
+                    🔥 RESTAURAR TEXTO DEL PAÍS
+
+                    form.reset() no cambia la variable,
+                    pero dejamos visualmente el botón
+                    sincronizado con el país actual.
+                */
+                if(
+                    paisOrigen === 'COLOMBIA'
+                ){
+
+                    btnPaisOrigen.textContent =
+                        'País: Colombia';
+
+                }else{
+
+                    btnPaisOrigen.textContent =
+                        'País: EEUU';
+
+                }
+
+
                 await cargarArticulos();
 
 
             }else{
 
                 mostrarMensaje(
-                    'Error al guardar el pedido',
+                    respuesta &&
+                    respuesta.mensaje
+                        ? respuesta.mensaje
+                        : 'Error al guardar el pedido',
                     'error'
                 );
 
@@ -1042,6 +1335,7 @@ document
                 'Error al guardar:',
                 error
             );
+
 
             mostrarMensaje(
                 'No se pudo guardar el pedido',

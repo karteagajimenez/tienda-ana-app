@@ -722,6 +722,9 @@ const parametros =
 const idUsuario =
     parametros.get("id");
 
+const grupoCompra =
+    parametros.get("grupo");
+
 
 const esArchivado =
     parametros.get("archivado") === "1";
@@ -820,15 +823,17 @@ async function cargarDetalles(){
     try{
 
 
-        if(!idUsuario){
+        if(
+    !idUsuario ||
+    !grupoCompra
+){
 
-            mostrarError(
-                "No se encontró el cliente."
-            );
+    mostrarError(
+        "No se encontró la factura seleccionada."
+    );
 
-            return;
-
-        }
+    return;
+}
 
 
 
@@ -865,7 +870,9 @@ const pedidos =
             pedidos.filter(
                 pedido =>
                     Number(pedido.id_usuario) ===
-                    Number(idUsuario)
+                    Number(idUsuario) &&
+                    Number(pedido.grupo_compra) ===
+                    Number(grupoCompra)
             );
 
 
@@ -1391,13 +1398,20 @@ function mostrarError(mensaje){
 
 function volver(){
 
+    if(esArchivado){
+
+        window.location.href =
+            `/archived_orders.html?id=${encodeURIComponent(idUsuario)}`;
+
+        return;
+
+    }
+
+
     window.location.href =
-        esArchivado
-            ? "/archived_orders.html"
-            : "/add_weight.html";
+        `/add_weight.html?id=${encodeURIComponent(idUsuario)}`;
 
 }
-
 
 /* =========================================================
    IMPRIMIR
