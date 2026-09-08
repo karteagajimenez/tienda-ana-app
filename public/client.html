@@ -47,49 +47,83 @@
         padding: 20px;
     }
 
+/* ========================================
+   🔹 HEADER
+======================================== */
+
+#header {
+
+    width: 100%;
+    max-width: 1200px;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    padding: 15px 20px;
+
+    background-color: #fffaf8;
+
+    border: 1px solid #f2d5dd;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 4px 12px rgba(150, 90, 110, 0.12);
+
+    margin-bottom: 30px;
+}
 
 
-    /* ========================================
-       🔹 HEADER
-    ======================================== */
+/* 🔹 Nombre del cliente */
 
-    #header {
+#nombreCliente {
 
-        width: 100%;
-        max-width: 1200px;
+    font-weight: bold;
 
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
+    font-size: 16px;
 
-        padding: 15px 20px;
+    color: #714f5b;
 
-        background-color: #fffaf8;
-
-        border: 1px solid #f2d5dd;
-
-        border-radius: 12px;
-
-        box-shadow:
-            0 4px 12px rgba(150, 90, 110, 0.12);
-
-        margin-bottom: 30px;
-    }
+    margin-right: 20px;
+}
 
 
+/* 🔹 Archivos */
 
-    /* 🔹 Nombre del cliente */
+#archivos {
 
-    #nombreCliente {
+    background-color: #d990a4;
 
-        font-weight: bold;
+    color: white;
 
-        font-size: 16px;
+    border: none;
 
-        color: #714f5b;
+    padding: 9px 17px;
 
-        margin-right: 20px;
-    }
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    margin-right: 10px;
+
+    transition:
+        background-color 0.3s,
+        transform 0.2s;
+}
+
+
+#archivos:hover {
+
+    background-color: #c97e95;
+
+    transform: translateY(-1px);
+}
+
 
 /* 🔹 Mi perfil */
 
@@ -594,7 +628,6 @@
 <!-- ========================================
      🔹 HEADER
 ======================================== -->
-
 <div id="header">
 
     <span id="nombreCliente">
@@ -602,6 +635,12 @@
         👤 Cargando cliente...
 
     </span>
+
+    <button id="archivos">
+
+        Archivos
+
+    </button>
 
     <button id="miPerfil">
 
@@ -616,7 +655,6 @@
     </button>
 
 </div>
-
 
 
 <!-- ========================================
@@ -1180,6 +1218,21 @@ async function cargar(){
 
 }
 
+// ========================================
+// 🔹 ABRIR ARCHIVOS DEL CLIENTE
+// ========================================
+
+document.getElementById(
+    "archivos"
+).addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            `/client_archived.html?id=${encodeURIComponent(id)}`;
+
+    }
+);
 
 // ========================================
 // 🔹 ABRIR MI PERFIL

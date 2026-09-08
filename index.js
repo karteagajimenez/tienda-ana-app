@@ -78,14 +78,28 @@ app.get('/dashboard.html', protegerAdmin, (req, res) => {
         path.join(__dirname, 'public', 'dashboard.html')
     );
 });
-// 🔐 PROTEGER PÁGINA DEL CLIENTE
+// ======================================================
+// 🔐 PROTEGER PÁGINAS DEL CLIENTE
+// ======================================================
+
+// 🔐 Página principal del cliente
 app.get('/client.html', protegerCliente, (req, res) => {
 
     res.sendFile(
         path.join(__dirname, 'public', 'client.html')
     );
+
 });
 
+
+// 🔐 Página de archivos del cliente
+app.get('/client_archived.html', protegerCliente, (req, res) => {
+
+    res.sendFile(
+        path.join(__dirname, 'public', 'client_archived.html')
+    );
+
+});
 // 🔐 PROTEGER PÁGINAS ADMINISTRATIVAS
 const paginasAdmin = [
     'add_weight.html',
@@ -2037,27 +2051,101 @@ app.post('/archive-client-orders', protegerAdmin, (req, res) => {
     });
 
 });
+// ======================================================
+// 🔹 CLIENTE VE SUS PEDIDOS ACTIVOS
+// ======================================================
 
-// 🔹 CLIENTE VE SUS PEDIDOS
 app.get('/client-orders/:id', protegerCliente, (req, res) => {
 
-    const id = req.session.usuario.id_usuario;
+    // Por seguridad se usa el ID de la sesión,
+    // no el ID enviado en la URL.
+    const id =
+        req.session.usuario.id_usuario;
+
 
     conexion.query(`
-        SELECT p.*, 
-        IFNULL(SUM(a.monto_abono), 0) AS total_abonado
+        SELECT
+            p.*,
+            IFNULL(
+                SUM(a.monto_abono),
+                0
+            ) AS total_abonado
         FROM pedidos p
-        LEFT JOIN abonos a ON p.id_pedido = a.id_pedido
-        WHERE p.id_usuario = ?
+        LEFT JOIN abonos a
+            ON p.id_pedido = a.id_pedido
+        WHERE
+            p.id_usuario = ?
+            AND p.archivado = 0
         GROUP BY p.id_pedido
     `, [id], (err, results) => {
 
-        if (err) return res.json([]);
+        if (err) {
+
+            console.log(
+                "❌ Error cargando pedidos del cliente:",
+                err
+            );
+
+            return res.status(500).json([]);
+
+        }
+
 
         res.json(results);
+
     });
+
 });
 
+
+// ======================================================
+// 🔹 CLIENTE VE SUS PEDIDOS ARCHIVADOS
+// ======================================================
+
+app.get('/client-archived-orders/:id', protegerCliente, (req, res) => {
+
+    // Igual que arriba: el cliente solamente puede
+    // consultar los pedidos de su propia sesión.
+    const id =
+        req.session.usuario.id_usuario;
+
+
+    conexion.query(`
+        SELECT
+            p.*,
+            IFNULL(
+                SUM(a.monto_abono),
+                0
+            ) AS total_abonado
+        FROM pedidos p
+        LEFT JOIN abonos a
+            ON p.id_pedido = a.id_pedido
+        WHERE
+            p.id_usuario = ?
+            AND p.archivado = 1
+        GROUP BY p.id_pedido
+        ORDER BY
+            p.fecha_archivado DESC,
+            p.id_pedido DESC
+    `, [id], (err, results) => {
+
+        if (err) {
+
+            console.log(
+                "❌ Error cargando archivos del cliente:",
+                err
+            );
+
+            return res.status(500).json([]);
+
+        }
+
+
+        res.json(results);
+
+    });
+
+});
 // ======================================================
 // 🔹 ABONOS
 // ======================================================
