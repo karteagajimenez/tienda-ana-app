@@ -3514,7 +3514,176 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
 
                 line-height: 1.5;
             }
+/* ========================================
+   🔐 MODAL CONFIRMAR CAMBIO CONTRASEÑA
+======================================== */
 
+.modal-confirmacion {
+
+    display: none;
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background:
+        rgba(0, 0, 0, 0.45);
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+
+    z-index: 9999;
+}
+
+
+.modal-confirmacion.activo {
+
+    display: flex;
+}
+
+
+.modal-contenido {
+
+    width: 100%;
+    max-width: 380px;
+
+    background: white;
+
+    border-radius: 16px;
+
+    padding: 26px 28px;
+
+    text-align: center;
+
+    box-shadow:
+        0 10px 30px
+        rgba(0, 0, 0, 0.20);
+
+    animation:
+        aparecerModal 0.2s ease;
+}
+
+
+.modal-icono {
+
+    width: 54px;
+    height: 54px;
+
+    margin: 0 auto 14px;
+
+    border-radius: 50%;
+
+    background: #f8e1e7;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+}
+
+.modal-contenido h3 {
+
+    margin:
+        0 0 14px;
+
+    color: #333;
+
+    font-size: 22px;
+}
+
+
+.modal-contenido p {
+
+    margin:
+        0 0 22px;
+
+    color: #666;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+.modal-botones {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+
+.modal-botones button {
+
+    width: auto;
+
+    min-width: 110px;
+
+    padding: 10px 18px;
+
+    margin: 0;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+}
+
+.btn-cancelar {
+
+    background: #e5e5e5;
+
+    color: #333;
+}
+
+
+.btn-cancelar:hover {
+
+    background: #d8d8d8;
+}
+
+
+.btn-confirmar {
+
+    background: #c48b9f;
+
+    color: white;
+}
+
+
+.btn-confirmar:hover {
+
+    background: #b3748a;
+}
+
+
+@keyframes aparecerModal {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            scale(0.96);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            scale(1);
+    }
+}
 
             @media(max-width: 480px) {
 
@@ -3563,7 +3732,10 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
 
                 ${mensajeHTML}
 
-
+            <div
+             id="zonaCambioPassword"
+             style="${token ? '' : 'display:none;'}"
+>
                 <div class="icono">
                     🔐
                 </div>
@@ -3629,14 +3801,59 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
 
                 </form>
 
+<!-- ========================================
+     🔐 MODAL CONFIRMAR CAMBIO CONTRASEÑA
+======================================== -->
 
-                <a
-                    href="/login.html"
-                    class="volver"
-                >
-                    Volver al inicio
-                </a>
+<div
+    id="modalConfirmacion"
+    class="modal-confirmacion"
+>
 
+    <div class="modal-contenido">
+
+        <div class="modal-icono">
+            🔐
+        </div>
+
+     <h3>
+    Confirmar cambio
+</h3>
+
+<p>
+    Por seguridad, la contraseña solo puede
+    cambiarse una vez cada 24 horas.
+
+    <br><br>
+
+    <strong>
+        ¿Desea continuar?
+    </strong>
+</p>
+
+        <div class="modal-botones">
+
+            <button
+                type="button"
+                id="btnCancelarCambio"
+                class="btn-cancelar"
+            >
+                Cancelar
+            </button>
+
+            <button
+                type="button"
+                id="btnConfirmarCambio"
+                class="btn-confirmar"
+            >
+                Confirmar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
                 <div class="seguridad">
 
@@ -3735,7 +3952,31 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
             );
 
 
-            formNuevaPassword.addEventListener(
+     // ========================================
+// 🔐 ELEMENTOS DEL MODAL
+// ========================================
+
+const modalConfirmacion =
+    document.getElementById(
+        "modalConfirmacion"
+    );
+
+const btnCancelarCambio =
+    document.getElementById(
+        "btnCancelarCambio"
+    );
+
+const btnConfirmarCambio =
+    document.getElementById(
+        "btnConfirmarCambio"
+    );
+
+
+// ========================================
+// 🔐 ABRIR MODAL AL ENVIAR FORMULARIO
+// ========================================
+
+formNuevaPassword.addEventListener(
     "submit",
     (e) => {
 
@@ -3755,24 +3996,50 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
             return;
         }
 
+        e.preventDefault();
 
-        const confirmarCambio =
-            window.confirm(
-                "🔐 Confirmar cambio de contraseña\n\n" +
-                "Por seguridad, solo puede cambiar su contraseña una vez cada 24 horas.\n\n" +
-                "¿Está seguro de que desea guardar esta nueva contraseña?"
-            );
-
-
-        if (!confirmarCambio) {
-
-            e.preventDefault();
-
-        }
+        modalConfirmacion.classList.add(
+            "activo"
+        );
 
     }
 );
-        </script>
+
+
+// ========================================
+// 🔹 CANCELAR CAMBIO
+// ========================================
+
+btnCancelarCambio.addEventListener(
+    "click",
+    () => {
+
+        modalConfirmacion.classList.remove(
+            "activo"
+        );
+
+    }
+);
+
+
+// ========================================
+// ✅ CONFIRMAR CAMBIO
+// ========================================
+
+btnConfirmarCambio.addEventListener(
+    "click",
+    () => {
+
+        modalConfirmacion.classList.remove(
+            "activo"
+        );
+
+        formNuevaPassword.submit();
+
+    }
+);
+
+ </script>
 
 
     </body>
@@ -4166,7 +4433,7 @@ if (ultimoCambio) {
                 SET
                     password = ?,
                     reset_token = NULL,
-                    reset_expiration = NULL
+                    reset_expiration = NULL,
                     ultimo_cambio_password = NOW()
 
                 WHERE reset_token = ?
