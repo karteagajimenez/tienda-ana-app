@@ -9,7 +9,43 @@
 <title>Pedidos Archivados</title>
 
 <style>
+.paginacion-clientes {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    padding: 14px 0;
+    margin: 0;
+    background: #fdf6f0;
+    font-weight: bold;
+    color: #555;
+    z-index: 900;
+}
+.paginacion-clientes button {
+    background: #c58aa0;
+    color: white;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
 
+.paginacion-clientes button:hover {
+    background: #ad6f87;
+}
+
+.paginacion-clientes span {
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+}
 body {
     font-family: Arial;
     background: linear-gradient(to right, #f8e1e7, #fdf6f0);
@@ -264,10 +300,11 @@ th {
 
     <div class="header-buttons">
 
+    
         <button
-            onclick="volverArchivados()"
+           onclick="volverArchivados()"
         >
-            Volver a Gestión
+          Volver a Gestión
         </button>
 
         <button
@@ -332,6 +369,29 @@ th {
 
 </table>
 
+<div
+    id="paginacionArchivados"
+    class="paginacion-clientes"
+>
+    <button
+        id="btnAnteriorArchivados"
+        onclick="paginaAnteriorArchivados()"
+    >
+        ← Anterior
+    </button>
+
+    <span id="textoPaginacionArchivados">
+        1 - 20 de 20
+    </span>
+
+    <button
+        id="btnSiguienteArchivados"
+        onclick="paginaSiguienteArchivados()"
+    >
+        Siguiente →
+    </button>
+</div>
+
 
 <!-- ======================================================
      MODAL ELIMINAR ARCHIVADO
@@ -384,6 +444,9 @@ let clienteArchivadoParaEliminar = null;
 let grupoArchivadoParaEliminar = null;
 
 let pedidoArchivadoParaEliminar = null;
+
+let paginaActualArchivados = 1;
+const clientesPorPaginaArchivados = 20;
 
 /* =========================================================
    TRADUCIR ESTADOS
@@ -780,13 +843,186 @@ function mostrarArchivados(){
     mostrarListaClientesArchivados();
 
 }
+function obtenerClientesArchivadosFiltrados(){
+
+    const buscar =
+        document.getElementById(
+            "buscar"
+        );
+
+    const valor =
+        buscar
+            ? buscar.value
+                .toLowerCase()
+                .trim()
+            : "";
 
 
+    return Object.values(
+        archivadosPorCliente
+    )
+    .filter(
+        cliente => {
+
+            const nombreCompleto =
+                `${cliente.nombre} ${cliente.apellido}`
+                .toLowerCase();
+
+            return nombreCompleto.includes(
+                valor
+            );
+
+        }
+    )
+    .sort(
+        (a, b) =>
+            `${a.nombre} ${a.apellido}`
+            .localeCompare(
+                `${b.nombre} ${b.apellido}`,
+                "es"
+            )
+    );
+
+}
+function actualizarPaginacionArchivados(){
+
+    const clientes =
+        obtenerClientesArchivadosFiltrados();
+
+    const totalClientes =
+        clientes.length;
+
+    const totalPaginas =
+        Math.ceil(
+            totalClientes /
+            clientesPorPaginaArchivados
+        );
+
+
+    if(
+        totalPaginas > 0 &&
+        paginaActualArchivados > totalPaginas
+    ){
+        paginaActualArchivados =
+            totalPaginas;
+    }
+
+
+    const inicio =
+        totalClientes === 0
+            ? 0
+            : (
+                (paginaActualArchivados - 1) *
+                clientesPorPaginaArchivados
+              ) + 1;
+
+
+    const fin =
+        Math.min(
+            paginaActualArchivados *
+            clientesPorPaginaArchivados,
+            totalClientes
+        );
+
+
+    const texto =
+        document.getElementById(
+            "textoPaginacionArchivados"
+        );
+
+    const anterior =
+        document.getElementById(
+            "btnAnteriorArchivados"
+        );
+
+    const siguiente =
+        document.getElementById(
+            "btnSiguienteArchivados"
+        );
+
+
+    if(texto){
+
+        texto.textContent =
+            `${inicio} - ${fin} de ${totalClientes}`;
+
+    }
+
+
+    if(anterior){
+
+        anterior.style.display =
+            paginaActualArchivados > 1
+                ? "inline-block"
+                : "none";
+
+    }
+
+
+    if(siguiente){
+
+        siguiente.style.display =
+            paginaActualArchivados < totalPaginas
+                ? "inline-block"
+                : "none";
+
+    }
+
+}
+
+
+function paginaAnteriorArchivados(){
+
+    if(paginaActualArchivados <= 1){
+        return;
+    }
+
+    paginaActualArchivados--;
+
+    mostrarListaClientesArchivados();
+
+}
+function paginaSiguienteArchivados(){
+
+    const clientes =
+        obtenerClientesArchivadosFiltrados();
+
+    const totalClientes =
+        clientes.length;
+
+    const totalPaginas =
+        Math.ceil(
+            totalClientes /
+            clientesPorPaginaArchivados
+        );
+
+    if(
+        paginaActualArchivados >=
+        totalPaginas
+    ){
+        return;
+    }
+
+    paginaActualArchivados++;
+
+    mostrarListaClientesArchivados();
+
+}
 /* =========================================================
    MOSTRAR LISTA DE CLIENTES ARCHIVADOS
 ========================================================= */
-
 function mostrarListaClientesArchivados(){
+
+    const botonExpandir =
+        document.getElementById(
+            "btnExpandir"
+        );
+
+    if(botonExpandir){
+        botonExpandir.textContent =
+            "Expandir";
+    }
+
 
     const tabla =
         document.getElementById(
@@ -811,34 +1047,25 @@ function mostrarListaClientesArchivados(){
     `;
 
 
-    const clientes =
-        Object.values(
-            archivadosPorCliente
-        );
+  const clientesFiltrados =
+    obtenerClientesArchivadosFiltrados();
 
 
-    if(
-        clientes.length === 0
-    ){
+const inicio =
+    (paginaActualArchivados - 1) *
+    clientesPorPaginaArchivados;
 
-        tabla.innerHTML = `
 
-            <tr>
+const fin =
+    inicio +
+    clientesPorPaginaArchivados;
 
-                <td
-                    class="sin-archivados"
-                >
-                    No hay pedidos archivados.
-                </td>
 
-            </tr>
-
-        `;
-
-        return;
-
-    }
-
+const clientes =
+    clientesFiltrados.slice(
+        inicio,
+        fin
+    );
 
     clientes.sort(
         (a, b) => {
@@ -854,7 +1081,8 @@ function mostrarListaClientesArchivados(){
 
 
             return nombreA.localeCompare(
-                nombreB
+                nombreB,
+                "es"
             );
 
         }
@@ -869,19 +1097,52 @@ function mostrarListaClientesArchivados(){
 
             html += `
 
-                <tr>
+                <tr
+                    class="fila-cliente"
+                    onclick="toggleClienteArchivado(
+                        ${cliente.id_usuario}
+                    )"
+                    style="cursor:pointer;"
+                >
 
                     <td
-                        onclick="abrirClienteArchivado(${cliente.id_usuario})"
                         style="
-                            cursor:pointer;
                             font-weight:bold;
                             color:#a85c78;
                         "
                     >
 
+                        <span
+                            id="flecha-archivado-${cliente.id_usuario}"
+                        >
+                            ▶
+                        </span>
+
                         ${cliente.nombre}
                         ${cliente.apellido}
+
+                    </td>
+
+                </tr>
+
+
+                <tr
+                    id="detalle-cliente-archivado-${cliente.id_usuario}"
+                    style="display:none;"
+                >
+
+                    <td
+                        colspan="1"
+                        style="
+                            padding:0;
+                            background:#fdf6f0;
+                        "
+                    >
+
+                        <div
+                            id="contenido-cliente-archivado-${cliente.id_usuario}"
+                        >
+                        </div>
 
                     </td>
 
@@ -896,51 +1157,136 @@ function mostrarListaClientesArchivados(){
     tabla.innerHTML =
         html;
 
+actualizarPaginacionArchivados();
+
 }
-
-
 /* =========================================================
    ABRIR CLIENTE ARCHIVADO
 ========================================================= */
 
-function abrirClienteArchivado(
+function toggleClienteArchivado(
     idUsuario
 ){
 
-    const idCliente =
-        Number(
-            idUsuario
+    const fila =
+        document.getElementById(
+            `detalle-cliente-archivado-${idUsuario}`
         );
 
+    const flecha =
+        document.getElementById(
+            `flecha-archivado-${idUsuario}`
+        );
 
-    if(
-        !archivadosPorCliente[
-            idCliente
-        ]
-    ){
-
+    if(!fila || !flecha){
         return;
-
     }
 
 
-    clienteArchivadoSeleccionado =
-        idCliente;
+    const estaAbierto =
+        fila.style.display ===
+        "table-row";
 
 
-    document.getElementById(
-        "buscar"
-    ).value =
-        "";
+    if(estaAbierto){
 
+        fila.style.display =
+            "none";
 
-    mostrarFacturasArchivadasCliente(
-        idCliente
-    );
+        flecha.textContent =
+            "▶";
+
+    }else{
+
+        fila.style.display =
+            "table-row";
+
+        flecha.textContent =
+            "▼";
+
+        mostrarFacturasArchivadasCliente(
+            idUsuario,
+            true
+        );
+
+    }
 
 }
 
 
+/* =========================================================
+   EXPANDIR / COLAPSAR TODOS LOS CLIENTES ARCHIVADOS
+========================================================= */
+
+function toggleTodosClientesArchivados(){
+
+    const boton =
+        document.getElementById(
+            "btnExpandir"
+        );
+
+    const filasDetalle =
+        document.querySelectorAll(
+            '[id^="detalle-cliente-archivado-"]'
+        );
+
+    const abrirTodos =
+        boton.textContent.trim() ===
+        "Expandir";
+
+
+    filasDetalle.forEach(
+        fila => {
+
+            const idUsuario =
+                fila.id.replace(
+                    "detalle-cliente-archivado-",
+                    ""
+                );
+
+            const flecha =
+                document.getElementById(
+                    `flecha-archivado-${idUsuario}`
+                );
+
+
+            if(abrirTodos){
+
+                fila.style.display =
+                    "table-row";
+
+                if(flecha){
+                    flecha.textContent =
+                        "▼";
+                }
+
+                mostrarFacturasArchivadasCliente(
+                    Number(idUsuario),
+                    true
+                );
+
+            }else{
+
+                fila.style.display =
+                    "none";
+
+                if(flecha){
+                    flecha.textContent =
+                        "▶";
+                }
+
+            }
+
+        }
+    );
+
+
+    boton.textContent =
+        abrirTodos
+            ? "Colapsar"
+            : "Expandir";
+
+}
 /* =========================================================
    VOLVER A LISTA DE CLIENTES ARCHIVADOS
 ========================================================= */
@@ -968,28 +1314,6 @@ function volverClientesArchivados(){
 
 function volverArchivados(){
 
-    /*
-        Si estamos viendo las facturas archivadas
-        de un cliente, vuelve primero a la lista
-        de clientes archivados.
-    */
-
-    if(
-        clienteArchivadoSeleccionado
-    ){
-
-        volverClientesArchivados();
-
-        return;
-
-    }
-
-
-    /*
-        Si ya estamos en la lista de clientes
-        archivados, vuelve a Gestión de Pedidos.
-    */
-
     window.location.href =
         "/add_weight.html";
 
@@ -998,9 +1322,9 @@ function volverArchivados(){
 /* =========================================================
    MOSTRAR FACTURAS ARCHIVADAS DEL CLIENTE
 ========================================================= */
-
 function mostrarFacturasArchivadasCliente(
-    idUsuario
+    idUsuario,
+    modoAcordeon = false
 ){
 
     const cliente =
@@ -1013,52 +1337,77 @@ function mostrarFacturasArchivadasCliente(
 
     if(!cliente){
 
+        if(modoAcordeon){
+            return;
+        }
+
         volverClientesArchivados();
 
         return;
-
     }
 
 
-    const tabla =
-        document.getElementById(
-            "tablaArchivados"
-        );
+    let tabla = null;
+
+    let encabezado = null;
+
+    let contenedor = null;
 
 
-    const encabezado =
-        document.querySelector(
-            "table thead"
-        );
+    if(modoAcordeon){
+
+        contenedor =
+            document.getElementById(
+                `contenido-cliente-archivado-${idUsuario}`
+            );
+
+        if(!contenedor){
+            return;
+        }
+
+    }else{
+
+        tabla =
+            document.getElementById(
+                "tablaArchivados"
+            );
 
 
-    encabezado.innerHTML = `
+        encabezado =
+            document.querySelector(
+                "table thead"
+            );
 
-        <tr>
 
-            <th>Cliente</th>
+        encabezado.innerHTML = `
 
-            <th>País de origen</th>
+            <tr>
 
-            <th>Peso</th>
+                <th>Cliente</th>
 
-            <th>Valor del Peso</th>
+                <th>País de origen</th>
 
-            <th>Estado</th>
+                <th>Peso</th>
 
-            <th>Abono</th>
+                <th>Valor del Peso</th>
 
-           <th>Saldo</th>
+                <th>Estado</th>
 
-           <th>Fecha</th>
+                <th>Abono</th>
 
-           <th>Archivado</th>
+                <th>Saldo</th>
 
-           <th>Acciones</th>
+                <th>Fecha</th>
 
-        </tr>
+                <th>Archivado</th>
 
-    `;
+                <th>Acciones</th>
+
+            </tr>
+
+        `;
+
+    }
 
 
     const grupos =
@@ -1071,25 +1420,43 @@ function mostrarFacturasArchivadasCliente(
         grupos.length === 0
     ){
 
-        tabla.innerHTML = `
+        if(modoAcordeon){
 
-            <tr>
+            contenedor.innerHTML = `
 
-                <td
-                    colspan="10"
+                <div
                     class="sin-archivados"
                 >
                     No hay facturas archivadas
                     para este cliente.
-                </td>
+                </div>
 
-            </tr>
+            `;
 
-        `;
+        }else{
+
+            tabla.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="10"
+                        class="sin-archivados"
+                    >
+                        No hay facturas archivadas
+                        para este cliente.
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
 
         return;
 
     }
+
 
     let html = "";
 
@@ -1097,10 +1464,6 @@ function mostrarFacturasArchivadasCliente(
     grupos.forEach(
         ([claveGrupo, grupo]) => {
 
-
-            /* =============================================
-               ESTADO
-            ============================================= */
 
             const estados =
                 Array.from(
@@ -1134,10 +1497,6 @@ function mostrarFacturasArchivadasCliente(
             }
 
 
-            /* =============================================
-               SALDO
-            ============================================= */
-
             let saldo =
                 grupo.envio_total -
                 grupo.total_abonado;
@@ -1157,10 +1516,6 @@ function mostrarFacturasArchivadasCliente(
                     ? "saldo-pendiente"
                     : "saldo-pagado";
 
-
-            /* =============================================
-               PAÍS
-            ============================================= */
 
             let paisMostrar =
                 "-";
@@ -1188,107 +1543,83 @@ function mostrarFacturasArchivadasCliente(
             }
 
 
-            /* =============================================
-               FACTURA
-            ============================================= */
+            let acciones = "";
 
-            const facturaMostrar =
+
+            if(
                 grupo.grupo_compra
-                    ? `Factura ${grupo.grupo_compra}`
-                    : "Pedido antiguo";
+            ){
 
-/* =============================================
-   ACCIONES
-============================================= */
+                acciones = `
 
-let acciones = "";
-
-
-/*
-    =====================================================
-    FACTURA NORMAL
-    =====================================================
-*/
-
-if(
-    grupo.grupo_compra
-){
-
-    acciones = `
-
-        <button
-            class="btn-detalles-archivado"
-            onclick="verDetallesArchivados(
-                ${cliente.id_usuario},
-                ${grupo.grupo_compra}
-            )"
-        >
-            Detalles
-        </button>
-
-        <button
-            class="btn-eliminar-archivado"
-            onclick="abrirEliminarArchivado(
-                ${cliente.id_usuario},
-                ${grupo.grupo_compra},
-                null
-            )"
-        >
-            Eliminar
-        </button>
-
-    `;
-
-}
+                    <button
+                        class="btn-detalles-archivado"
+                        onclick="verDetallesArchivados(
+                            ${cliente.id_usuario},
+                            ${grupo.grupo_compra}
+                        )"
+                    >
+                        Detalles
+                    </button>
 
 
-/*
-    =====================================================
-    PEDIDO ANTIGUO SIN FACTURA
-    =====================================================
-*/
+                    <button
+                        class="btn-eliminar-archivado"
+                        onclick="abrirEliminarArchivado(
+                            ${cliente.id_usuario},
+                            ${grupo.grupo_compra},
+                            null
+                        )"
+                    >
+                        Eliminar
+                    </button>
 
-else{
+                `;
 
-    const pedidoAntiguo =
-        grupo.pedidos &&
-        grupo.pedidos.length > 0
-            ? grupo.pedidos[0]
-            : null;
+            }else{
+
+                const pedidoAntiguo =
+                    grupo.pedidos &&
+                    grupo.pedidos.length > 0
+                        ? grupo.pedidos[0]
+                        : null;
 
 
-    if(pedidoAntiguo){
+                if(pedidoAntiguo){
 
-        acciones = `
+                    acciones = `
 
-            <button
-                class="btn-eliminar-archivado"
-                onclick="abrirEliminarArchivado(
-                    ${cliente.id_usuario},
-                    null,
-                    ${pedidoAntiguo.id_pedido}
-                )"
-            >
-                Eliminar
-            </button>
+                        <button
+                            class="btn-eliminar-archivado"
+                            onclick="abrirEliminarArchivado(
+                                ${cliente.id_usuario},
+                                null,
+                                ${pedidoAntiguo.id_pedido}
+                            )"
+                        >
+                            Eliminar
+                        </button>
 
-        `;
+                    `;
 
-    }else{
+                }else{
 
-        acciones = `
-            <span>-</span>
-        `;
+                    acciones = `
+                        <span>-</span>
+                    `;
 
-    }
+                }
 
-}
+            }
+
 
             html += `
 
-                <tr> 
+                <tr>
+
                     <td>
-                      ${cliente.nombre} ${cliente.apellido}
+                        ${cliente.nombre}
+                        ${cliente.apellido}
                     </td>
 
                     <td>
@@ -1300,11 +1631,9 @@ else{
                     </td>
 
                     <td>
-
                         ${moneda(
                             grupo.envio_total
                         )}
-
                     </td>
 
                     <td>
@@ -1312,49 +1641,39 @@ else{
                     </td>
 
                     <td>
-
                         ${moneda(
                             grupo.total_abonado
                         )}
-
                     </td>
 
                     <td
                         class="${claseSaldo}"
                     >
-
                         ${moneda(
                             saldo
                         )}
-
                     </td>
 
                     <td>
-
                         ${
                             grupo.fecha_abono
                                 ? grupo.fecha_abono
                                 : "-"
                         }
-
                     </td>
 
                     <td
                         class="fecha-archivado"
                     >
-
                         ${
                             grupo.fecha_archivado
                                 ? grupo.fecha_archivado
                                 : "-"
                         }
-
                     </td>
 
                     <td>
-
                         ${acciones}
-
                     </td>
 
                 </tr>
@@ -1365,42 +1684,69 @@ else{
     );
 
 
-    tabla.innerHTML =
-        html;
+    if(modoAcordeon){
+
+        contenedor.innerHTML = `
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Cliente</th>
+
+                        <th>País de origen</th>
+
+                        <th>Peso</th>
+
+                        <th>Valor del Peso</th>
+
+                        <th>Estado</th>
+
+                        <th>Abono</th>
+
+                        <th>Saldo</th>
+
+                        <th>Fecha</th>
+
+                        <th>Archivado</th>
+
+                        <th>Acciones</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    ${html}
+
+                </tbody>
+
+            </table>
+
+        `;
+
+    }else{
+
+        tabla.innerHTML =
+            html;
+
+    }
 
 }
-
 /* =========================================================
    BUSCADOR
 ========================================================= */
 
 function filtrar(){
 
-    const valor =
-        document.getElementById(
-            "buscar"
-        )
-        .value
-        .toLowerCase();
+    paginaActualArchivados = 1;
 
-
-    document.querySelectorAll(
-        "#tablaArchivados tr"
-    ).forEach(fila => {
-
-        const texto =
-            fila.innerText
-            .toLowerCase();
-
-        fila.style.display =
-            texto.includes(valor)
-                ? ""
-                : "none";
-
-    });
+    mostrarListaClientesArchivados();
 
 }
-
 
 /* =========================================================
    DETALLES ARCHIVADOS
@@ -1707,13 +2053,44 @@ async function iniciarArchivados(){
         archivadosPorCliente[idClienteURL]
     ){
 
-        clienteArchivadoSeleccionado =
-            idClienteURL;
+        const clientes =
+            obtenerClientesArchivadosFiltrados();
 
 
-        mostrarFacturasArchivadasCliente(
-            idClienteURL
-        );
+        const indice =
+            clientes.findIndex(
+                cliente =>
+                    Number(
+                        cliente.id_usuario
+                    ) ===
+                    idClienteURL
+            );
+
+
+        if(indice !== -1){
+
+            paginaActualArchivados =
+                Math.floor(
+                    indice /
+                    clientesPorPaginaArchivados
+                ) + 1;
+
+
+            mostrarListaClientesArchivados();
+
+
+            setTimeout(
+                () => {
+
+                    toggleClienteArchivado(
+                        idClienteURL
+                    );
+
+                },
+                0
+            );
+
+        }
 
 
         window.history.replaceState(
@@ -1725,6 +2102,7 @@ async function iniciarArchivados(){
     }
 
 }
+
 
 
 iniciarArchivados();
