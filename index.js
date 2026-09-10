@@ -2054,6 +2054,114 @@ app.post('/archive-client-orders', protegerAdmin, (req, res) => {
 
 });
 // ======================================================
+// 🔹 DESARCHIVAR UNA FACTURA DEL CLIENTE
+// ======================================================
+
+app.post('/unarchive-client-orders', protegerAdmin, (req, res) => {
+
+    const idUsuario =
+        Number(req.body.id_usuario);
+
+    const grupoCompra =
+        Number(req.body.grupo_compra);
+
+
+    // ======================================================
+    // 🔐 VALIDAR CLIENTE
+    // ======================================================
+
+    if(
+        !Number.isInteger(idUsuario) ||
+        idUsuario <= 0
+    ){
+
+        return res.status(400).json({
+            ok: false,
+            mensaje: "Cliente inválido"
+        });
+
+    }
+
+
+    // ======================================================
+    // 🔐 VALIDAR GRUPO / FACTURA
+    // ======================================================
+
+    if(
+        !Number.isInteger(grupoCompra) ||
+        grupoCompra <= 0
+    ){
+
+        return res.status(400).json({
+            ok: false,
+            mensaje: "Factura inválida"
+        });
+
+    }
+
+
+    // ======================================================
+    // 🔹 DESARCHIVAR SOLO ESA FACTURA DEL CLIENTE
+    // ======================================================
+
+    conexion.query(`
+
+        UPDATE pedidos
+
+        SET
+            archivado = 0,
+            fecha_archivado = NULL
+
+        WHERE id_usuario = ?
+        AND grupo_compra = ?
+        AND archivado = 1
+
+    `, [
+        idUsuario,
+        grupoCompra
+    ], (err, resultado) => {
+
+        if(err){
+
+            console.log(
+                "❌ Error desarchivando factura:",
+                err
+            );
+
+            return res.status(500).json({
+                ok: false,
+                mensaje:
+                    "No se pudo desarchivar la factura"
+            });
+
+        }
+
+
+        if(
+            resultado.affectedRows === 0
+        ){
+
+            return res.status(404).json({
+                ok: false,
+                mensaje:
+                    "No se encontró la factura archivada"
+            });
+
+        }
+
+
+        return res.json({
+            ok: true,
+            mensaje:
+                "Factura desarchivada correctamente",
+            pedidos_desarchivados:
+                resultado.affectedRows
+        });
+
+    });
+
+});
+// ======================================================
 // 🔹 CLIENTE VE SUS PEDIDOS ACTIVOS
 // ======================================================
 
