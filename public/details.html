@@ -1396,24 +1396,14 @@ function mostrarError(mensaje){
 /* =========================================================
    VOLVER
 ========================================================= */
-
 function volver(){
 
-    if(esArchivado){
-
-        window.location.href =
-            `/archived_orders.html?id=${encodeURIComponent(idUsuario)}`;
-
-        return;
-
-    }
-
-
     window.location.href =
-        `/add_weight.html?id=${encodeURIComponent(idUsuario)}`;
+        esArchivado
+            ? "/archived_orders.html"
+            : `/add_weight.html?id=${idUsuario}`;
 
 }
-
 /* =========================================================
    IMPRIMIR
 ========================================================= */

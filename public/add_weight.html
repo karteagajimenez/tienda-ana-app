@@ -7,6 +7,44 @@
 <title>Gestión de Pedidos</title>
 
 <style>
+
+.paginacion-clientes {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+
+    padding: 14px 0;
+    margin: 0;
+
+    background: #fdf6f0;
+
+    font-weight: bold;
+    color: #555;
+
+    z-index: 900;
+}
+
+.paginacion-clientes button {
+    background: #b76e8a;
+    color: white;
+    border: none;
+    padding: 9px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.paginacion-clientes button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
 body {
     font-family: Arial;
     background: linear-gradient(to right, #f8e1e7, #fdf6f0);
@@ -308,6 +346,13 @@ td button {
         <button onclick="volverGestion()">
            Volver
         </button>
+        
+        <button
+         id="btnExpandir"
+          onclick="toggleTodosClientes()"
+        >
+           Expandir
+        </button>
 
         <button onclick="location.href='/archived_orders.html'">
             Archivados
@@ -351,6 +396,27 @@ td button {
 
 </table>
 
+<div id="paginacionClientes" class="paginacion-clientes">
+
+    <button
+        id="btnAnterior"
+        onclick="paginaAnterior()"
+    >
+        ← Anterior
+    </button>
+
+    <span id="textoPaginacion">
+        1 - 20 de 20
+    </span>
+
+    <button
+        id="btnSiguiente"
+        onclick="paginaSiguiente()"
+    >
+        Siguiente →
+    </button>
+
+</div>
 
 
 <!-- MODAL -->
@@ -670,6 +736,14 @@ let clienteVistaActual = null;
 let pedidosGlobales = [];
 
 let pedidosPorCliente = {};
+
+/* =========================================================
+   PAGINACIÓN DE CLIENTES
+========================================================= */
+
+let paginaActual = 1;
+
+const clientesPorPagina = 20;
 
 
 
@@ -1122,32 +1196,117 @@ if(
 /* =========================================================
    RENDERIZAR VISTA ACTUAL
 ========================================================= */
-
 function renderizarVista(){
-
-    if(clienteVistaActual){
-
-        mostrarFacturasCliente(
-            clienteVistaActual
-        );
-
-        return;
-
-    }
-
 
     mostrarListaClientes();
 
+
+    if(clienteVistaActual){
+
+        const cliente =
+            pedidosPorCliente[
+                Number(
+                    clienteVistaActual
+                )
+            ];
+
+        if(!cliente){
+            return;
+        }
+
+
+        const clientes =
+            obtenerClientesFiltrados();
+
+        const indice =
+            clientes.findIndex(
+                c =>
+                    Number(c.id_usuario) ===
+                    Number(clienteVistaActual)
+            );
+
+
+        if(indice !== -1){
+
+            paginaActual =
+                Math.floor(
+                    indice /
+                    clientesPorPagina
+                ) + 1;
+
+            mostrarListaClientes();
+
+
+            setTimeout(
+                () => {
+
+                    toggleCliente(
+                        Number(
+                            clienteVistaActual
+                        )
+                    );
+
+                },
+                0
+            );
+        }
+    }
 }
 
+function obtenerClientesFiltrados(){
+
+    const buscar =
+        document.getElementById(
+            "buscar"
+        );
+
+    const valor =
+        buscar
+            ? buscar.value
+                .toLowerCase()
+                .trim()
+            : "";
 
 
+    return Object.values(
+        pedidosPorCliente
+    )
+    .filter(
+        cliente => {
+
+            const nombreCompleto =
+                `${cliente.nombre} ${cliente.apellido}`
+                .toLowerCase();
+
+            return nombreCompleto.includes(
+                valor
+            );
+        }
+    )
+    .sort(
+        (a, b) =>
+            `${a.nombre} ${a.apellido}`
+            .localeCompare(
+                `${b.nombre} ${b.apellido}`,
+                "es"
+            )
+    );
+}
 /* =========================================================
    MOSTRAR LISTA DE CLIENTES
 ========================================================= */
 
 function mostrarListaClientes(){
 
+    const botonExpandir =
+    document.getElementById(
+        "btnExpandir"
+    );
+
+if(botonExpandir){
+    botonExpandir.textContent =
+        "Expandir";
+}
     const tabla =
         document.querySelector(
             "table"
@@ -1177,20 +1336,22 @@ function mostrarListaClientes(){
     let html = "";
 
 
+const clientes =
+    obtenerClientesFiltrados();
 
-    const clientes =
-        Object.values(
-            pedidosPorCliente
-        )
-        .sort(
-            (a, b) =>
-                `${a.nombre} ${a.apellido}`
-                .localeCompare(
-                    `${b.nombre} ${b.apellido}`,
-                    "es"
-                )
-        );
+const inicio =
+    (paginaActual - 1) *
+    clientesPorPagina;
 
+const fin =
+    inicio +
+    clientesPorPagina;
+
+const clientesPagina =
+    clientes.slice(
+        inicio,
+        fin
+    );
 
 
     if(clientes.length === 0){
@@ -1210,36 +1371,55 @@ function mostrarListaClientes(){
     }
 
 
+clientesPagina.forEach(
+    cliente => {
 
-    clientes.forEach(
-        cliente => {
+
+        html += `
+
+            <tr
+                style="cursor:pointer;"
+                onclick="toggleCliente(
+                    ${cliente.id_usuario}
+                )"
+            >
+
+                <td>
+
+                    <strong>
+                        <span id="flecha-${cliente.id_usuario}">
+                            ▶
+                        </span>
+
+                        ${cliente.nombre}
+                        ${cliente.apellido}
+                    </strong>
+
+                </td>
+
+            </tr>
 
 
-            html += `
+            <tr
+                id="detalle-cliente-${cliente.id_usuario}"
+                style="display:none;"
+            >
 
-                <tr
-                    style="cursor:pointer;"
-                    onclick="abrirCliente(
-                        ${cliente.id_usuario}
-                    )"
-                >
+                <td>
 
-                    <td>
+                    <div
+                        id="contenido-cliente-${cliente.id_usuario}"
+                    >
+                    </div>
 
-                        <strong>
-                            ${cliente.nombre}
-                            ${cliente.apellido}
-                        </strong>
+                </td>
 
-                    </td>
+            </tr>
 
-                </tr>
+        `;
 
-            `;
-
-        }
-    );
-
+    }
+);
 
 
     document.getElementById(
@@ -1252,11 +1432,224 @@ function mostrarListaClientes(){
         "buscar"
     ).placeholder =
         "Buscar cliente...";
+    
+    actualizarPaginacion();
 
 }
 
+/* =========================================================
+   PAGINACIÓN - CLIENTES
+========================================================= */
+
+function actualizarPaginacion(){
+
+const clientes =
+    obtenerClientesFiltrados();
+
+    const totalClientes =
+        clientes.length;
+
+    const inicio =
+        (paginaActual - 1) *
+        clientesPorPagina;
+
+    const fin =
+        Math.min(
+            inicio + clientesPorPagina,
+            totalClientes
+        );
+
+    const texto =
+        document.getElementById(
+            "textoPaginacion"
+        );
+
+    const anterior =
+        document.getElementById(
+            "btnAnterior"
+        );
+
+    const siguiente =
+        document.getElementById(
+            "btnSiguiente"
+        );
 
 
+   if(totalClientes === 0){
+
+    texto.textContent =
+        "0 de 0";
+
+    anterior.style.visibility =
+        "hidden";
+
+    siguiente.style.visibility =
+        "hidden";
+
+    return;
+     }
+
+
+    texto.textContent =
+        `${inicio + 1} - ${fin} de ${totalClientes}`;
+
+anterior.style.visibility =
+    paginaActual === 1
+        ? "hidden"
+        : "visible";
+
+
+siguiente.style.visibility =
+    fin >= totalClientes
+        ? "hidden"
+        : "visible";
+}
+
+
+function paginaAnterior(){
+
+    if(paginaActual <= 1){
+        return;
+    }
+
+    paginaActual--;
+
+    mostrarListaClientes();
+}
+
+function paginaSiguiente(){
+
+    const clientes =
+        obtenerClientesFiltrados();
+
+    const totalClientes =
+        clientes.length;
+
+    const totalPaginas =
+        Math.ceil(
+            totalClientes /
+            clientesPorPagina
+        );
+
+    if(paginaActual >= totalPaginas){
+        return;
+    }
+
+    paginaActual++;
+
+    mostrarListaClientes();
+}
+function toggleTodosClientes(){
+
+    const boton =
+        document.getElementById(
+            "btnExpandir"
+        );
+
+    const filasDetalle =
+        document.querySelectorAll(
+            '[id^="detalle-cliente-"]'
+        );
+
+    const abrirTodos =
+        boton.textContent.trim() ===
+        "Expandir";
+
+
+    filasDetalle.forEach(
+        fila => {
+
+            const idUsuario =
+                fila.id.replace(
+                    "detalle-cliente-",
+                    ""
+                );
+
+            const flecha =
+                document.getElementById(
+                    `flecha-${idUsuario}`
+                );
+
+
+            if(abrirTodos){
+
+                fila.style.display =
+                    "table-row";
+
+                if(flecha){
+                    flecha.textContent =
+                        "▼";
+                }
+
+                mostrarFacturasCliente(
+                    Number(idUsuario),
+                    true
+                );
+
+            }else{
+
+                fila.style.display =
+                    "none";
+
+                if(flecha){
+                    flecha.textContent =
+                        "▶";
+                }
+
+            }
+
+        }
+    );
+
+
+    boton.textContent =
+        abrirTodos
+            ? "Colapsar"
+            : "Expandir";
+}
+
+
+function toggleCliente(idUsuario){
+
+    const fila =
+        document.getElementById(
+            `detalle-cliente-${idUsuario}`
+        );
+
+    const flecha =
+        document.getElementById(
+            `flecha-${idUsuario}`
+        );
+
+    if(!fila || !flecha){
+        return;
+    }
+
+    const estaAbierto =
+        fila.style.display === "table-row";
+
+    if(estaAbierto){
+
+        fila.style.display =
+            "none";
+
+        flecha.textContent =
+            "▶";
+
+    }else{
+
+        fila.style.display =
+            "table-row";
+
+        flecha.textContent =
+            "▼";
+
+        mostrarFacturasCliente(
+            idUsuario,
+            true
+        );
+    }
+}
 /* =========================================================
    ABRIR CLIENTE
 ========================================================= */
@@ -1294,28 +1687,7 @@ function abrirCliente(idUsuario){
 
 }
 
-
 function volverGestion(){
-
-    /*
-        Si estamos dentro de las facturas
-        de un cliente, volvemos a la lista
-        de clientes.
-    */
-
-    if(clienteVistaActual){
-
-        volverAClientes();
-
-        return;
-
-    }
-
-
-    /*
-        Si ya estamos en la lista de clientes,
-        entonces sí volvemos a Crear Pedido.
-    */
 
     window.location.href =
         "/dashboard.html";
@@ -1350,7 +1722,8 @@ function volverAClientes(){
 ========================================================= */
 
 function mostrarFacturasCliente(
-    idUsuario
+    idUsuario,
+    modoAcordeon = false
 ){
 
     const cliente =
@@ -1367,7 +1740,7 @@ function mostrarFacturasCliente(
 
     }
 
-
+if(!modoAcordeon){
 
     const tabla =
         document.querySelector(
@@ -1425,6 +1798,7 @@ function mostrarFacturasCliente(
 
     `;
 
+}
 let html = "";
 
     const grupos =
@@ -1714,6 +2088,51 @@ let html = "";
 
 
 
+if(modoAcordeon){
+
+    const contenedor =
+        document.getElementById(
+            `contenido-cliente-${idUsuario}`
+        );
+
+    if(!contenedor){
+        return;
+    }
+
+    contenedor.innerHTML = `
+
+        <table style="width:100%;">
+
+            <thead>
+
+                <tr>
+
+                    <th>Cliente</th>
+                    <th>País de origen</th>
+                    <th>Peso</th>
+                    <th>Valor del Peso</th>
+                    <th>Estado</th>
+                    <th>Abono</th>
+                    <th>Saldo</th>
+                    <th>Fecha</th>
+                    <th>Acción</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                ${html}
+
+            </tbody>
+
+        </table>
+
+    `;
+
+}else{
+
     document.getElementById(
         "tablaPedidos"
     ).innerHTML =
@@ -1724,9 +2143,9 @@ let html = "";
         "buscar"
     ).placeholder =
         "Buscar dentro del cliente...";
-
 }
 
+}
 
 
 /* =========================================================
@@ -3727,34 +4146,9 @@ async function confirmarArchivar(){
 
 function filtrar(){
 
+    paginaActual = 1;
 
-    const valor =
-        document.getElementById(
-            "buscar"
-        ).value
-        .toLowerCase();
-
-
-    document.querySelectorAll(
-        "#tablaPedidos tr"
-    ).forEach(
-        fila => {
-
-
-            const texto =
-                fila.innerText
-                .toLowerCase();
-
-
-            fila.style.display =
-                texto.includes(valor)
-                ? ""
-                : "none";
-
-
-        }
-    );
-
+    mostrarListaClientes();
 
 }
 
