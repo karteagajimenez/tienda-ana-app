@@ -240,7 +240,108 @@ input:focus {
 .toast.error {
     color: #c62828;
 }
+/* =========================================================
+   MENÚ LATERAL
+========================================================= */
 
+.menu-lateral {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 70px;
+    height: 100vh;
+    background: rgba(196, 139, 159, 0.22);
+    padding-top: 20px;
+    box-sizing: border-box;
+    transition: width 0.3s ease;
+    z-index: 900;
+    overflow: hidden;
+}
+
+.menu-lateral.abierto {
+    width: 220px;
+}
+
+.menu-lateral-superior {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+}
+
+.logo-menu-lateral {
+    width: 65px;
+    height: auto;
+    border-radius: 8px;
+
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease;
+}
+
+.menu-lateral.abierto .logo-menu-lateral {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+.btn-menu-lateral {
+    background: transparent;
+    color: #b76e8a;
+    border: none;
+    font-size: 28px;
+    min-width: 0;
+    width: 50px;
+    padding: 5px;
+    margin-left: 10px;
+}
+
+.btn-menu-lateral:hover {
+    background: transparent;
+    color: #9f5f79;
+}
+
+.menu-lateral-contenido {
+    margin-top: 25px;
+    padding: 0 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.menu-lateral.abierto .menu-lateral-contenido {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.menu-lateral-contenido button {
+    width: 100%;
+    margin-bottom: 10px;
+    background: #c48b9f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.menu-lateral-contenido button:hover {
+    background: #b3748a;
+}
+
+/* =========================================================
+   AJUSTAR CONTENIDO CUANDO EL MENÚ ESTÁ ABIERTO
+========================================================= */
+
+body {
+    transition: padding-left 0.3s ease;
+}
+
+body.menu-abierto {
+    padding-left: 240px;
+}
 </style>
 </head>
 
@@ -249,6 +350,52 @@ input:focus {
 <!-- 🔥 MENSAJE PROFESIONAL -->
 <div id="mensajeExito" class="toast">
     Pedido guardado correctamente
+</div>
+
+<!-- ======================================================
+     MENÚ LATERAL
+====================================================== -->
+
+<div id="menuLateral" class="menu-lateral">
+
+   <div class="menu-lateral-superior">
+
+    <button
+        type="button"
+        id="btnMenuLateral"
+        class="btn-menu-lateral"
+        onclick="toggleMenuLateral()"
+        title="Abrir o cerrar menú"
+    >
+        ☰
+    </button>
+
+    <img
+        src="logo.jpg"
+        alt="Logo Tienda Ana"
+        class="logo-menu-lateral"
+    >
+
+</div>
+
+    <div class="menu-lateral-contenido">
+
+        <button
+            type="button"
+            onclick="window.location.href='/add_article.html'"
+        >
+            Agregar artículo
+        </button>
+
+        <button
+            type="button"
+            onclick="window.location.href='/add_weight.html'"
+        >
+            Agregar peso
+        </button>
+
+    </div>
+
 </div>
 
 <!-- 🔥 HEADER DERECHA -->
@@ -334,20 +481,6 @@ input:focus {
             País: EEUU
         </button>
 
-        <button
-            type="button"
-            onclick="window.location.href='/add_article.html'"
-        >
-            Agregar artículo
-        </button>
-
-        <button
-            type="button"
-            onclick="window.location.href='/add_weight.html'"
-        >
-            Agregar peso
-        </button>
-
     </div>
 
 </form>
@@ -357,6 +490,22 @@ input:focus {
 let clientes = [];
 let articulos = [];
 
+function toggleMenuLateral(){
+
+    const menu =
+        document.getElementById(
+            "menuLateral"
+        );
+
+    menu.classList.toggle(
+        "abierto"
+    );
+
+    document.body.classList.toggle(
+        "menu-abierto"
+    );
+
+}
 let clienteSeleccionado = null;
 let articuloSeleccionado = null;
 let precioUnitarioSeleccionado = null;
@@ -693,7 +842,7 @@ function mostrarClientes(filtro = ''){
 
     }
 
-    resultados.forEach(c => {
+    resultados.slice(0, 20).forEach(c => {
 
         const opcion =
             document.createElement('div');
@@ -836,7 +985,7 @@ function mostrarArticulos(filtro = ''){
 
     }
 
-    resultados.forEach(item => {
+    resultados.slice(0, 20).forEach(item => {
 
         const opcion =
             document.createElement('div');
