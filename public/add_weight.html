@@ -332,7 +332,7 @@ td button {
 @media (max-width: 768px) {
 
     /* =========================================================
-       TODA LA PÁGINA SE PUEDE DESPLAZAR HORIZONTALMENTE
+       PÁGINA MÓVIL
     ========================================================= */
 
     html {
@@ -341,48 +341,49 @@ td button {
     }
 
     body {
-        min-width: 900px;
+        min-width: 760px;
+        width: 760px;
         overflow-x: visible;
+
+        background:
+            linear-gradient(
+                to right,
+                #f8e1e7,
+                #fdf6f0
+            );
     }
 
 
     /* =========================================================
-       ENCABEZADO EN UNA SOLA FILA
+       ENCABEZADO COMPLETO EN UNA SOLA FILA
     ========================================================= */
 
     .header {
-        width: 900px;
-        min-width: 900px;
+        width: 760px;
+        min-width: 760px;
 
         display: flex;
         align-items: center;
-        justify-content: flex-start;
-
-        gap: 18px;
 
         padding: 15px 18px;
         box-sizing: border-box;
+
+        gap: 14px;
     }
-
-
-    /* TÍTULO */
 
     .header h1 {
         position: static;
 
         width: auto;
 
-        font-size: 22px;
-        line-height: 1.2;
-
         margin: 0;
         padding: 0;
 
+        font-size: 20px;
+        line-height: 1.2;
+
         white-space: nowrap;
     }
-
-
-    /* LOGO */
 
     .logo-container {
         position: static;
@@ -397,13 +398,8 @@ td button {
     }
 
     .logo {
-        height: 70px;
+        height: 65px;
     }
-
-
-    /* =========================================================
-       BOTONES ARRIBA - TODOS EN UNA SOLA FILA
-    ========================================================= */
 
     .header-buttons {
         position: static;
@@ -412,10 +408,9 @@ td button {
 
         display: flex;
         flex-wrap: nowrap;
-
         align-items: center;
 
-        gap: 6px;
+        gap: 5px;
 
         margin: 0;
         padding: 0;
@@ -430,10 +425,9 @@ td button {
         min-width: 0;
 
         margin: 0;
+        padding: 7px 9px;
 
-        padding: 8px 12px;
-
-        font-size: 13px;
+        font-size: 11px;
 
         white-space: nowrap;
     }
@@ -454,27 +448,38 @@ td button {
 
 
     /* =========================================================
-       LISTA PRINCIPAL DE CLIENTES
+       TABLA PRINCIPAL DE CLIENTES
     ========================================================= */
 
     table {
-        width: 900px;
-        min-width: 900px;
+        width: 760px;
+        min-width: 760px;
     }
 
 
     /* =========================================================
-       ACORDEÓN DEL CLIENTE
+       ACORDEÓN - SCROLL INDEPENDIENTE
     ========================================================= */
 
     [id^="detalle-cliente-"] > td {
+        width: 760px;
+        max-width: 760px;
+
         padding: 0;
-        overflow: visible;
+
+        overflow: hidden;
     }
 
     [id^="contenido-cliente-"] {
-        width: 900px;
-        overflow: visible;
+        display: block;
+
+        width: 760px;
+        max-width: 760px;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        -webkit-overflow-scrolling: touch;
     }
 
     [id^="contenido-cliente-"] > table {
@@ -498,17 +503,11 @@ td button {
         vertical-align: middle;
     }
 
-
-    /* =========================================================
-       BOTONES DE LAS ACCIONES
-    ========================================================= */
-
     [id^="contenido-cliente-"] td button {
         width: auto;
         min-width: 0;
 
         padding: 7px 9px;
-
         margin: 2px;
 
         font-size: 12px;
