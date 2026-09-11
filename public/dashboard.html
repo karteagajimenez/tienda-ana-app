@@ -346,6 +346,91 @@ body {
 body.menu-abierto {
     padding-left: 240px;
 }
+@media (max-width: 768px) {
+
+    body {
+        padding: 12px;
+    }
+
+    body.menu-abierto {
+        padding-left: 12px;
+    }
+
+    .menu-lateral {
+        width: 0;
+        padding-top: 0;
+        overflow: visible;
+        background: transparent;
+    }
+
+    .menu-lateral.abierto {
+        width: 220px;
+        padding-top: 20px;
+        background: rgba(196, 139, 159, 0.95);
+    }
+
+    .btn-menu-lateral {
+        position: fixed;
+        top: 85px;
+        left: 10px;
+        z-index: 1200;
+        background: transparent;
+    }
+
+    .header {
+        padding-left: 55px;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .admin {
+        font-size: 14px;
+        margin-right: 0;
+    }
+
+    .logout {
+        font-size: 14px;
+        padding: 8px 10px;
+    }
+
+    .titulo-centro {
+        margin-top: 35px;
+    }
+
+    .titulo-centro .fila {
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .titulo-centro h2 {
+        font-size: 28px !important;
+    }
+
+    .titulo-centro img {
+        width: 75px;
+    }
+
+    hr {
+        width: 100%;
+        max-width: 540px;
+    }
+
+    form {
+        width: 100%;
+        max-width: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .botones {
+        gap: 8px;
+    }
+
+    .botones button {
+        font-size: 14px;
+        padding: 10px 6px;
+    }
+}
 </style>
 </head>
 
