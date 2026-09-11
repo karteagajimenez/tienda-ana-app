@@ -380,32 +380,39 @@ td button {
         height: 65px;
     }
 
-    .header-buttons {
-        position: absolute;
-        top: 10px;
-        right: 8px;
+   .header-buttons {
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    left: 170px;
 
-        width: 125px;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 5px;
 
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        gap: 4px;
+    overflow-x: auto;
+    overflow-y: hidden;
 
-        margin: 0;
-    }
+    -webkit-overflow-scrolling: touch;
 
-    .header-buttons button {
-        width: auto;
-        min-width: 0;
+    margin: 0;
+    padding-bottom: 4px;
+}
 
-        margin: 0;
-        padding: 6px 8px;
+.header-buttons button {
+    flex: 0 0 auto;
 
-        font-size: 10px;
-        border-radius: 5px;
-    }
+    width: auto;
+    min-width: 0;
 
+    margin: 0;
+    padding: 6px 9px;
+
+    font-size: 10px;
+    border-radius: 5px;
+
+    white-space: nowrap;
+}
 
     /* =========================================================
        BUSCADOR
