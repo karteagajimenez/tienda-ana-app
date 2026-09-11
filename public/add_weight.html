@@ -328,6 +328,81 @@ td button {
     max-width: 430px;
     text-align: center;
 }
+@media (max-width: 768px) {
+
+    body {
+        overflow-x: hidden;
+    }
+
+    .header {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 15px 10px;
+    }
+
+    .header h1 {
+        font-size: 24px;
+        text-align: center;
+        margin: 0;
+        padding-right: 90px;
+    }
+
+    .logo-container {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        left: auto;
+        transform: none;
+    }
+
+    .logo {
+        height: 75px;
+    }
+
+    .header-buttons {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 70px;
+    }
+
+    .header-buttons button {
+        width: 100%;
+        margin: 0;
+        padding: 10px 6px;
+        font-size: 14px;
+    }
+
+    #buscar {
+        width: calc(100% - 24px);
+        max-width: none;
+        box-sizing: border-box;
+        margin: 15px auto;
+    }
+
+    table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    th,
+    td {
+        padding: 10px 8px;
+        font-size: 14px;
+    }
+
+    td button {
+        padding: 7px 9px;
+        font-size: 13px;
+    }
+}
 </style>
 </head>
 
