@@ -566,62 +566,119 @@
     /* ========================================
        🔹 RESPONSIVE
     ======================================== */
+@media(max-width:700px){
 
-    @media(max-width:700px){
-
-        body {
-
-            padding: 10px;
-        }
-
-
-
-        #header {
-
-            flex-wrap: wrap;
-
-            gap: 10px;
-        }
-
-
-
-        #nombreCliente {
-
-            margin-right: 10px;
-
-            font-size: 14px;
-        }
-
-
-
-        .tabla-container {
-
-            overflow-x: auto;
-        }
-
-
-
-        table {
-
-            min-width: 750px;
-        }
-
-
-
-        .redes {
-
-            gap: 25px;
-        }
-
-
-
-        .contacto {
-
-            margin-top: 90px;
-        }
-
+    body {
+        padding: 10px;
+        overflow-x: hidden;
     }
 
+    /* ========================================
+       HEADER MÓVIL
+    ======================================== */
+
+    #header {
+        width: 100%;
+        max-width: 100%;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+
+        gap: 8px;
+
+        padding: 12px;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        -webkit-overflow-scrolling: touch;
+
+        white-space: nowrap;
+    }
+
+    #nombreCliente {
+        flex: 0 0 auto;
+
+        margin-right: 5px;
+
+        font-size: 14px;
+
+        white-space: nowrap;
+    }
+
+    #miPerfil,
+    #archivos,
+    #cerrarSesion {
+        flex: 0 0 auto;
+
+        margin-right: 5px;
+
+        padding: 8px 12px;
+
+        font-size: 12px;
+
+        white-space: nowrap;
+    }
+
+
+    /* ========================================
+       TABLA
+    ======================================== */
+
+    .tabla-container {
+        width: 100%;
+        max-width: 100%;
+
+        padding: 12px;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        width: 760px;
+        min-width: 760px;
+
+        table-layout: auto;
+
+        white-space: nowrap;
+    }
+
+    th,
+    td {
+        padding: 10px 12px;
+
+        font-size: 13px;
+
+        white-space: nowrap;
+    }
+
+
+    /* ========================================
+       REDES SOCIALES
+    ======================================== */
+
+    .redes {
+        gap: 18px;
+        flex-wrap: nowrap;
+    }
+
+    .red-social {
+        min-width: 75px;
+    }
+
+    .contacto {
+        width: 100%;
+        max-width: 100%;
+
+        margin-top: 70px;
+    }
+
+}
 </style>
 
 </head>
