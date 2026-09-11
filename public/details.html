@@ -340,15 +340,24 @@ td {
 /* =========================================================
    RESPONSIVE
 ========================================================= */
-
 @media(max-width: 700px) {
 
-    .informacion-factura {
-        flex-direction: column;
+    body {
+        overflow-x: hidden;
     }
 
-    .datos-fecha {
-        text-align: left;
+    /* HEADER SUPERIOR */
+
+    .header {
+        width: 100%;
+        padding: 12px 10px;
+        box-sizing: border-box;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 8px;
     }
 
     .header h1 {
@@ -358,39 +367,157 @@ td {
     .logo-container {
         position: static;
         transform: none;
+        flex: 0 0 auto;
     }
 
-}
-
-
-/* =========================================================
-   IMPRESIÓN
-========================================================= */
-
-@media print {
-
-    body {
-        background: white;
+    .logo-header {
+        height: 58px;
     }
 
-    .header {
-        display: none;
+    .header-buttons {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 5px;
     }
+
+    .header-buttons button {
+        padding: 7px 9px;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+
+    /* CONTENEDOR */
 
     .contenedor {
-        width: 100%;
-        max-width: none;
-        margin: 0;
+        width: calc(100% - 20px);
+        max-width: 100%;
+        margin: 15px auto;
     }
+
+
+    /* FACTURA */
 
     .factura {
-        box-shadow: none;
-        border-radius: 0;
+        width: 100%;
         padding: 20px;
+        box-sizing: border-box;
     }
 
-    @page {
-        margin: 15mm;
+
+    /* ENCABEZADO DE LA FACTURA */
+
+    .encabezado-factura {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 12px;
+
+        padding-bottom: 18px;
+    }
+
+    .logo-factura {
+        width: 110px;
+        flex: 0 0 auto;
+    }
+
+    .titulo-factura {
+        text-align: right;
+    }
+
+    .titulo-factura h2 {
+        font-size: 22px;
+        line-height: 1.15;
+    }
+
+    .titulo-factura p {
+        font-size: 14px;
+    }
+
+
+    /* CLIENTE + FECHA */
+
+    .informacion-factura {
+        display: block;
+
+        margin-top: 22px;
+        margin-bottom: 22px;
+    }
+
+    .datos-cliente {
+        width: 100%;
+    }
+
+    .nombre-cliente {
+        font-size: 19px;
+    }
+
+    .direccion-cliente {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .datos-fecha {
+        min-width: 0;
+        width: 100%;
+
+        margin-top: 22px;
+
+        text-align: left;
+    }
+
+    .fecha {
+        font-size: 16px;
+    }
+
+
+    /* TABLA */
+
+    .tabla-contenedor {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tabla-contenedor table {
+        min-width: 620px;
+        width: 620px;
+    }
+
+    th {
+        padding: 10px 8px;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    td {
+        padding: 11px 8px;
+        font-size: 13px;
+    }
+
+
+    /* RESUMEN */
+
+    .resumen {
+        width: 100%;
+        max-width: 100%;
+
+        margin-top: 25px;
+        margin-left: 0;
+    }
+
+    .fila-resumen {
+        padding: 10px 2px;
+    }
+
+
+    /* PIE */
+
+    .pie-factura {
+        margin-top: 30px;
+        padding-top: 15px;
     }
 
 }
