@@ -799,13 +799,19 @@ app.post('/create-article',protegerAdmin, (req, res) => {
 
 
     // Primero revisamos si ya existe el mismo nombre.
-    conexion.query(`
-        SELECT id_articulo
-        FROM articulos
-        WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?))
-        LIMIT 1
-    `, [nombreLimpio], (err, resultados) => {
-
+// Revisamos si ya existe el mismo nombre
+// con la misma descripción.
+conexion.query(`
+    SELECT id_articulo
+    FROM articulos
+    WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?))
+    AND LOWER(TRIM(COALESCE(descripcion, ''))) =
+        LOWER(TRIM(?))
+    LIMIT 1
+`, [
+    nombreLimpio,
+    descripcionLimpia
+], (err, resultados) => {
         if (err) {
             console.log("❌ Error buscando artículo:", err);
             return res.status(500).json({
@@ -817,7 +823,7 @@ app.post('/create-article',protegerAdmin, (req, res) => {
 
             return res.status(409).json({
                 ok: false,
-                mensaje: "El artículo ya existe"
+                mensaje: "Este artículo ya existe con la misma descripción"
             });
 
         }
