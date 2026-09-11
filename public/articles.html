@@ -341,6 +341,59 @@ tbody tr:hover{
         translateY(0);
 }
 
+/* PAGINACIÓN */
+
+.paginacion{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    width:100%;
+    margin-top:18px;
+
+    gap:8px;
+}
+
+.rango-paginacion{
+    width:100%;
+    text-align:center;
+
+    color:#333;
+
+    font-size:14px;
+    font-weight:bold;
+}
+
+.botones-paginacion{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    gap:8px;
+}
+
+.botones-paginacion button{
+    background:#c48b9f;
+    color:white;
+
+    border:none;
+    border-radius:6px;
+
+    padding:7px 13px;
+
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.botones-paginacion button:hover{
+    background:#b3748a;
+}
+
+.botones-paginacion button:disabled{
+    display:none;
+}
+
 /* RESPONSIVE */
 
 @media(max-width:700px){
@@ -420,58 +473,90 @@ tbody tr:hover{
 
         </div>
 
+<div class="tabla-contenedor">
 
-        <div class="tabla-contenedor">
+    <table>
 
-            <table>
+        <thead>
 
-                <thead>
+            <tr>
 
-                    <tr>
+                <th>
+                    Nombre del artículo
+                </th>
 
-                        <th>
-                            Nombre del artículo
-                        </th>
+                <th>
+                    Tasa
+                </th>
 
-                        <th>
-                            Tasa
-                        </th>
+                <th>
+                    Descripción
+                </th>
 
-                        <th>
-                            Descripción
-                        </th>
+                <th class="col-accion">
+                    Acción
+                </th>
 
-                        <th class="col-accion">
-                            Acción
-                        </th>
+            </tr>
 
-                    </tr>
-
-                </thead>
+        </thead>
 
 
-                <tbody id="tablaArticulos">
+        <tbody id="tablaArticulos">
 
-                    <tr>
+            <tr>
 
-                        <td
-                            colspan="4"
-                            class="sin-resultados"
-                        >
-                            Cargando artículos...
-                        </td>
+                <td
+                    colspan="4"
+                    class="sin-resultados"
+                >
+                    Cargando artículos...
+                </td>
 
-                    </tr>
+            </tr>
 
-                </tbody>
+        </tbody>
 
-            </table>
+    </table>
 
-        </div>
+</div>
+
+
+<div class="paginacion">
+
+    <div
+        id="rangoPaginacion"
+        class="rango-paginacion"
+    >
+        0 - 0 de 0
+    </div>
+
+    <div class="botones-paginacion">
+
+        <button
+            id="btnAnterior"
+            type="button"
+            onclick="paginaAnterior()"
+        >
+            Anterior
+        </button>
+
+        <button
+            id="btnSiguiente"
+            type="button"
+            onclick="paginaSiguiente()"
+        >
+            Siguiente
+        </button>
 
     </div>
 
 </div>
+
+    </div>
+
+</div>
+
 
 <div
     id="modalEliminarArticulo"
@@ -512,18 +597,27 @@ tbody tr:hover{
         </div>
 
     </div>
-    
+
 </div>
+
+
 <div
     id="mensajeExito"
     class="mensaje-exito"
 >
 </div>
+
+
 <script>
 
 
 let articulos = [];
 
+let paginaActual = 1;
+
+const articulosPorPagina = 20;
+
+let articulosFiltrados = [];
 
 
 /* ================================
@@ -664,9 +758,23 @@ function mostrarArticulos(lista){
         return;
 
     }
+articulosFiltrados = lista;
 
+const inicio =
+    (paginaActual - 1) *
+    articulosPorPagina;
 
-    lista.forEach(
+const fin =
+    inicio +
+    articulosPorPagina;
+
+const articulosPagina =
+    lista.slice(
+        inicio,
+        fin
+    );
+
+    articulosPagina.forEach(
         articulo => {
 
 
@@ -795,10 +903,114 @@ tdAccion.appendChild(
 
         }
     );
+actualizarPaginacion();
+}
+
+/* ================================
+   PAGINACIÓN
+================================ */
+
+function actualizarPaginacion(){
+
+    const total =
+        articulosFiltrados.length;
+
+    const rango =
+        document.getElementById(
+            "rangoPaginacion"
+        );
+
+    const btnAnterior =
+        document.getElementById(
+            "btnAnterior"
+        );
+
+    const btnSiguiente =
+        document.getElementById(
+            "btnSiguiente"
+        );
+
+
+    if(total === 0){
+
+        rango.textContent =
+            "0 - 0 de 0";
+
+        btnAnterior.disabled =
+            true;
+
+        btnSiguiente.disabled =
+            true;
+
+        return;
+    }
+
+
+    const inicio =
+        (paginaActual - 1) *
+        articulosPorPagina + 1;
+
+    const fin =
+        Math.min(
+            paginaActual *
+            articulosPorPagina,
+            total
+        );
+
+
+    rango.textContent =
+        `${inicio} - ${fin} de ${total}`;
+
+
+    btnAnterior.disabled =
+        paginaActual === 1;
+
+    btnSiguiente.disabled =
+        fin >= total;
 
 }
 
 
+function paginaAnterior(){
+
+    if(paginaActual <= 1){
+        return;
+    }
+
+    paginaActual--;
+
+    mostrarArticulos(
+        articulosFiltrados
+    );
+
+    actualizarPaginacion();
+
+}
+
+
+function paginaSiguiente(){
+
+    const totalPaginas =
+        Math.ceil(
+            articulosFiltrados.length /
+            articulosPorPagina
+        );
+
+    if(
+        paginaActual >= totalPaginas
+    ){
+        return;
+    }
+
+    paginaActual++;
+
+    mostrarArticulos(
+        articulosFiltrados
+    );
+
+    actualizarPaginacion();
+
+}
 
 /* ================================
    BUSCADOR
@@ -842,7 +1054,7 @@ document.getElementById(
                 }
             );
 
-
+         paginaActual = 1;
         mostrarArticulos(
             resultados
         );
