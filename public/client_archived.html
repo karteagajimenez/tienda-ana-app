@@ -280,36 +280,117 @@
             font-size: 15px;
         }
 
+@media(max-width:700px){
 
-        @media(max-width:700px){
-
-            body {
-
-                padding: 10px;
-            }
-
-
-            #header {
-
-                flex-wrap: wrap;
-
-                gap: 10px;
-            }
+    body {
+        padding: 10px;
+        overflow-x: hidden;
+    }
 
 
-            .tabla-container {
+    /* ========================================
+       HEADER MÓVIL
+    ======================================== */
 
-                overflow-x: auto;
-            }
+    #header {
+        width: 100%;
+        max-width: 100%;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+
+        gap: 8px;
+
+        padding: 12px;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        -webkit-overflow-scrolling: touch;
+
+        white-space: nowrap;
+    }
+
+    #nombreCliente {
+        flex: 0 0 auto;
+
+        margin-right: 5px;
+
+        font-size: 14px;
+
+        white-space: nowrap;
+    }
+
+    #miPerfil,
+    #archivos,
+    #cerrarSesion {
+        flex: 0 0 auto;
+
+        margin-right: 5px;
+
+        padding: 8px 12px;
+
+        font-size: 12px;
+
+        white-space: nowrap;
+    }
 
 
-            table {
+    /* ========================================
+       TABLA DE ARCHIVADOS
+    ======================================== */
 
-                min-width: 750px;
-            }
+    .tabla-container {
+        width: 100%;
+        max-width: 100%;
 
-        }
+        padding: 12px;
 
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        width: 800px;
+        min-width: 800px;
+
+        table-layout: auto;
+
+        white-space: nowrap;
+    }
+
+    th,
+    td {
+        padding: 10px 12px;
+
+        font-size: 13px;
+
+        white-space: nowrap;
+    }
+
+
+    /* ========================================
+       BOTONES DE ARCHIVADOS
+    ======================================== */
+
+    .btn-detalles-archivado,
+    .btn-desarchivar,
+    .btn-eliminar-archivado {
+        width: auto;
+        min-width: 0;
+
+        padding: 7px 9px;
+
+        font-size: 12px;
+
+        white-space: nowrap;
+    }
+
+}
     </style>
 
 </head>
