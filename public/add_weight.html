@@ -383,32 +383,40 @@ td button {
         box-sizing: border-box;
         margin: 15px auto;
     }
-table {
+/* =========================================================
+   TABLA MÓVIL - DESPLAZAMIENTO HORIZONTAL
+========================================================= */
+
+[id^="contenido-cliente-"] {
     width: 100%;
-    display: table;
-    table-layout: fixed;
-    overflow: visible;
-    white-space: normal;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
-th,
-td {
-    padding: 8px 5px;
-    font-size: 12px;
-    white-space: normal;
-    word-break: break-word;
+[id^="contenido-cliente-"] > table {
+    width: 900px !important;
+    min-width: 900px;
+    table-layout: auto;
+    white-space: nowrap;
 }
 
-td {
+[id^="contenido-cliente-"] th,
+[id^="contenido-cliente-"] td {
+    padding: 9px 10px;
+    font-size: 13px;
+    white-space: nowrap;
+    word-break: normal;
     vertical-align: middle;
 }
 
-td button {
-    padding: 7px 6px;
-    font-size: 12px;
+[id^="contenido-cliente-"] td button {
+    width: auto;
     min-width: 0;
-    width: 100%;
-    margin: 3px 0;
+    padding: 7px 9px;
+    margin: 2px;
+    font-size: 12px;
+    white-space: nowrap;
 }
 </style>
 </head>
