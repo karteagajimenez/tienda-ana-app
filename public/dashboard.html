@@ -371,11 +371,10 @@ body.menu-abierto {
     background: rgba(196, 139, 159, 0.97);
     box-shadow: 4px 0 12px rgba(0,0,0,0.18);
 }
-
 .btn-menu-lateral {
     position: fixed;
-    top: 92px;
-    left: 16px;
+    top: 90px;
+    left: 6px;
     z-index: 1300;
     background: transparent;
     margin: 0;
@@ -385,20 +384,34 @@ body.menu-abierto {
     align-items: center;
     justify-content: center;
 }
+
 .menu-lateral.abierto .menu-lateral-superior {
     position: absolute;
     top: 18px;
-    left: 10px;
+    left: 0;
+    width: 100%;
+    justify-content: center;
 }
 
-.menu-lateral.abierto .menu-lateral-contenido {
-    margin-top: 40px;
+.menu-lateral.abierto .logo-menu-lateral {
+    width: 90px;
 }
 
 .menu-lateral.abierto .btn-menu-lateral {
     position: absolute;
     top: 18px;
-    left: 14px;
+    left: 8px;
+}
+
+.menu-lateral.abierto .menu-lateral-contenido {
+    margin-top: 85px;
+}
+
+.menu-lateral-contenido button {
+    background: #b76e8a;
+    opacity: 1;
+    color: white;
+    font-weight: 600;
 }
     .header {
         padding-left: 55px;
