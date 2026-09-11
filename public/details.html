@@ -1573,25 +1573,22 @@ function limpiarNombreArchivo(texto){
 /* =========================================================
    DESCARGAR PDF REAL
 ========================================================= */
-
 async function descargarPDF(){
-
 
     const botonPDF =
         document.getElementById(
             "btnPDF"
         );
 
-
     try{
-
 
         /* ================================================
            VERIFICAR LIBRERÍAS
         ================================================ */
 
         if(
-            typeof html2canvas === "undefined"
+            typeof html2canvas ===
+            "undefined"
         ){
 
             alert(
@@ -1599,12 +1596,12 @@ async function descargarPDF(){
             );
 
             return;
-
         }
 
 
         if(
-            typeof window.jspdf === "undefined"
+            typeof window.jspdf ===
+            "undefined"
         ){
 
             alert(
@@ -1612,26 +1609,22 @@ async function descargarPDF(){
             );
 
             return;
-
         }
 
 
-
         /* ================================================
-           DESACTIVAR BOTÓN MIENTRAS GENERA
+           DESACTIVAR BOTÓN
         ================================================ */
 
         botonPDF.disabled =
             true;
 
-
         botonPDF.innerText =
             "Generando PDF...";
 
 
-
         /* ================================================
-           OBTENER FACTURA
+           FACTURA
         ================================================ */
 
         const factura =
@@ -1640,9 +1633,8 @@ async function descargarPDF(){
             );
 
 
-
         /* ================================================
-           ESPERAR A QUE LAS IMÁGENES ESTÉN CARGADAS
+           ESPERAR IMÁGENES
         ================================================ */
 
         const imagenes =
@@ -1650,21 +1642,17 @@ async function descargarPDF(){
                 "img"
             );
 
-
         await Promise.all(
 
             Array.from(
                 imagenes
             ).map(
-
                 imagen => {
 
                     if(imagen.complete){
 
                         return Promise.resolve();
-
                     }
-
 
                     return new Promise(
                         resolve => {
@@ -1672,45 +1660,45 @@ async function descargarPDF(){
                             imagen.onload =
                                 resolve;
 
-
                             imagen.onerror =
                                 resolve;
-
                         }
                     );
-
                 }
-
             )
-
         );
 
 
-
         /* ================================================
-           CAPTURAR FACTURA COMO IMAGEN
+           CAPTURAR COMO VERSIÓN DE COMPUTADORA
+
+           IMPORTANTE:
+           windowWidth evita que el PDF use
+           el diseño móvil del teléfono.
         ================================================ */
 
         const canvas =
             await html2canvas(
                 factura,
                 {
-
                     scale: 2,
 
                     useCORS: true,
 
-                    backgroundColor: "#ffffff",
+                    backgroundColor:
+                        "#ffffff",
 
                     logging: false,
 
                     scrollX: 0,
 
-                    scrollY: -window.scrollY
+                    scrollY: 0,
 
+                    windowWidth: 1200,
+
+                    windowHeight: 1600
                 }
             );
-
 
 
         /* ================================================
@@ -1731,18 +1719,16 @@ async function descargarPDF(){
             );
 
 
-
-        /* ================================================
-           TAMAÑO DEL PDF
-        ================================================ */
-
         const anchoPagina =
-            pdf.internal.pageSize.getWidth();
+            pdf.internal
+            .pageSize
+            .getWidth();
 
 
         const altoPagina =
-            pdf.internal.pageSize.getHeight();
-
+            pdf.internal
+            .pageSize
+            .getHeight();
 
 
         /* ================================================
@@ -1750,13 +1736,17 @@ async function descargarPDF(){
         ================================================ */
 
         const margen =
-            10;
+            8;
 
 
         const anchoDisponible =
             anchoPagina -
             (margen * 2);
 
+
+        const altoDisponible =
+            altoPagina -
+            (margen * 2);
 
 
         /* ================================================
@@ -1770,12 +1760,7 @@ async function descargarPDF(){
             );
 
 
-
-        /* ================================================
-           CALCULAR ALTURA PROPORCIONAL
-        ================================================ */
-
-        const altoImagen =
+        let altoImagen =
             (
                 canvas.height *
                 anchoDisponible
@@ -1783,19 +1768,9 @@ async function descargarPDF(){
             canvas.width;
 
 
-
         /* ================================================
-           ESPACIO ÚTIL DE CADA PÁGINA
-        ================================================ */
-
-        const altoDisponible =
-            altoPagina -
-            (margen * 2);
-
-
-
-        /* ================================================
-           SI CABE EN UNA SOLA PÁGINA
+           SI LA FACTURA ES CORTA:
+           UNA SOLA HOJA
         ================================================ */
 
         if(
@@ -1803,54 +1778,37 @@ async function descargarPDF(){
             altoDisponible
         ){
 
-
             pdf.addImage(
-
                 imagen,
-
                 "JPEG",
-
                 margen,
-
                 margen,
-
                 anchoDisponible,
-
                 altoImagen
-
             );
-
 
         }else{
 
-
             /* ============================================
-               PDF DE VARIAS PÁGINAS
+               FACTURA LARGA:
+               VARIAS HOJAS SOLO CUANDO
+               REALMENTE SEA NECESARIO
             ============================================ */
+
+            let alturaRestante =
+                altoImagen;
 
             let posicionY =
                 margen;
 
 
-            let alturaRestante =
-                altoImagen;
-
-
-
             pdf.addImage(
-
                 imagen,
-
                 "JPEG",
-
                 margen,
-
                 posicionY,
-
                 anchoDisponible,
-
                 altoImagen
-
             );
 
 
@@ -1858,11 +1816,9 @@ async function descargarPDF(){
                 altoDisponible;
 
 
-
             while(
                 alturaRestante > 0
             ){
-
 
                 pdf.addPage();
 
@@ -1876,33 +1832,24 @@ async function descargarPDF(){
 
 
                 pdf.addImage(
-
                     imagen,
-
                     "JPEG",
-
                     margen,
-
                     posicionY,
-
                     anchoDisponible,
-
                     altoImagen
-
                 );
 
 
                 alturaRestante -=
                     altoDisponible;
-
             }
 
         }
 
 
-
         /* ================================================
-           NOMBRE DEL CLIENTE
+           NOMBRE DEL ARCHIVO
         ================================================ */
 
         const nombreCliente =
@@ -1911,23 +1858,16 @@ async function descargarPDF(){
             ).innerText.trim();
 
 
-
         const nombreLimpio =
             limpiarNombreArchivo(
                 nombreCliente
             );
 
 
-
-        /* ================================================
-           NOMBRE DEL PDF
-        ================================================ */
-
         const nombrePDF =
             nombreLimpio
                 ? `Factura_${nombreLimpio}.pdf`
                 : "Factura_Tienda_Ana.pdf";
-
 
 
         /* ================================================
@@ -1941,34 +1881,24 @@ async function descargarPDF(){
 
     }catch(error){
 
-
         console.error(
             "Error generando PDF:",
             error
         );
 
-
         alert(
             "No se pudo generar el PDF."
         );
 
-
     }finally{
-
 
         botonPDF.disabled =
             false;
 
-
         botonPDF.innerText =
             "Descargar PDF";
-
     }
-
 }
-
-
-
 /* =========================================================
    INICIAR
 ========================================================= */
