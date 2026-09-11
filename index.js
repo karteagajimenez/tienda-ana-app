@@ -932,6 +932,76 @@ app.post('/update-article',protegerAdmin, (req, res) => {
     });
 
 });
+
+// 🔹 ELIMINAR ARTÍCULO
+app.post(
+    '/delete-article',
+    protegerAdmin,
+    (req, res) => {
+
+        const idArticulo =
+            Number(
+                req.body.id_articulo
+            );
+
+        if(
+            !Number.isInteger(idArticulo) ||
+            idArticulo <= 0
+        ){
+
+            return res.status(400).json({
+                ok: false,
+                mensaje:
+                    "Artículo inválido"
+            });
+
+        }
+
+        conexion.query(`
+            DELETE FROM articulos
+            WHERE id_articulo = ?
+        `, [
+            idArticulo
+        ], (err, result) => {
+
+            if(err){
+
+                console.log(
+                    "❌ Error eliminando artículo:",
+                    err
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    mensaje:
+                        "No se pudo eliminar el artículo"
+                });
+
+            }
+
+            if(
+                result.affectedRows === 0
+            ){
+
+                return res.status(404).json({
+                    ok: false,
+                    mensaje:
+                        "Artículo no encontrado"
+                });
+
+            }
+
+            return res.json({
+                ok: true,
+                mensaje:
+                    "Artículo eliminado exitosamente"
+            });
+
+        });
+
+    }
+);
+
 // 🔹 EDITAR PEDIDO
 app.post('/update-order', protegerAdmin, (req, res) => {
 
