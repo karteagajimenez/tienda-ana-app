@@ -517,7 +517,7 @@ td button {
     id="btnEditarAbono"
     class="editar"
     style="display:none;"
-    onclick="abrirEditarAbono()"
+    onclick="abrirEdicionSegunTipo()"
 >
     Editar
 </button>
@@ -589,6 +589,96 @@ td button {
         <button
             class="cancel"
             onclick="cerrarEditarAbono()"
+        >
+            Cancelar
+        </button>
+
+    </div>
+
+</div>
+<!-- =====================================================
+     MODAL EDITAR PESO
+===================================================== -->
+
+<div
+    id="modalEditarPeso"
+    class="modal"
+    style="display:none;"
+>
+
+    <div class="modal-content">
+
+        <h3>
+            Editar peso
+        </h3>
+
+        <select
+            id="editarPesoArticulo"
+            onchange="cargarPesoParaEditar()"
+        >
+            <option value="">
+                Seleccione el artículo
+            </option>
+        </select>
+
+ <label
+    id="labelPesoViejo"
+    style="
+        display:none;
+        width:95%;
+        margin:8px auto 0;
+        text-align:left;
+        font-size:13px;
+        color:#555;
+        font-weight:bold;
+    "
+>
+    Peso viejo
+</label>
+
+<input
+    type="number"
+    id="editarPesoViejo"
+    readonly
+    style="display:none;"
+>
+
+<label
+    id="labelPesoNuevo"
+    style="
+        display:none;
+        width:95%;
+        margin:8px auto 0;
+        text-align:left;
+        font-size:13px;
+        color:#555;
+        font-weight:bold;
+    "
+>
+    Peso nuevo
+</label>
+
+<input
+    type="number"
+    id="editarPesoNuevo"
+    placeholder="Ingrese el nuevo peso en gramos"
+    min="1"
+    step="1"
+    style="display:none;"
+>
+
+        <br>
+
+        <button
+            class="ok"
+            onclick="guardarEdicionPeso()"
+        >
+            Guardar
+        </button>
+
+        <button
+            class="cancel"
+            onclick="cerrarEditarPeso()"
         >
             Cancelar
         </button>
@@ -2487,27 +2577,28 @@ function abrirModal(
     pedidoSelect.innerHTML =
         opciones;
 
+/* =====================================================
+   PESO
+===================================================== */
 
-    /* =====================================================
-       PESO
-    ===================================================== */
+if(tipo === "peso"){
 
-    if(tipo === "peso"){
-
-        titulo.innerText =
-            "Seleccione artículo e ingrese el peso";
-
-
-        inputValor.style.display =
-            "block";
+    titulo.innerText =
+        "Seleccione artículo e ingrese el peso";
 
 
-        inputValor.placeholder =
-            "Peso en gramos";
-
-    }
+    inputValor.style.display =
+        "block";
 
 
+    inputValor.placeholder =
+        "Peso en gramos";
+
+
+    btnEditarAbono.style.display =
+        "inline-block";
+
+}
     /* =====================================================
        ABONO
     ===================================================== */
@@ -2942,6 +3033,337 @@ function mostrarMontoAbonoEditar(){
     inputMonto.style.display =
         "block";
 
+}function abrirEdicionSegunTipo(){
+
+    if(tipo === "pago"){
+
+        abrirEditarAbono();
+
+        return;
+    }
+
+    if(tipo === "peso"){
+
+        abrirEditarPeso();
+
+        return;
+    }
+
+}
+
+function abrirEditarPeso(){
+
+    const modal =
+        document.getElementById(
+            "modalEditarPeso"
+        );
+
+    const selectArticulo =
+        document.getElementById(
+            "editarPesoArticulo"
+        );
+
+    const inputPeso =
+        document.getElementById(
+            "editarPesoNuevo"
+        );
+
+    selectArticulo.innerHTML = `
+        <option value="">
+            Seleccione el artículo
+        </option>
+    `;
+
+    inputPeso.value =
+        "";
+
+    inputPeso.style.display =
+        "none";
+
+    const cliente =
+        pedidosPorCliente[
+            clienteSeleccionado
+        ];
+
+    if(!cliente){
+
+        mostrarMensaje(
+            "No se encontró el cliente"
+        );
+
+        return;
+    }
+
+    const grupo =
+        cliente.grupos[
+            String(grupoSeleccionado)
+        ];
+
+    if(!grupo){
+
+        mostrarMensaje(
+            "No se encontró la factura seleccionada"
+        );
+
+        return;
+    }
+
+    grupo.pedidos.forEach(
+        pedido => {
+
+            const opcion =
+                document.createElement(
+                    "option"
+                );
+
+            opcion.value =
+                pedido.id_pedido;
+
+            opcion.textContent =
+                `${pedido.articulo} - Cantidad ${pedido.cantidad}`;
+
+            selectArticulo.appendChild(
+                opcion
+            );
+        }
+    );
+
+    modal.style.display =
+        "flex";
+}
+function cargarPesoParaEditar(){
+
+    const selectArticulo =
+        document.getElementById(
+            "editarPesoArticulo"
+        );
+
+    const inputPesoViejo =
+        document.getElementById(
+            "editarPesoViejo"
+        );
+
+    const inputPesoNuevo =
+        document.getElementById(
+            "editarPesoNuevo"
+        );
+
+    const labelPesoViejo =
+        document.getElementById(
+            "labelPesoViejo"
+        );
+
+    const labelPesoNuevo =
+        document.getElementById(
+            "labelPesoNuevo"
+        );
+
+    const idPedido =
+        Number(
+            selectArticulo.value
+        );
+
+    inputPesoViejo.value =
+        "";
+
+    inputPesoNuevo.value =
+        "";
+
+    inputPesoViejo.style.display =
+        "none";
+
+    inputPesoNuevo.style.display =
+        "none";
+
+    labelPesoViejo.style.display =
+        "none";
+
+    labelPesoNuevo.style.display =
+        "none";
+
+    if(!idPedido){
+        return;
+    }
+
+    const pedido =
+        pedidosGlobales.find(
+            p =>
+                Number(p.id_pedido) ===
+                idPedido
+        );
+
+    if(!pedido){
+
+        mostrarMensaje(
+            "No se encontró el artículo"
+        );
+
+        return;
+    }
+
+    /* PESO ACTUAL - SOLO LECTURA */
+
+    inputPesoViejo.value =
+        Number(
+            pedido.peso_gramos
+        ) || 0;
+
+    labelPesoViejo.style.display =
+        "block";
+
+    inputPesoViejo.style.display =
+        "block";
+
+
+    /* NUEVO PESO - EDITABLE */
+
+    inputPesoNuevo.value =
+        "";
+
+    labelPesoNuevo.style.display =
+        "block";
+
+    inputPesoNuevo.style.display =
+        "block";
+}
+
+
+async function guardarEdicionPeso(){
+
+    const selectArticulo =
+        document.getElementById(
+            "editarPesoArticulo"
+        );
+
+    const inputPesoNuevo =
+        document.getElementById(
+            "editarPesoNuevo"
+        );
+
+    const idPedido =
+        Number(
+            selectArticulo.value
+        );
+
+    const nuevoPeso =
+        Number(
+            inputPesoNuevo.value
+        );
+
+    if(
+        !idPedido ||
+        !Number.isFinite(nuevoPeso) ||
+        nuevoPeso <= 0
+    ){
+
+        mostrarMensaje(
+            "Ingrese un peso nuevo válido"
+        );
+
+        return;
+    }
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/update-weight",
+                {
+                    method:
+                        "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            id_pedido:
+                                idPedido,
+
+                            peso_gramos:
+                                nuevoPeso
+                        })
+                }
+            );
+
+        const data =
+            await respuesta.json();
+
+        if(
+            !respuesta.ok ||
+            !data.ok
+        ){
+
+            mostrarMensaje(
+                "No se pudo editar el peso"
+            );
+
+            return;
+        }
+
+        cerrarEditarPeso();
+
+        await cargarPedidos();
+
+        mostrarMensaje(
+            "Peso editado exitosamente"
+        );
+
+    }catch(error){
+
+        console.error(
+            "Error editando peso:",
+            error
+        );
+
+        mostrarMensaje(
+            "No se pudo editar el peso"
+        );
+    }
+}
+function cerrarEditarPeso(){
+
+    document.getElementById(
+        "modalEditarPeso"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "editarPesoArticulo"
+    ).value =
+        "";
+
+    document.getElementById(
+        "editarPesoViejo"
+    ).value =
+        "";
+
+    document.getElementById(
+        "editarPesoViejo"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "editarPesoNuevo"
+    ).value =
+        "";
+
+    document.getElementById(
+        "editarPesoNuevo"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "labelPesoViejo"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "labelPesoNuevo"
+    ).style.display =
+        "none";
 }
 function abrirEditarAbono(){
 
@@ -3045,7 +3467,6 @@ function abrirEditarAbono(){
         "flex";
 
 }
-
 /* =========================================================
    CONFIRMAR
 ========================================================= */
@@ -3087,73 +3508,94 @@ async function confirmar(){
 
     }
 
+/* =====================================================
+   PESO
+===================================================== */
 
-    /* =====================================================
-       PESO
-    ===================================================== */
+if(tipo === "peso"){
 
-    if(tipo === "peso"){
-
-        const valor =
-            Number(
-                document.getElementById(
-                    "inputValor"
-                ).value
-            );
-
-
-        if(
-            !valor ||
-            valor <= 0
-        ){
-
-            return;
-
-        }
+    const valor =
+        Number(
+            document.getElementById(
+                "inputValor"
+            ).value
+        );
 
 
-        const respuesta =
-            await fetch(
-                "/update-weight",
-                {
+    if(
+        !valor ||
+        valor <= 0
+    ){
 
-                    method:
-                        "POST",
+        mostrarMensaje(
+            "Ingrese un peso válido"
+        );
 
-                    headers: {
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            id_pedido:
-                                pedidoId,
-
-                            peso_gramos:
-                                valor
-
-                        })
-
-                }
-            );
-
-
-        if(!respuesta.ok){
-
-            mostrarMensaje(
-                "No se pudo actualizar el peso"
-            );
-
-            return;
-
-        }
-
+        return;
     }
 
+
+    const pedido =
+        pedidosGlobales.find(
+            p =>
+                Number(p.id_pedido) ===
+                Number(pedidoId)
+        );
+
+
+    if(
+        pedido &&
+        Number(pedido.peso_gramos) > 0
+    ){
+
+        mostrarMensaje(
+            "Este artículo ya tiene un peso registrado. Use el botón Editar para cambiarlo."
+        );
+
+        return;
+    }
+
+
+    const respuesta =
+        await fetch(
+            "/update-weight",
+            {
+
+                method:
+                    "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body:
+                    JSON.stringify({
+
+                        id_pedido:
+                            pedidoId,
+
+                        peso_gramos:
+                            valor
+
+                    })
+
+            }
+        );
+
+
+    if(!respuesta.ok){
+
+        mostrarMensaje(
+            "No se pudo guardar el peso"
+        );
+
+        return;
+    }
+
+}
 
     /* =====================================================
        ABONO
@@ -3175,15 +3617,26 @@ async function confirmar(){
             ).value;
 
 
-        if(
-            !valor ||
-            valor <= 0 ||
-            !metodo
-        ){
+  if(
+    !valor ||
+    valor <= 0
+){
 
-            return;
+    mostrarMensaje(
+        "Ingrese un monto válido"
+    );
 
-        }
+    return;
+}
+
+if(!metodo){
+
+    mostrarMensaje(
+        "Seleccione el método de pago"
+    );
+
+    return;
+}
 
 
         /* BUSCAR SOLO DENTRO DE ESTA FACTURA */
