@@ -383,25 +383,32 @@ td button {
         box-sizing: border-box;
         margin: 15px auto;
     }
+table {
+    width: 100%;
+    display: table;
+    table-layout: fixed;
+    overflow: visible;
+    white-space: normal;
+}
 
-    table {
-        display: block;
-        width: 100%;
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-    }
+th,
+td {
+    padding: 8px 5px;
+    font-size: 12px;
+    white-space: normal;
+    word-break: break-word;
+}
 
-    th,
-    td {
-        padding: 10px 8px;
-        font-size: 14px;
-    }
+td {
+    vertical-align: middle;
+}
 
-    td button {
-        padding: 7px 9px;
-        font-size: 13px;
-    }
+td button {
+    padding: 7px 6px;
+    font-size: 12px;
+    min-width: 0;
+    width: 100%;
+    margin: 3px 0;
 }
 </style>
 </head>
