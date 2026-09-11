@@ -568,14 +568,51 @@ td button {
             </option>
         </select>
 
-        <input
-            type="number"
-            id="editarAbonoMonto"
-            placeholder="Nuevo monto del abono"
-            min="1"
-            step="0.01"
-            style="display:none;"
-        >
+    <label
+    id="labelAbonoViejo"
+    style="
+        display:none;
+        width:95%;
+        margin:8px auto 0;
+        text-align:left;
+        font-size:13px;
+        color:#555;
+        font-weight:bold;
+    "
+>
+    Abono viejo
+</label>
+
+<input
+    type="number"
+    id="editarAbonoViejo"
+    readonly
+    style="display:none;"
+>
+
+<label
+    id="labelAbonoNuevo"
+    style="
+        display:none;
+        width:95%;
+        margin:8px auto 0;
+        text-align:left;
+        font-size:13px;
+        color:#555;
+        font-weight:bold;
+    "
+>
+    Abono nuevo
+</label>
+
+<input
+    type="number"
+    id="editarAbonoMonto"
+    placeholder="Ingrese el nuevo monto"
+    min="1"
+    step="0.01"
+    style="display:none;"
+>
 
         <br>
 
@@ -2994,17 +3031,31 @@ async function guardarEdicionAbono(){
 
     }
 
-}
-function mostrarMontoAbonoEditar(){
+}function mostrarMontoAbonoEditar(){
 
     const selectAbono =
         document.getElementById(
             "editarAbonoRegistro"
         );
 
-    const inputMonto =
+    const inputMontoViejo =
+        document.getElementById(
+            "editarAbonoViejo"
+        );
+
+    const inputMontoNuevo =
         document.getElementById(
             "editarAbonoMonto"
+        );
+
+    const labelAbonoViejo =
+        document.getElementById(
+            "labelAbonoViejo"
+        );
+
+    const labelAbonoNuevo =
+        document.getElementById(
+            "labelAbonoNuevo"
         );
 
     const opcionSeleccionada =
@@ -3012,28 +3063,61 @@ function mostrarMontoAbonoEditar(){
             selectAbono.selectedIndex
         ];
 
+
+    inputMontoViejo.value =
+        "";
+
+    inputMontoNuevo.value =
+        "";
+
+    inputMontoViejo.style.display =
+        "none";
+
+    inputMontoNuevo.style.display =
+        "none";
+
+    labelAbonoViejo.style.display =
+        "none";
+
+    labelAbonoNuevo.style.display =
+        "none";
+
+
     if(
         !selectAbono.value ||
         !opcionSeleccionada
     ){
 
-        inputMonto.value =
-            "";
-
-        inputMonto.style.display =
-            "none";
-
         return;
-
     }
 
-    inputMonto.value =
+
+    /* ABONO ACTUAL - SOLO LECTURA */
+
+    inputMontoViejo.value =
         opcionSeleccionada.dataset.monto;
 
-    inputMonto.style.display =
+    labelAbonoViejo.style.display =
         "block";
 
-}function abrirEdicionSegunTipo(){
+    inputMontoViejo.style.display =
+        "block";
+
+
+    /* ABONO NUEVO - EDITABLE */
+
+    inputMontoNuevo.value =
+        "";
+
+    labelAbonoNuevo.style.display =
+        "block";
+
+    inputMontoNuevo.style.display =
+        "block";
+
+
+}
+function abrirEdicionSegunTipo(){
 
     if(tipo === "pago"){
 
@@ -3303,13 +3387,15 @@ async function guardarEdicionPeso(){
             return;
         }
 
-        cerrarEditarPeso();
+     cerrarEditarPeso();
 
-        await cargarPedidos();
+cerrarModal();
 
-        mostrarMensaje(
-            "Peso editado exitosamente"
-        );
+await cargarPedidos();
+
+mostrarMensaje(
+    "Peso editado exitosamente"
+);
 
     }catch(error){
 
@@ -3382,10 +3468,26 @@ function abrirEditarAbono(){
             "editarAbonoRegistro"
         );
 
-    const inputMonto =
+    const inputMontoViejo =
+        document.getElementById(
+            "editarAbonoViejo"
+        );
+
+    const inputMontoNuevo =
         document.getElementById(
             "editarAbonoMonto"
         );
+
+    const labelAbonoViejo =
+        document.getElementById(
+            "labelAbonoViejo"
+        );
+
+    const labelAbonoNuevo =
+        document.getElementById(
+            "labelAbonoNuevo"
+        );
+
 
     selectArticulo.innerHTML = `
         <option value="">
@@ -3393,19 +3495,36 @@ function abrirEditarAbono(){
         </option>
     `;
 
+
     selectAbono.innerHTML = `
         <option value="">
             Seleccione el abono
         </option>
     `;
 
+
     selectAbono.style.display =
         "none";
 
-    inputMonto.value =
+
+    inputMontoViejo.value =
         "";
 
-    inputMonto.style.display =
+    inputMontoNuevo.value =
+        "";
+
+
+    inputMontoViejo.style.display =
+        "none";
+
+    inputMontoNuevo.style.display =
+        "none";
+
+
+    labelAbonoViejo.style.display =
+        "none";
+
+    labelAbonoNuevo.style.display =
         "none";
 
 
@@ -3421,7 +3540,6 @@ function abrirEditarAbono(){
         );
 
         return;
-
     }
 
 
@@ -3437,7 +3555,6 @@ function abrirEditarAbono(){
         );
 
         return;
-
     }
 
 
@@ -3465,7 +3582,6 @@ function abrirEditarAbono(){
 
     modal.style.display =
         "flex";
-
 }
 /* =========================================================
    CONFIRMAR
