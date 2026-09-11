@@ -784,174 +784,232 @@ const ubicacionesCR = {
 
 };
 
-
 // ========================================
-// ELEMENTOS DEL FORMULARIO
-// ========================================
-
-const provinciaSelect =
-    document.getElementById(
-        "provincia"
-    );
-
-const cantonSelect =
-    document.getElementById(
-        "canton"
-    );
-
-const distritoSelect =
-    document.getElementById(
-        "distrito"
-    );
-
-
-// ========================================
-// CAMBIO DE PROVINCIA
+// CONECTAR PROVINCIA -> CANTÓN -> DISTRITO
 // ========================================
 
-provinciaSelect.addEventListener(
-    "change",
-    function(){
+function configurarUbicaciones(
+    provinciaId,
+    cantonId,
+    distritoId
+){
 
-        const provincia =
-            this.value;
+    const provinciaSelect =
+        document.getElementById(
+            provinciaId
+        );
 
+    const cantonSelect =
+        document.getElementById(
+            cantonId
+        );
 
-        cantonSelect.innerHTML = `
-            <option value="">
-                🏙️ Seleccione cantón
-            </option>
-        `;
-
-
-        distritoSelect.innerHTML = `
-            <option value="">
-                📍 Seleccione distrito
-            </option>
-        `;
-
-
-        distritoSelect.disabled =
-            true;
-
-
-        if(
-            !provincia ||
-            !ubicacionesCR[provincia]
-        ){
-
-            cantonSelect.disabled =
-                true;
-
-            return;
-
-        }
-
-
-        const cantones =
-            Object.keys(
-                ubicacionesCR[provincia]
-            );
-
-
-        cantones.forEach(
-            (canton) => {
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-                option.value =
-                    canton;
-
-                option.textContent =
-                    canton;
-
-                cantonSelect.appendChild(
-                    option
-                );
-
-            }
+    const distritoSelect =
+        document.getElementById(
+            distritoId
         );
 
 
-        cantonSelect.disabled =
-            false;
-
+    // Si esta página no tiene estos campos,
+    // simplemente no hacemos nada.
+    if(
+        !provinciaSelect ||
+        !cantonSelect ||
+        !distritoSelect
+    ){
+        return;
     }
-);
 
 
-// ========================================
-// CAMBIO DE CANTÓN
-// ========================================
+    // ========================================
+    // CAMBIO DE PROVINCIA
+    // ========================================
 
-cantonSelect.addEventListener(
-    "change",
-    function(){
+    provinciaSelect.addEventListener(
+        "change",
+        function(){
 
-        const provincia =
-            provinciaSelect.value;
-
-        const canton =
-            this.value;
+            const provincia =
+                this.value;
 
 
-        distritoSelect.innerHTML = `
-            <option value="">
-                📍 Seleccione distrito
-            </option>
-        `;
+            cantonSelect.innerHTML = `
+                <option value="">
+                    Seleccione cantón
+                </option>
+            `;
 
 
-        if(
-            !provincia ||
-            !canton ||
-            !ubicacionesCR[provincia] ||
-            !ubicacionesCR[provincia][canton]
-        ){
+            distritoSelect.innerHTML = `
+                <option value="">
+                    Seleccione distrito
+                </option>
+            `;
+
 
             distritoSelect.disabled =
                 true;
 
-            return;
 
-        }
+            if(
+                !provincia ||
+                !ubicacionesCR[provincia]
+            ){
 
+                cantonSelect.disabled =
+                    true;
 
-        const distritos =
-            ubicacionesCR[
-                provincia
-            ][
-                canton
-            ];
-
-
-        distritos.forEach(
-            (distrito) => {
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-                option.value =
-                    distrito;
-
-                option.textContent =
-                    distrito;
-
-                distritoSelect.appendChild(
-                    option
-                );
+                return;
 
             }
-        );
 
 
-        distritoSelect.disabled =
-            false;
+            const cantones =
+                Object.keys(
+                    ubicacionesCR[
+                        provincia
+                    ]
+                );
 
-    }
+
+            cantones.forEach(
+                (canton) => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+                    option.value =
+                        canton;
+
+                    option.textContent =
+                        canton;
+
+                    cantonSelect.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+            cantonSelect.disabled =
+                false;
+
+        }
+    );
+
+
+    // ========================================
+    // CAMBIO DE CANTÓN
+    // ========================================
+
+    cantonSelect.addEventListener(
+        "change",
+        function(){
+
+            const provincia =
+                provinciaSelect.value;
+
+            const canton =
+                this.value;
+
+
+            distritoSelect.innerHTML = `
+                <option value="">
+                    Seleccione distrito
+                </option>
+            `;
+
+
+            if(
+                !provincia ||
+                !canton ||
+                !ubicacionesCR[
+                    provincia
+                ] ||
+                !ubicacionesCR[
+                    provincia
+                ][
+                    canton
+                ]
+            ){
+
+                distritoSelect.disabled =
+                    true;
+
+                return;
+
+            }
+
+
+            const distritos =
+                ubicacionesCR[
+                    provincia
+                ][
+                    canton
+                ];
+
+
+            distritos.forEach(
+                (distrito) => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+                    option.value =
+                        distrito;
+
+                    option.textContent =
+                        distrito;
+
+                    distritoSelect.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+            distritoSelect.disabled =
+                false;
+
+        }
+    );
+
+}
+
+
+// ========================================
+// REGISTRO
+// ========================================
+
+configurarUbicaciones(
+    "provincia",
+    "canton",
+    "distrito"
+);
+
+
+// ========================================
+// DASHBOARD - AGREGAR CLIENTE
+// ========================================
+
+configurarUbicaciones(
+    "clienteProvincia",
+    "clienteCanton",
+    "clienteDistrito"
+);
+
+// ========================================
+// DASHBOARD - EDITAR CLIENTE
+// ========================================
+
+configurarUbicaciones(
+    "editarClienteProvincia",
+    "editarClienteCanton",
+    "editarClienteDistrito"
 );

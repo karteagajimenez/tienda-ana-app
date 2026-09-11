@@ -215,7 +215,7 @@ input:focus {
     box-shadow: 0 8px 25px rgba(0,0,0,0.15);
     opacity: 0;
     transition: all 0.35s ease;
-    z-index: 1000;
+    z-index: 5000;
     text-align: center;
     min-width: 240px;
     pointer-events: none;
@@ -346,125 +346,240 @@ body {
 body.menu-abierto {
     padding-left: 240px;
 }
+/* =========================================================
+   MODAL AGREGAR CLIENTE
+========================================================= */
+
+.modal-cliente{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    width:100vw;
+    height:100vh;
+    background:rgba(0,0,0,0.35);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:3000;
+    padding:20px;
+    box-sizing:border-box;
+}
+
+.modal-cliente.activo{
+    display:flex;
+}
+
+.modal-cliente-contenido{
+    background:white;
+    width:100%;
+    max-width:520px;
+    max-height:85vh;
+    overflow-y:auto;
+    border-radius:12px;
+    padding:24px;
+    box-shadow:0 8px 28px rgba(0,0,0,0.22);
+    box-sizing:border-box;
+}
+
+
+.modal-cliente-contenido h3{
+    margin-top:0;
+    text-align:center;
+    color:#c48b9f;
+    font-size:24px;
+}
+#formularioEditarCliente label{
+    display:block;
+    font-weight:bold;
+    color:#444;
+    margin-top:8px;
+    margin-bottom:0;
+}
+.modal-cliente-botones-superiores{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:18px;
+}
+
+.modal-cliente-botones-superiores button{
+    min-width:120px;
+}
+
+/* =========================================================
+   CONTRASEÑA CLIENTE + OJO
+========================================================= */
+
+.password-container-cliente{
+    position:relative;
+    width:100%;
+    margin:10px 0;
+}
+
+.password-container-cliente input{
+    width:100%;
+    margin:0;
+    padding-right:52px;
+    box-sizing:border-box;
+}
+
+.toggle-password-cliente{
+    position:absolute;
+    top:50%;
+    right:8px;
+    transform:translateY(-50%);
+    width:40px;
+    height:40px;
+    min-width:0;
+    padding:0;
+    margin:0;
+    border:none;
+    background:transparent;
+    color:#777;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+.toggle-password-cliente:hover{
+    background:transparent;
+    color:#c48b9f;
+}
+
+.toggle-password-cliente:focus{
+    outline:none;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
 @media (max-width: 768px) {
 
     body {
-        padding: 12px;
+        padding:12px;
     }
 
     body.menu-abierto {
-        padding-left: 12px;
+        padding-left:12px;
     }
 
-   .menu-lateral {
-    width: 0;
-    padding-top: 0;
-    overflow: visible;
-    background: transparent;
-    z-index: 1100;
-}
+    .menu-lateral {
+        width:0;
+        padding-top:0;
+        overflow:visible;
+        background:transparent;
+        z-index:1100;
+    }
 
-.menu-lateral.abierto {
-    width: 230px;
-    height: 100vh;
-    padding-top: 75px;
-    background: rgba(196, 139, 159, 0.97);
-    box-shadow: 4px 0 12px rgba(0,0,0,0.18);
-}
-.btn-menu-lateral {
-    position: fixed;
-    top: 18px;
-    left: 8px;
-    z-index: 1300;
-    background: transparent;
-    margin: 0;
-    width: 45px;
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+    .menu-lateral.abierto {
+        width:230px;
+        height:100vh;
+        padding-top:75px;
+        background:rgba(196, 139, 159, 0.97);
+        box-shadow:4px 0 12px rgba(0,0,0,0.18);
+    }
 
-.menu-lateral.abierto .menu-lateral-superior {
-    position: absolute;
-    top: 18px;
-    left: 0;
-    width: 100%;
-    justify-content: center;
-}
+    .btn-menu-lateral {
+        position:fixed;
+        top:18px;
+        left:8px;
+        z-index:1300;
+        background:transparent;
+        margin:0;
+        width:45px;
+        height:45px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
 
-.menu-lateral.abierto .logo-menu-lateral {
-    width: 90px;
-}
+    .menu-lateral.abierto .menu-lateral-superior {
+        position:absolute;
+        top:18px;
+        left:0;
+        width:100%;
+        justify-content:center;
+    }
 
-.menu-lateral.abierto .btn-menu-lateral {
-    position: fixed;
-    top: 18px;
-    left: 8px;
-}
+    .menu-lateral.abierto .logo-menu-lateral {
+        width:90px;
+    }
 
-.menu-lateral.abierto .menu-lateral-contenido {
-    margin-top: 85px;
-}
+    .menu-lateral.abierto .btn-menu-lateral {
+        position:fixed;
+        top:18px;
+        left:8px;
+    }
 
-.menu-lateral-contenido button {
-    background: #b76e8a;
-    opacity: 1;
-    color: white;
-    font-weight: 600;
-}
+    .menu-lateral.abierto .menu-lateral-contenido {
+        margin-top:85px;
+    }
+
+    .menu-lateral-contenido button {
+        background:#b76e8a;
+        opacity:1;
+        color:white;
+        font-weight:600;
+    }
+
     .header {
-        padding-left: 55px;
-        gap: 8px;
-        flex-wrap: wrap;
+        padding-left:55px;
+        gap:8px;
+        flex-wrap:wrap;
     }
 
     .admin {
-        font-size: 14px;
-        margin-right: 0;
+        font-size:14px;
+        margin-right:0;
     }
 
     .logout {
-        font-size: 14px;
-        padding: 8px 10px;
+        font-size:14px;
+        padding:8px 10px;
     }
 
     .titulo-centro {
-        margin-top: 35px;
+        margin-top:35px;
     }
 
     .titulo-centro .fila {
-        gap: 5px;
-        flex-wrap: wrap;
+        gap:5px;
+        flex-wrap:wrap;
     }
 
     .titulo-centro h2 {
-        font-size: 28px !important;
+        font-size:28px !important;
     }
 
     .titulo-centro img {
-        width: 75px;
+        width:75px;
     }
 
     hr {
-        width: 100%;
-        max-width: 540px;
+        width:100%;
+        max-width:540px;
     }
 
     form {
-        width: 100%;
-        max-width: 100%;
-        padding: 20px;
-        box-sizing: border-box;
+        width:100%;
+        max-width:100%;
+        padding:20px;
+        box-sizing:border-box;
     }
 
     .botones {
-        gap: 8px;
+        gap:8px;
     }
 
     .botones button {
-        font-size: 14px;
-        padding: 10px 6px;
+        font-size:14px;
+        padding:10px 6px;
     }
 }
 </style>
@@ -506,6 +621,13 @@ body.menu-abierto {
     <div class="menu-lateral-contenido">
 
         <button
+          type="button"
+           onclick="abrirAgregarCliente()"
+       >
+           Agregar cliente
+        </button>
+
+        <button
             type="button"
             onclick="window.location.href='/add_article.html'"
         >
@@ -522,7 +644,382 @@ body.menu-abierto {
     </div>
 
 </div>
+<!-- ======================================================
+     MODAL AGREGAR CLIENTE
+====================================================== -->
 
+<div
+    id="modalAgregarCliente"
+    class="modal-cliente"
+>
+    <div class="modal-cliente-contenido">
+
+        <h3>Agregar cliente</h3>
+
+        <!-- FORMULARIO AGREGAR CLIENTE -->
+        <div id="formularioAgregarCliente">
+
+            <input
+                type="text"
+                id="clienteNombre"
+                placeholder="Nombre"
+                autocomplete="off"
+            >
+
+            <input
+                type="text"
+                id="clienteApellido"
+                placeholder="Apellido"
+                autocomplete="off"
+            >
+
+            <input
+                type="tel"
+                id="clienteTelefono"
+                placeholder="Teléfono"
+                inputmode="numeric"
+                autocomplete="off"
+            >
+
+           <select id="clienteProvincia">
+
+    <option value="">
+        Seleccione provincia
+    </option>
+
+    <option value="San José">
+        San José
+    </option>
+
+    <option value="Alajuela">
+        Alajuela
+    </option>
+
+    <option value="Cartago">
+        Cartago
+    </option>
+
+    <option value="Heredia">
+        Heredia
+    </option>
+
+    <option value="Guanacaste">
+        Guanacaste
+    </option>
+
+    <option value="Puntarenas">
+        Puntarenas
+    </option>
+
+    <option value="Limón">
+        Limón
+    </option>
+
+</select>
+
+<select id="clienteCanton" disabled>
+    <option value="">
+        Seleccione cantón
+    </option>
+</select>
+
+<select id="clienteDistrito" disabled>
+    <option value="">
+        Seleccione distrito
+    </option>
+</select>
+
+            <input
+                type="text"
+                id="clienteDireccion"
+                placeholder="Dirección exacta (opcional)"
+                autocomplete="off"
+            >
+
+            <input
+                type="email"
+                id="clienteCorreo"
+                placeholder="Correo electrónico (opcional)"
+                autocomplete="off"
+            >
+<div class="password-container-cliente">
+
+    <input
+        type="password"
+        id="clientePassword"
+        placeholder="Contraseña (opcional)"
+        autocomplete="new-password"
+    >
+
+    <button
+        type="button"
+        class="toggle-password-cliente"
+        onclick="mostrarPasswordCliente()"
+        aria-label="Mostrar u ocultar contraseña"
+    >
+
+        <svg
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <path
+                d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12"
+            ></path>
+
+            <circle
+                cx="12"
+                cy="12"
+                r="3"
+            ></circle>
+
+        </svg>
+
+    </button>
+
+</div>
+
+            </div>
+<div class="modal-cliente-botones-superiores">
+
+    <button
+        type="button"
+        class="btn-guardar-cliente"
+        onclick="guardarClienteManual()"
+    >
+        Guardar cliente
+    </button>
+
+    <button
+        type="button"
+        onclick="abrirEditarCliente()"
+    >
+        Editar
+    </button>
+
+    <button
+        type="button"
+        onclick="cerrarAgregarCliente()"
+    >
+        Cancelar
+    </button>
+
+</div>
+    </div>
+</div>
+<!-- ======================================================
+     MODAL EDITAR CLIENTE
+====================================================== -->
+
+<div
+    id="modalEditarCliente"
+    class="modal-cliente"
+>
+    <div class="modal-cliente-contenido">
+
+        <h3>Editar cliente</h3>
+
+
+        <!-- BUSCAR CLIENTE -->
+        <div class="buscador-contenedor">
+
+            <input
+                type="text"
+                id="buscarClienteEditar"
+                placeholder="Buscar cliente..."
+                autocomplete="off"
+            >
+
+            <div
+                id="listaClientesEditar"
+                class="lista-buscador"
+            ></div>
+
+        </div>
+
+
+        <!-- DATOS DEL CLIENTE -->
+
+        <div id="formularioEditarCliente">
+<label>Nombre</label>
+
+<input
+    type="text"
+    id="editarClienteNombre"
+    placeholder="Nombre"
+    autocomplete="off"
+>
+
+
+<label>Apellido</label>
+
+<input
+    type="text"
+    id="editarClienteApellido"
+    placeholder="Apellido"
+    autocomplete="off"
+>
+
+
+<label>Teléfono</label>
+
+<input
+    type="tel"
+    id="editarClienteTelefono"
+    placeholder="Teléfono"
+    inputmode="numeric"
+    autocomplete="off"
+
+>
+<label>Provincia</label>
+
+            <select id="editarClienteProvincia">
+                
+
+                <option value="">
+                    Seleccione provincia
+                </option>
+
+                <option value="San José">
+                    San José
+                </option>
+
+                <option value="Alajuela">
+                    Alajuela
+                </option>
+
+                <option value="Cartago">
+                    Cartago
+                </option>
+
+                <option value="Heredia">
+                    Heredia
+                </option>
+
+                <option value="Guanacaste">
+                    Guanacaste
+                </option>
+
+                <option value="Puntarenas">
+                    Puntarenas
+                </option>
+
+                <option value="Limón">
+                    Limón
+                </option>
+
+            </select>
+
+<label>Cantón</label>
+            <select
+                id="editarClienteCanton"
+                disabled
+            >
+                <option value="">
+                    Seleccione cantón
+                </option>
+            </select>
+
+<label>Distrito</label>
+            <select
+                id="editarClienteDistrito"
+                disabled
+            >
+                <option value="">
+                    Seleccione distrito
+                </option>
+            </select>
+
+<label>Dirección exacta</label>
+            <input
+                type="text"
+                id="editarClienteDireccion"
+                placeholder="Dirección exacta (opcional)"
+                autocomplete="off"
+            >
+
+<label>Correo electrónico</label>
+            <input
+                type="email"
+                id="editarClienteCorreo"
+                placeholder="Correo electrónico (opcional)"
+                autocomplete="off"
+            >
+
+<label>Nueva contraseña</label>
+            <div class="password-container-cliente">
+
+                <input
+                    type="password"
+                    id="editarClientePassword"
+                    placeholder="Nueva contraseña (opcional)"
+                    autocomplete="new-password"
+                >
+
+                <button
+                    type="button"
+                    class="toggle-password-cliente"
+                    onclick="mostrarPasswordEditarCliente()"
+                    aria-label="Mostrar u ocultar contraseña"
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        width="22"
+                        height="22"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path
+                            d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12"
+                        ></path>
+
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                        ></circle>
+
+                    </svg>
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- BOTONES -->
+
+        <div class="modal-cliente-botones-superiores">
+
+            <button
+                type="button"
+                class="btn-actualizar-cliente"
+                onclick="actualizarClienteManual()"
+            >
+                Actualizar cliente
+            </button>
+
+            <button
+                type="button"
+                onclick="cerrarEditarCliente()"
+            >
+                Cancelar
+            </button>
+
+        </div>
+
+    </div>
+</div>
 <!-- 🔥 HEADER DERECHA -->
 <div class="header">
     <span class="admin">📊 Panel Administrador</span>
@@ -609,7 +1106,7 @@ body.menu-abierto {
     </div>
 
 </form>
-
+<script src="ubicaciones-cr.js"></script>
 <script>
 
 let clientes = [];
@@ -631,6 +1128,1134 @@ function toggleMenuLateral(){
     );
 
 }
+function abrirAgregarCliente(){
+
+    document
+        .getElementById(
+            "modalAgregarCliente"
+        )
+        .classList.add(
+            "activo"
+        );
+
+}
+
+function cerrarAgregarCliente(){
+
+    document
+        .getElementById(
+            "modalAgregarCliente"
+        )
+        .classList.remove(
+            "activo"
+        );
+
+
+    // Limpiar datos escritos
+    document.getElementById(
+        "clienteNombre"
+    ).value = "";
+
+    document.getElementById(
+        "clienteApellido"
+    ).value = "";
+
+    document.getElementById(
+        "clienteTelefono"
+    ).value = "";
+
+    document.getElementById(
+        "clienteProvincia"
+    ).value = "";
+
+    document.getElementById(
+        "clienteCanton"
+    ).innerHTML = `
+        <option value="">
+            Seleccione cantón
+        </option>
+    `;
+
+    document.getElementById(
+        "clienteCanton"
+    ).disabled = true;
+
+    document.getElementById(
+        "clienteDistrito"
+    ).innerHTML = `
+        <option value="">
+            Seleccione distrito
+        </option>
+    `;
+
+    document.getElementById(
+        "clienteDistrito"
+    ).disabled = true;
+
+    document.getElementById(
+        "clienteDireccion"
+    ).value = "";
+
+    document.getElementById(
+        "clienteCorreo"
+    ).value = "";
+
+    document.getElementById(
+        "clientePassword"
+    ).value = "";
+
+}
+
+function mostrarPasswordCliente(){
+
+    const campo =
+        document.getElementById(
+            "clientePassword"
+        );
+
+    if(
+        campo.type ===
+        "password"
+    ){
+
+        campo.type =
+            "text";
+
+    }else{
+
+        campo.type =
+            "password";
+
+    }
+
+}
+
+function abrirEditarCliente(){
+
+    cerrarAgregarCliente();
+
+    document
+        .getElementById(
+            "modalEditarCliente"
+        )
+        .classList.add(
+            "activo"
+        );
+
+}
+
+
+function cerrarEditarCliente(){
+
+    document
+        .getElementById(
+            "modalEditarCliente"
+        )
+        .classList.remove(
+            "activo"
+        );
+
+
+    // Limpiar buscador
+    document.getElementById(
+        "buscarClienteEditar"
+    ).value = "";
+
+
+    // Ocultar lista
+    document.getElementById(
+        "listaClientesEditar"
+    ).classList.remove(
+        "mostrar"
+    );
+
+
+    // Limpiar todos los datos del cliente
+    limpiarDatosEditarCliente();
+
+}
+
+
+function mostrarPasswordEditarCliente(){
+
+    const campo =
+        document.getElementById(
+            "editarClientePassword"
+        );
+
+    if(campo.type === "password"){
+
+        campo.type =
+            "text";
+
+    }else{
+
+        campo.type =
+            "password";
+
+    }
+
+}
+// =========================================================
+// GUARDAR CLIENTE MANUAL
+// =========================================================
+
+async function guardarClienteManual(){
+
+    const nombre =
+        document.getElementById(
+            "clienteNombre"
+        ).value.trim();
+
+    const apellido =
+        document.getElementById(
+            "clienteApellido"
+        ).value.trim();
+
+    const telefono =
+        document.getElementById(
+            "clienteTelefono"
+        ).value.trim();
+
+    const provincia =
+        document.getElementById(
+            "clienteProvincia"
+        ).value;
+
+    const canton =
+        document.getElementById(
+            "clienteCanton"
+        ).value;
+
+    const distrito =
+        document.getElementById(
+            "clienteDistrito"
+        ).value;
+
+    const direccion =
+        document.getElementById(
+            "clienteDireccion"
+        ).value.trim();
+
+    const correo =
+        document.getElementById(
+            "clienteCorreo"
+        ).value.trim();
+
+    const password =
+        document.getElementById(
+            "clientePassword"
+        ).value;
+
+
+    // =====================================================
+    // CAMPOS OBLIGATORIOS
+    // =====================================================
+
+    if(
+        !nombre ||
+        !apellido ||
+        !telefono ||
+        !provincia ||
+        !canton ||
+        !distrito
+    ){
+
+        mostrarMensaje(
+            "Complete todos los campos obligatorios",
+            "error"
+        );
+
+        return;
+    }
+
+
+    // =====================================================
+    // NOMBRE Y APELLIDO SOLO LETRAS
+    // =====================================================
+
+    const soloLetras =
+        /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+$/;
+
+
+    if(!soloLetras.test(nombre)){
+
+        mostrarMensaje(
+            "En el nombre solo se permiten letras",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(!soloLetras.test(apellido)){
+
+        mostrarMensaje(
+            "En el apellido solo se permiten letras",
+            "error"
+        );
+
+        return;
+    }
+
+
+    // =====================================================
+    // TELÉFONO SOLO NÚMEROS
+    // =====================================================
+
+    if(!/^\d+$/.test(telefono)){
+
+        mostrarMensaje(
+            "En el teléfono solo se permiten números",
+            "error"
+        );
+
+        return;
+    }
+
+
+    // =====================================================
+    // CORREO Y CONTRASEÑA
+    // =====================================================
+
+    const tieneCorreo =
+        correo !== "";
+
+    const tienePassword =
+        password !== "";
+
+
+    if(
+        tieneCorreo &&
+        !tienePassword
+    ){
+
+        mostrarMensaje(
+            "Si ingresa un correo también debe ingresar una contraseña",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(
+        !tieneCorreo &&
+        tienePassword
+    ){
+
+        mostrarMensaje(
+            "Si ingresa una contraseña también debe ingresar un correo",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(tieneCorreo){
+
+        const correoValido =
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if(!correoValido.test(correo)){
+
+            mostrarMensaje(
+                "Ingrese un correo electrónico válido",
+                "error"
+            );
+
+            return;
+        }
+
+    }
+
+
+    if(tienePassword){
+
+        const passwordValido =
+            /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
+        if(!passwordValido.test(password)){
+
+            mostrarMensaje(
+                "La contraseña debe tener mínimo 8 caracteres, al menos una letra y un número",
+                "error"
+            );
+
+            return;
+        }
+
+    }
+
+
+    // =====================================================
+    // ENVIAR AL SERVIDOR
+    // =====================================================
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/create-client",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        nombre,
+                        apellido,
+                        telefono,
+                        provincia,
+                        canton,
+                        distrito,
+                        direccion_exacta:
+                            direccion,
+                        correo,
+                        password
+                    })
+                }
+            );
+
+
+        const data =
+            await respuesta.json();
+
+
+        if(
+            !respuesta.ok ||
+            !data.ok
+        ){
+
+            mostrarMensaje(
+                data.mensaje ||
+                "No se pudo guardar el cliente",
+                "error"
+            );
+
+            return;
+        }
+
+
+        // =================================================
+        // ÉXITO
+        // =================================================
+
+        mostrarMensaje(
+            "Cliente guardado exitosamente"
+        );
+
+
+        // Limpiar campos
+        document.getElementById(
+            "clienteNombre"
+        ).value = "";
+
+        document.getElementById(
+            "clienteApellido"
+        ).value = "";
+
+        document.getElementById(
+            "clienteTelefono"
+        ).value = "";
+
+        document.getElementById(
+            "clienteProvincia"
+        ).value = "";
+
+        document.getElementById(
+            "clienteCanton"
+        ).innerHTML = `
+            <option value="">
+                Seleccione cantón
+            </option>
+        `;
+
+        document.getElementById(
+            "clienteCanton"
+        ).disabled = true;
+
+        document.getElementById(
+            "clienteDistrito"
+        ).innerHTML = `
+            <option value="">
+                Seleccione distrito
+            </option>
+        `;
+
+        document.getElementById(
+            "clienteDistrito"
+        ).disabled = true;
+
+        document.getElementById(
+            "clienteDireccion"
+        ).value = "";
+
+        document.getElementById(
+            "clienteCorreo"
+        ).value = "";
+
+        document.getElementById(
+            "clientePassword"
+        ).value = "";
+
+
+        // Recargar clientes para que aparezca inmediatamente
+        await cargarClientes();
+
+
+        // Cerrar ventana
+        cerrarAgregarCliente();
+
+
+    }catch(error){
+
+        console.error(
+            "Error guardando cliente:",
+            error
+        );
+
+        mostrarMensaje(
+            "No se pudo guardar el cliente",
+            "error"
+        );
+
+    }
+
+}
+
+// =========================================================
+// EDITAR CLIENTE - BUSCADOR
+// =========================================================
+
+let clienteEditarSeleccionado = null;
+
+function limpiarDatosEditarCliente(){
+
+    clienteEditarSeleccionado = null;
+
+    document.getElementById(
+        "editarClienteNombre"
+    ).value = "";
+
+    document.getElementById(
+        "editarClienteApellido"
+    ).value = "";
+
+    document.getElementById(
+        "editarClienteTelefono"
+    ).value = "";
+
+    document.getElementById(
+        "editarClienteDireccion"
+    ).value = "";
+
+    document.getElementById(
+        "editarClienteCorreo"
+    ).value = "";
+
+    document.getElementById(
+        "editarClientePassword"
+    ).value = "";
+
+
+    const provincia =
+        document.getElementById(
+            "editarClienteProvincia"
+        );
+
+    const canton =
+        document.getElementById(
+            "editarClienteCanton"
+        );
+
+    const distrito =
+        document.getElementById(
+            "editarClienteDistrito"
+        );
+
+
+    provincia.value = "";
+
+    canton.innerHTML = `
+        <option value="">
+            Seleccione cantón
+        </option>
+    `;
+
+    canton.disabled = true;
+
+
+    distrito.innerHTML = `
+        <option value="">
+            Seleccione distrito
+        </option>
+    `;
+
+    distrito.disabled = true;
+
+}
+
+const buscarClienteEditar =
+    document.getElementById(
+        "buscarClienteEditar"
+    );
+
+const listaClientesEditar =
+    document.getElementById(
+        "listaClientesEditar"
+    );
+
+
+function mostrarClientesEditar(
+    filtro = ""
+){
+
+    const buscar =
+        normalizar(
+            filtro
+        );
+
+    const resultados =
+        clientes.filter(
+            cliente => {
+
+                const nombreCompleto =
+                    normalizar(
+                        `${cliente.nombre} ${cliente.apellido}`
+                    );
+
+                return nombreCompleto.includes(
+                    buscar
+                );
+
+            }
+        );
+
+
+    listaClientesEditar.innerHTML =
+        "";
+
+
+    if(resultados.length === 0){
+
+        listaClientesEditar.innerHTML = `
+            <div class="sin-resultados">
+                No se encontraron clientes
+            </div>
+        `;
+
+        listaClientesEditar
+            .classList
+            .add("mostrar");
+
+        return;
+    }
+
+
+    resultados
+        .slice(0, 20)
+        .forEach(
+            cliente => {
+
+                const opcion =
+                    document.createElement(
+                        "div"
+                    );
+
+                opcion.className =
+                    "opcion-buscador";
+
+                opcion.textContent =
+                    `${cliente.nombre} ${cliente.apellido}`;
+
+
+                opcion.addEventListener(
+                    "mousedown",
+                    async (e) => {
+
+                        e.preventDefault();
+
+                        await seleccionarClienteEditar(
+                            cliente
+                        );
+
+                    }
+                );
+
+
+                listaClientesEditar
+                    .appendChild(
+                        opcion
+                    );
+
+            }
+        );
+
+
+    listaClientesEditar
+        .classList
+        .add("mostrar");
+
+}
+
+
+buscarClienteEditar.addEventListener(
+    "focus",
+    () => {
+
+        mostrarClientesEditar(
+            buscarClienteEditar.value
+        );
+
+    }
+);
+
+buscarClienteEditar.addEventListener(
+    "input",
+    () => {
+
+        limpiarDatosEditarCliente();
+
+        mostrarClientesEditar(
+            buscarClienteEditar.value
+        );
+
+    }
+);
+
+// =========================================================
+// EDITAR CLIENTE - SELECCIONAR Y CARGAR DATOS
+// =========================================================
+
+async function seleccionarClienteEditar(
+    cliente
+){
+
+    clienteEditarSeleccionado =
+        cliente;
+
+
+    buscarClienteEditar.value =
+        `${cliente.nombre} ${cliente.apellido}`;
+
+
+    listaClientesEditar
+        .classList
+        .remove(
+            "mostrar"
+        );
+
+
+    try{
+
+        const respuesta =
+            await fetch(
+                `/user/${cliente.id_usuario}`
+            );
+
+
+        if(!respuesta.ok){
+
+            mostrarMensaje(
+                "No se pudieron cargar los datos del cliente",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const datos =
+            await respuesta.json();
+
+
+        document.getElementById(
+            "editarClienteNombre"
+        ).value =
+            datos.nombre || "";
+
+
+        document.getElementById(
+            "editarClienteApellido"
+        ).value =
+            datos.apellido || "";
+
+
+        document.getElementById(
+            "editarClienteTelefono"
+        ).value =
+            datos.telefono || "";
+
+
+        document.getElementById(
+            "editarClienteDireccion"
+        ).value =
+            datos.direccion_exacta || "";
+
+
+        document.getElementById(
+            "editarClienteCorreo"
+        ).value =
+            datos.correo || "";
+
+
+        // La contraseña actual nunca se muestra.
+        document.getElementById(
+            "editarClientePassword"
+        ).value =
+            "";
+
+
+        // =========================================
+        // PROVINCIA
+        // =========================================
+
+        const provincia =
+            document.getElementById(
+                "editarClienteProvincia"
+            );
+
+        const canton =
+            document.getElementById(
+                "editarClienteCanton"
+            );
+
+        const distrito =
+            document.getElementById(
+                "editarClienteDistrito"
+            );
+
+
+        provincia.value =
+            datos.provincia || "";
+
+
+        provincia.dispatchEvent(
+            new Event(
+                "change"
+            )
+        );
+
+
+        // =========================================
+        // CANTÓN
+        // =========================================
+
+        canton.value =
+            datos.canton || "";
+
+
+        canton.dispatchEvent(
+            new Event(
+                "change"
+            )
+        );
+
+
+        // =========================================
+        // DISTRITO
+        // =========================================
+
+        distrito.value =
+            datos.distrito || "";
+
+
+    }catch(error){
+
+        console.error(
+            "Error cargando cliente:",
+            error
+        );
+
+
+        mostrarMensaje(
+            "No se pudieron cargar los datos del cliente",
+            "error"
+        );
+
+    }
+
+}
+
+
+// =========================================================
+// ACTUALIZAR CLIENTE
+// =========================================================
+
+async function actualizarClienteManual(){
+
+    if(
+        !clienteEditarSeleccionado ||
+        !clienteEditarSeleccionado.id_usuario
+    ){
+
+        mostrarMensaje(
+            "Seleccione un cliente para editar",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const nombre =
+        document.getElementById(
+            "editarClienteNombre"
+        ).value.trim();
+
+    const apellido =
+        document.getElementById(
+            "editarClienteApellido"
+        ).value.trim();
+
+    const telefono =
+        document.getElementById(
+            "editarClienteTelefono"
+        ).value.trim();
+
+    const provincia =
+        document.getElementById(
+            "editarClienteProvincia"
+        ).value;
+
+    const canton =
+        document.getElementById(
+            "editarClienteCanton"
+        ).value;
+
+    const distrito =
+        document.getElementById(
+            "editarClienteDistrito"
+        ).value;
+
+    const direccion =
+        document.getElementById(
+            "editarClienteDireccion"
+        ).value.trim();
+
+    const correo =
+        document.getElementById(
+            "editarClienteCorreo"
+        ).value.trim();
+
+    const password =
+        document.getElementById(
+            "editarClientePassword"
+        ).value;
+
+
+    // =========================================
+    // CAMPOS OBLIGATORIOS
+    // =========================================
+
+    if(
+        !nombre ||
+        !apellido ||
+        !telefono ||
+        !provincia ||
+        !canton ||
+        !distrito
+    ){
+
+        mostrarMensaje(
+            "Complete todos los campos obligatorios",
+            "error"
+        );
+
+        return;
+    }
+
+
+    // =========================================
+    // SOLO LETRAS
+    // =========================================
+
+    const soloLetras =
+        /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+$/;
+
+
+    if(!soloLetras.test(nombre)){
+
+        mostrarMensaje(
+            "En el nombre solo se permiten letras",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(!soloLetras.test(apellido)){
+
+        mostrarMensaje(
+            "En el apellido solo se permiten letras",
+            "error"
+        );
+
+        return;
+    }
+
+
+    // =========================================
+    // TELÉFONO SOLO NÚMEROS
+    // =========================================
+
+    if(!/^\d+$/.test(telefono)){
+
+        mostrarMensaje(
+            "En el teléfono solo se permiten números",
+            "error"
+        );
+
+        return;
+    }
+
+
+    // =========================================
+    // CORREO
+    // =========================================
+
+    if(correo){
+
+        const correoValido =
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if(!correoValido.test(correo)){
+
+            mostrarMensaje(
+                "Ingrese un correo electrónico válido",
+                "error"
+            );
+
+            return;
+        }
+
+    }
+
+
+    // =========================================
+    // NUEVA CONTRASEÑA
+    // =========================================
+
+    if(password){
+
+        const passwordValido =
+            /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
+        if(!passwordValido.test(password)){
+
+            mostrarMensaje(
+                "La nueva contraseña debe tener mínimo 8 caracteres, al menos una letra y un número",
+                "error"
+            );
+
+            return;
+        }
+
+    }
+
+
+    // =========================================
+    // ENVIAR CAMBIOS
+    // =========================================
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/update-client",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        id_usuario:
+                            clienteEditarSeleccionado
+                                .id_usuario,
+
+                        nombre,
+                        apellido,
+                        telefono,
+                        provincia,
+                        canton,
+                        distrito,
+                        direccion_exacta:
+                            direccion,
+                        correo,
+                        password
+                    })
+                }
+            );
+
+
+        const data =
+            await respuesta.json();
+
+
+        if(
+            !respuesta.ok ||
+            !data.ok
+        ){
+
+            mostrarMensaje(
+                data.mensaje ||
+                "No se pudo actualizar el cliente",
+                "error"
+            );
+
+            return;
+        }
+
+
+        // =========================================
+        // ÉXITO
+        // =========================================
+
+        mostrarMensaje(
+            "Cliente actualizado correctamente"
+        );
+
+
+        await cargarClientes();
+
+
+        buscarClienteEditar.value =
+            `${nombre} ${apellido}`;
+
+
+        document.getElementById(
+            "editarClientePassword"
+        ).value =
+            "";
+
+
+    }catch(error){
+
+        console.error(
+            "Error actualizando cliente:",
+            error
+        );
+
+        mostrarMensaje(
+            "No se pudo actualizar el cliente",
+            "error"
+        );
+
+    }
+
+}
+
 let clienteSeleccionado = null;
 let articuloSeleccionado = null;
 let precioUnitarioSeleccionado = null;

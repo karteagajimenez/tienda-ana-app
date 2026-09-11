@@ -745,6 +745,917 @@ app.get('/clientes', protegerAdmin, (req, res) => {
     });
 });
 
+// ======================================================
+// 🔹 CREAR CLIENTE MANUAL
+// ======================================================
+
+app.post(
+    '/create-client',
+    protegerAdmin,
+    async (req, res) => {
+
+        try{
+
+            const {
+                nombre,
+                apellido,
+                telefono,
+                provincia,
+                canton,
+                distrito,
+                direccion_exacta,
+                correo,
+                password
+            } = req.body;
+
+
+            // ======================================================
+            // NORMALIZAR
+            // ======================================================
+
+            const nombreLimpio =
+                String(nombre || '').trim();
+
+            const apellidoLimpio =
+                String(apellido || '').trim();
+
+            const telefonoLimpio =
+                String(telefono || '').trim();
+
+            const provinciaLimpia =
+                String(provincia || '').trim();
+
+            const cantonLimpio =
+                String(canton || '').trim();
+
+            const distritoLimpio =
+                String(distrito || '').trim();
+
+            const direccionLimpia =
+                String(direccion_exacta || '').trim();
+
+            const correoLimpio =
+                String(correo || '')
+                    .trim()
+                    .toLowerCase();
+
+            const passwordLimpio =
+                String(password || '');
+
+
+            // ======================================================
+            // CAMPOS OBLIGATORIOS
+            // ======================================================
+
+            if(
+                !nombreLimpio ||
+                !apellidoLimpio ||
+                !telefonoLimpio ||
+                !provinciaLimpia ||
+                !cantonLimpio ||
+                !distritoLimpio
+            ){
+
+                return res.status(400).json({
+                    ok:false,
+                    mensaje:
+                        "Complete todos los campos obligatorios"
+                });
+
+            }
+
+
+            // ======================================================
+            // NOMBRE Y APELLIDO SOLO LETRAS
+            // ======================================================
+
+            const soloLetras =
+                /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+$/;
+
+
+            if(
+                !soloLetras.test(nombreLimpio)
+            ){
+
+                return res.status(400).json({
+                    ok:false,
+                    mensaje:
+                        "En el nombre solo se permiten letras"
+                });
+
+            }
+
+
+            if(
+                !soloLetras.test(apellidoLimpio)
+            ){
+
+                return res.status(400).json({
+                    ok:false,
+                    mensaje:
+                        "En el apellido solo se permiten letras"
+                });
+
+            }
+
+
+            // ======================================================
+            // TELÉFONO SOLO NÚMEROS
+            // ======================================================
+
+            if(
+                !/^\d+$/.test(
+                    telefonoLimpio
+                )
+            ){
+
+                return res.status(400).json({
+                    ok:false,
+                    mensaje:
+                        "En el teléfono solo se permiten números"
+                });
+
+            }
+
+
+            // ======================================================
+            // CORREO Y CONTRASEÑA
+            // ======================================================
+
+            const tieneCorreo =
+                correoLimpio !== '';
+
+            const tienePassword =
+                passwordLimpio !== '';
+
+
+            if(
+                tieneCorreo &&
+                !tienePassword
+            ){
+
+                return res.status(400).json({
+                    ok:false,
+                    mensaje:
+                        "Si ingresa un correo también debe ingresar una contraseña"
+                });
+
+            }
+
+
+            if(
+                !tieneCorreo &&
+                tienePassword
+            ){
+
+                return res.status(400).json({
+                    ok:false,
+                    mensaje:
+                        "Si ingresa una contraseña también debe ingresar un correo"
+                });
+
+            }
+
+
+            if(tieneCorreo){
+
+                const correoValido =
+                    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if(
+                    !correoValido.test(
+                        correoLimpio
+                    )
+                ){
+
+                    return res.status(400).json({
+                        ok:false,
+                        mensaje:
+                            "Ingrese un correo electrónico válido"
+                    });
+
+                }
+
+            }
+
+
+            if(tienePassword){
+
+                const passwordValido =
+                    /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
+                if(
+                    !passwordValido.test(
+                        passwordLimpio
+                    )
+                ){
+
+                    return res.status(400).json({
+                        ok:false,
+                        mensaje:
+                            "La contraseña debe tener mínimo 8 caracteres, al menos una letra y un número"
+                    });
+
+                }
+
+            }
+
+
+            // ======================================================
+            // SI HAY CORREO, VALIDAR DUPLICADO
+            // ======================================================
+
+            const continuarGuardado =
+                async () => {
+
+                    let hash = null;
+
+                    if(tienePassword){
+
+                        hash =
+                            await bcrypt.hash(
+                                passwordLimpio,
+                                10
+                            );
+
+                    }
+
+
+                    conexion.query(
+                        `
+                        INSERT INTO usuarios
+                        (
+                            nombre,
+                            apellido,
+                            telefono,
+                            correo,
+                            password,
+                            tipo_usuario,
+                            provincia,
+                            canton,
+                            distrito,
+                            direccion_exacta
+                        )
+                        VALUES (?, ?, ?, ?, ?, 'cliente', ?, ?, ?, ?)
+                        `,
+                        [
+                            nombreLimpio,
+                            apellidoLimpio,
+                            telefonoLimpio,
+                            tieneCorreo
+                                ? correoLimpio
+                                : null,
+                            hash,
+                            provinciaLimpia,
+                            cantonLimpio,
+                            distritoLimpio,
+                            direccionLimpia || null
+                        ],
+                        (err, result) => {
+
+                            if(err){
+
+                                console.log(
+                                    "❌ Error guardando cliente:",
+                                    err
+                                );
+
+                                return res
+                                    .status(500)
+                                    .json({
+                                        ok:false,
+                                        mensaje:
+                                            "No se pudo guardar el cliente"
+                                    });
+
+                            }
+
+
+                            return res.json({
+                                ok:true,
+                                mensaje:
+                                    "Cliente guardado exitosamente",
+                                id_usuario:
+                                    result.insertId
+                            });
+
+                        }
+                    );
+
+                };
+
+
+            if(tieneCorreo){
+
+                conexion.query(
+                    `
+                    SELECT id_usuario
+                    FROM usuarios
+                    WHERE LOWER(TRIM(correo)) = ?
+                    LIMIT 1
+                    `,
+                    [
+                        correoLimpio
+                    ],
+                    async (
+                        err,
+                        resultados
+                    ) => {
+
+                        if(err){
+
+                            console.log(
+                                "❌ Error verificando correo:",
+                                err
+                            );
+
+                            return res
+                                .status(500)
+                                .json({
+                                    ok:false,
+                                    mensaje:
+                                        "No se pudo verificar el correo"
+                                });
+
+                        }
+
+
+                        if(
+                            resultados.length > 0
+                        ){
+
+                            return res
+                                .status(409)
+                                .json({
+                                    ok:false,
+                                    mensaje:
+                                        "Este correo ya está registrado"
+                                });
+
+                        }
+
+
+                        await continuarGuardado();
+
+                    }
+                );
+
+            }else{
+
+                await continuarGuardado();
+
+            }
+
+
+        }catch(error){
+
+            console.log(
+                "❌ Error creando cliente:",
+                error
+            );
+
+            return res
+                .status(500)
+                .json({
+                    ok:false,
+                    mensaje:
+                        "No se pudo guardar el cliente"
+                });
+
+        }
+
+    }
+);
+
+// ======================================================
+// 🔹 ACTUALIZAR CLIENTE
+// ======================================================
+
+app.post(
+    '/update-client',
+    protegerAdmin,
+    async (req, res) => {
+
+        try{
+
+            const {
+                id_usuario,
+                nombre,
+                apellido,
+                telefono,
+                provincia,
+                canton,
+                distrito,
+                direccion_exacta,
+                correo,
+                password
+            } = req.body;
+
+
+            const idUsuario =
+                Number(id_usuario);
+
+            const nombreLimpio =
+                String(nombre || '').trim();
+
+            const apellidoLimpio =
+                String(apellido || '').trim();
+
+            const telefonoLimpio =
+                String(telefono || '').trim();
+
+            const provinciaLimpia =
+                String(provincia || '').trim();
+
+            const cantonLimpio =
+                String(canton || '').trim();
+
+            const distritoLimpio =
+                String(distrito || '').trim();
+
+            const direccionLimpia =
+                String(direccion_exacta || '').trim();
+
+            const correoLimpio =
+                String(correo || '')
+                    .trim()
+                    .toLowerCase();
+
+            const passwordLimpio =
+                String(password || '');
+
+
+            // ======================================================
+            // VALIDAR CLIENTE
+            // ======================================================
+
+            if(
+                !Number.isInteger(idUsuario) ||
+                idUsuario <= 0
+            ){
+
+                return res.status(400).json({
+                    ok:false,
+                    mensaje:
+                        "Seleccione un cliente válido"
+                });
+
+            }
+
+
+            // ======================================================
+            // CAMPOS OBLIGATORIOS
+            // ======================================================
+
+            if(
+                !nombreLimpio ||
+                !apellidoLimpio ||
+                !telefonoLimpio ||
+                !provinciaLimpia ||
+                !cantonLimpio ||
+                !distritoLimpio
+            ){
+
+                return res.status(400).json({
+                    ok:false,
+                    mensaje:
+                        "Complete todos los campos obligatorios"
+                });
+
+            }
+
+
+            // ======================================================
+            // NOMBRE Y APELLIDO
+            // ======================================================
+
+            const soloLetras =
+                /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+$/;
+
+
+            if(
+                !soloLetras.test(
+                    nombreLimpio
+                )
+            ){
+
+                return res.status(400).json({
+                    ok:false,
+                    mensaje:
+                        "En el nombre solo se permiten letras"
+                });
+
+            }
+
+
+            if(
+                !soloLetras.test(
+                    apellidoLimpio
+                )
+            ){
+
+                return res.status(400).json({
+                    ok:false,
+                    mensaje:
+                        "En el apellido solo se permiten letras"
+                });
+
+            }
+
+
+            // ======================================================
+            // TELÉFONO
+            // ======================================================
+
+            if(
+                !/^\d+$/.test(
+                    telefonoLimpio
+                )
+            ){
+
+                return res.status(400).json({
+                    ok:false,
+                    mensaje:
+                        "En el teléfono solo se permiten números"
+                });
+
+            }
+
+
+            // ======================================================
+            // CORREO
+            // ======================================================
+
+            const tieneCorreo =
+                correoLimpio !== '';
+
+            const tienePassword =
+                passwordLimpio !== '';
+
+
+            if(tieneCorreo){
+
+                const correoValido =
+                    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if(
+                    !correoValido.test(
+                        correoLimpio
+                    )
+                ){
+
+                    return res.status(400).json({
+                        ok:false,
+                        mensaje:
+                            "Ingrese un correo electrónico válido"
+                    });
+
+                }
+
+            }
+
+
+            // ======================================================
+            // NUEVA CONTRASEÑA
+            // ======================================================
+
+            if(tienePassword){
+
+                const passwordValido =
+                    /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
+                if(
+                    !passwordValido.test(
+                        passwordLimpio
+                    )
+                ){
+
+                    return res.status(400).json({
+                        ok:false,
+                        mensaje:
+                            "La nueva contraseña debe tener mínimo 8 caracteres, al menos una letra y un número"
+                    });
+
+                }
+
+            }
+
+
+            // ======================================================
+            // BUSCAR CLIENTE ACTUAL
+            // ======================================================
+
+            conexion.query(
+                `
+                SELECT
+                    id_usuario,
+                    correo,
+                    password
+                FROM usuarios
+                WHERE id_usuario = ?
+                AND tipo_usuario = 'cliente'
+                LIMIT 1
+                `,
+                [
+                    idUsuario
+                ],
+                async (
+                    errBuscar,
+                    resultadosCliente
+                ) => {
+
+                    if(errBuscar){
+
+                        console.log(
+                            "❌ Error buscando cliente:",
+                            errBuscar
+                        );
+
+                        return res
+                            .status(500)
+                            .json({
+                                ok:false,
+                                mensaje:
+                                    "No se pudo buscar el cliente"
+                            });
+
+                    }
+
+
+                    if(
+                        resultadosCliente.length === 0
+                    ){
+
+                        return res
+                            .status(404)
+                            .json({
+                                ok:false,
+                                mensaje:
+                                    "Cliente no encontrado"
+                            });
+
+                    }
+
+
+                    const clienteActual =
+                        resultadosCliente[0];
+
+
+                    // ==============================================
+                    // REGLA CORREO / CONTRASEÑA
+                    // ==============================================
+
+                    const teniaPassword =
+                        !!clienteActual.password;
+
+
+                    /*
+                        Si el cliente todavía NO tenía acceso:
+                        correo y contraseña deben agregarse juntos.
+                    */
+
+                    if(
+                        !teniaPassword &&
+                        tieneCorreo &&
+                        !tienePassword
+                    ){
+
+                        return res
+                            .status(400)
+                            .json({
+                                ok:false,
+                                mensaje:
+                                    "Para activar el acceso debe ingresar correo y contraseña"
+                            });
+
+                    }
+
+
+                    if(
+                        !teniaPassword &&
+                        !tieneCorreo &&
+                        tienePassword
+                    ){
+
+                        return res
+                            .status(400)
+                            .json({
+                                ok:false,
+                                mensaje:
+                                    "Para activar el acceso debe ingresar correo y contraseña"
+                            });
+
+                    }
+
+
+                    /*
+                        Si el cliente ya tenía acceso:
+                        puede cambiar datos y dejar Nueva contraseña vacía.
+                    */
+
+                    if(
+                        teniaPassword &&
+                        !tieneCorreo
+                    ){
+
+                        return res
+                            .status(400)
+                            .json({
+                                ok:false,
+                                mensaje:
+                                    "Este cliente ya tiene acceso y debe conservar un correo"
+                            });
+
+                    }
+
+
+                    // ==============================================
+                    // VALIDAR CORREO DUPLICADO
+                    // ==============================================
+
+                    const continuarActualizacion =
+                        async () => {
+
+                            let nuevoHash =
+                                clienteActual.password;
+
+                            if(tienePassword){
+
+                                nuevoHash =
+                                    await bcrypt.hash(
+                                        passwordLimpio,
+                                        10
+                                    );
+
+                            }
+
+
+                            conexion.query(
+                                `
+                                UPDATE usuarios
+                                SET
+                                    nombre = ?,
+                                    apellido = ?,
+                                    telefono = ?,
+                                    correo = ?,
+                                    password = ?,
+                                    provincia = ?,
+                                    canton = ?,
+                                    distrito = ?,
+                                    direccion_exacta = ?
+                                WHERE id_usuario = ?
+                                AND tipo_usuario = 'cliente'
+                                `,
+                                [
+                                    nombreLimpio,
+                                    apellidoLimpio,
+                                    telefonoLimpio,
+                                    tieneCorreo
+                                        ? correoLimpio
+                                        : null,
+                                    nuevoHash || null,
+                                    provinciaLimpia,
+                                    cantonLimpio,
+                                    distritoLimpio,
+                                    direccionLimpia || null,
+                                    idUsuario
+                                ],
+                                (
+                                    errActualizar,
+                                    resultado
+                                ) => {
+
+                                    if(errActualizar){
+
+                                        console.log(
+                                            "❌ Error actualizando cliente:",
+                                            errActualizar
+                                        );
+
+                                        return res
+                                            .status(500)
+                                            .json({
+                                                ok:false,
+                                                mensaje:
+                                                    "No se pudo actualizar el cliente"
+                                            });
+
+                                    }
+
+
+                                    if(
+                                        resultado.affectedRows === 0
+                                    ){
+
+                                        return res
+                                            .status(404)
+                                            .json({
+                                                ok:false,
+                                                mensaje:
+                                                    "Cliente no encontrado"
+                                            });
+
+                                    }
+
+
+                                    return res.json({
+                                        ok:true,
+                                        mensaje:
+                                            "Cliente actualizado correctamente"
+                                    });
+
+                                }
+                            );
+
+                        };
+
+
+                    if(tieneCorreo){
+
+                        conexion.query(
+                            `
+                            SELECT id_usuario
+                            FROM usuarios
+                            WHERE LOWER(TRIM(correo)) = ?
+                            AND id_usuario <> ?
+                            LIMIT 1
+                            `,
+                            [
+                                correoLimpio,
+                                idUsuario
+                            ],
+                            async (
+                                errCorreo,
+                                resultadosCorreo
+                            ) => {
+
+                                if(errCorreo){
+
+                                    console.log(
+                                        "❌ Error verificando correo:",
+                                        errCorreo
+                                    );
+
+                                    return res
+                                        .status(500)
+                                        .json({
+                                            ok:false,
+                                            mensaje:
+                                                "No se pudo verificar el correo"
+                                        });
+
+                                }
+
+
+                                if(
+                                    resultadosCorreo.length > 0
+                                ){
+
+                                    return res
+                                        .status(409)
+                                        .json({
+                                            ok:false,
+                                            mensaje:
+                                                "Este correo ya está registrado"
+                                        });
+
+                                }
+
+
+                                await continuarActualizacion();
+
+                            }
+                        );
+
+                    }else{
+
+                        await continuarActualizacion();
+
+                    }
+
+                }
+            );
+
+
+        }catch(error){
+
+            console.log(
+                "❌ Error actualizando cliente:",
+                error
+            );
+
+            return res
+                .status(500)
+                .json({
+                    ok:false,
+                    mensaje:
+                        "No se pudo actualizar el cliente"
+                });
+
+        }
+
+    }
+);
 
 // 🔹 ARTÍCULOS
 // Carga los artículos guardados en el catálogo.
