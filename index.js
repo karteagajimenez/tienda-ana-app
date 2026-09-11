@@ -2260,8 +2260,144 @@ app.get('/client-archived-orders/:id', protegerCliente, (req, res) => {
 // 🔹 ABONOS
 // ======================================================
 
-app.post('/add-payment', protegerAdmin, (req, res) => {
 
+// ======================================================
+// 🔹 OBTENER ABONOS DE UN PEDIDO
+// ======================================================
+
+app.get(
+    '/payments/:id_pedido',
+    protegerAdmin,
+    (req, res) => {
+
+        const idPedido =
+            Number(req.params.id_pedido);
+
+        if (
+            !Number.isInteger(idPedido) ||
+            idPedido <= 0
+        ) {
+
+            return res.status(400).json({
+                ok: false,
+                mensaje: "Pedido inválido"
+            });
+
+        }
+
+        conexion.query(`
+            SELECT
+                id_abono,
+                id_pedido,
+                monto_abono,
+                fecha_abono,
+                metodo_pago
+            FROM abonos
+            WHERE id_pedido = ?
+            ORDER BY
+                fecha_abono DESC,
+                id_abono DESC
+        `, [
+            idPedido
+        ], (err, resultados) => {
+
+            if (err) {
+
+                console.log(
+                    "❌ Error cargando abonos:",
+                    err
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    mensaje:
+                        "No se pudieron cargar los abonos"
+                });
+
+            }
+
+            return res.json({
+                ok: true,
+                abonos: resultados
+            });
+
+        });
+
+    }
+);
+// ======================================================
+// 🔹 EDITAR UN ABONO
+// ======================================================
+
+app.post(
+    '/update-payment',
+    protegerAdmin,
+    (req, res) => {
+
+        const idAbono =
+            Number(req.body.id_abono);
+
+        const nuevoMonto =
+            Number(req.body.monto_abono);
+
+        if (
+            !Number.isInteger(idAbono) ||
+            idAbono <= 0 ||
+            !Number.isFinite(nuevoMonto) ||
+            nuevoMonto <= 0
+        ) {
+
+            return res.status(400).json({
+                ok: false,
+                mensaje: "Datos de abono inválidos"
+            });
+
+        }
+
+        conexion.query(`
+            UPDATE abonos
+            SET monto_abono = ?
+            WHERE id_abono = ?
+        `, [
+            nuevoMonto,
+            idAbono
+        ], (err, resultado) => {
+
+            if (err) {
+
+                console.log(
+                    "❌ Error actualizando abono:",
+                    err
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    mensaje:
+                        "No se pudo actualizar el abono"
+                });
+
+            }
+
+            if (resultado.affectedRows === 0) {
+
+                return res.status(404).json({
+                    ok: false,
+                    mensaje: "Abono no encontrado"
+                });
+
+            }
+
+            return res.json({
+                ok: true,
+                mensaje:
+                    "Su cambio ha sido guardado"
+            });
+
+        });
+
+    }
+);
+app.post('/add-payment', protegerAdmin, (req, res) => {
     const idPedido =
         Number(req.body.id_pedido);
 

@@ -506,25 +506,96 @@ td button {
 
     <br>
 
+<button
+    class="ok"
+    onclick="confirmar()"
+>
+    Aceptar
+</button>
 
-    <button
-        class="ok"
-        onclick="confirmar()"
-    >
-        Aceptar
-    </button>
+<button
+    id="btnEditarAbono"
+    class="editar"
+    style="display:none;"
+    onclick="abrirEditarAbono()"
+>
+    Editar
+</button>
 
-
-    <button
-        class="cancel"
-        onclick="cerrarModal()"
-    >
-        Cancelar
-    </button>
+<button
+    class="cancel"
+    onclick="cerrarModal()"
+>
+    Cancelar
+</button>
 
 </div>
  
 </div> 
+
+<!-- =====================================================
+     MODAL EDITAR ABONO
+===================================================== -->
+
+<div
+    id="modalEditarAbono"
+    class="modal"
+    style="display:none;"
+>
+
+    <div class="modal-content">
+
+        <h3>
+            Editar abono
+        </h3>
+
+        <select
+            id="editarAbonoArticulo"
+            onchange="cargarAbonosParaEditar()"
+        >
+            <option value="">
+                Seleccione el artículo
+            </option>
+        </select>
+
+        <select
+            id="editarAbonoRegistro"
+            style="display:none;"
+             onchange="mostrarMontoAbonoEditar()"
+        >
+            <option value="">
+                Seleccione el abono
+            </option>
+        </select>
+
+        <input
+            type="number"
+            id="editarAbonoMonto"
+            placeholder="Nuevo monto del abono"
+            min="1"
+            step="0.01"
+            style="display:none;"
+        >
+
+        <br>
+
+        <button
+            class="ok"
+            onclick="guardarEdicionAbono()"
+        >
+            Guardar
+        </button>
+
+        <button
+            class="cancel"
+            onclick="cerrarEditarAbono()"
+        >
+            Cancelar
+        </button>
+
+    </div>
+
+</div>
 <!-- MODAL CONFIRMAR ELIMINACIÓN -->
 
 <div class="modal" id="modalConfirmarEliminar">
@@ -620,7 +691,7 @@ td button {
             <input
                 type="text"
                 id="editarBuscarArticulo"
-                placeholder="Buscar o escribir artículo..."
+                placeholder="Seleccione el nuevo artículo..."
                 autocomplete="off"
             >
 
@@ -638,19 +709,49 @@ td button {
             id="editarArticuloSelect"
         >
   
+<!-- CANTIDAD -->
 
-        <!-- CANTIDAD -->
-        <input  
-            type="number"  
-            id="editarCantidad"  
-            min="1"  
-            placeholder="Cantidad"
-            style="display:none;"  
-        >  
+<label
+    id="labelEditarCantidad"
+    style="
+        display:none;
+        width:95%;
+        margin:8px auto 0;
+        text-align:left;
+        font-size:13px;
+        color:#555;
+        font-weight:bold;
+    "
+>
+    Cantidad
+</label>
 
+<input  
+    type="number"  
+    id="editarCantidad"  
+    min="1"  
+    placeholder="Cantidad"
+    style="display:none;"  
+>
 
+<label
+    id="labelEditarPeso"
+    style="
+        display:none;
+        width:95%;
+        margin:8px auto 0;
+        text-align:left;
+        font-size:13px;
+        color:#555;
+        font-weight:bold;
+    "
+>
+    Peso del nuevo artículo
+</label>
         <!-- PESO -->
         <input
+
+        
             type="number"
             id="editarPeso"
             min="1"
@@ -865,12 +966,48 @@ function obtenerClaveGrupo(pedido){
 /* =========================================================
    CARGAR PEDIDOS
 ========================================================= */
+function obtenerClientesAbiertos(){
+
+    const abiertos = [];
+
+    document.querySelectorAll(
+        '[id^="detalle-cliente-"]'
+    ).forEach(
+        fila => {
+
+            if(
+                fila.style.display ===
+                "table-row"
+            ){
+
+                const idUsuario =
+                    Number(
+                        fila.id.replace(
+                            "detalle-cliente-",
+                            ""
+                        )
+                    );
+
+                abiertos.push(
+                    idUsuario
+                );
+
+            }
+
+        }
+    );
+
+    return abiertos;
+}
 
 async function cargarPedidos(){
 
+    
     try{
 
-
+        const clientesAbiertos =
+          obtenerClientesAbiertos();
+          
         const res =
             await fetch("/orders");
 
@@ -1161,7 +1298,38 @@ if(
         ================================================= */
 
         renderizarVista();
+clientesAbiertos.forEach(
+    idUsuario => {
 
+        const fila =
+            document.getElementById(
+                `detalle-cliente-${idUsuario}`
+            );
+
+        const flecha =
+            document.getElementById(
+                `flecha-${idUsuario}`
+            );
+
+        if(fila){
+
+            fila.style.display =
+                "table-row";
+
+            if(flecha){
+                flecha.textContent =
+                    "▼";
+            }
+
+            mostrarFacturasCliente(
+                idUsuario,
+                true
+            );
+
+        }
+
+    }
+);
 
     }catch(error){
 
@@ -2243,6 +2411,11 @@ function abrirModal(
             "estadoSelect"
         );
 
+    const btnEditarAbono =
+         document.getElementById(
+         "btnEditarAbono"
+        );
+
 
     modal.style.display =
         "flex";
@@ -2275,6 +2448,8 @@ function abrirModal(
     estadoSelect.style.display =
         "none";
 
+    btnEditarAbono.style.display =
+      "none";
 
     /* =====================================================
        CARGAR SOLO ARTÍCULOS DE ESTA FACTURA
@@ -2350,6 +2525,8 @@ function abrirModal(
         metodoPago.style.display =
             "block";
 
+        btnEditarAbono.style.display =
+         "inline-block";         
 
         inputValor.placeholder =
             "Monto del abono";
@@ -2413,7 +2590,6 @@ function actualizarPedidoSeleccionado(){
 }
 
 
-
 /* =========================================================
    CERRAR MODAL
 ========================================================= */
@@ -2425,25 +2601,450 @@ function cerrarModal(){
     ).style.display =
         "none";
 
-
-    tipo =
+    document.getElementById(
+        "pedidoSelect"
+    ).value =
         "";
 
+    document.getElementById(
+        "inputValor"
+    ).value =
+        "";
+
+    document.getElementById(
+        "metodoPago"
+    ).value =
+        "";
+
+    document.getElementById(
+        "estadoSelect"
+    ).value =
+        "";
 
     pedidoId =
         null;
 
-
     clienteSeleccionado =
         null;
-
 
     grupoSeleccionado =
         null;
 
+    tipo =
+        "";
+
 }
+async function cargarAbonosParaEditar(){
+
+    const selectArticulo =
+        document.getElementById(
+            "editarAbonoArticulo"
+        );
+
+    const selectAbono =
+        document.getElementById(
+            "editarAbonoRegistro"
+        );
+
+    const inputMonto =
+        document.getElementById(
+            "editarAbonoMonto"
+        );
+
+    const idPedido =
+        Number(
+            selectArticulo.value
+        );
+
+    selectAbono.innerHTML = `
+        <option value="">
+            Seleccione el abono
+        </option>
+    `;
+
+    selectAbono.style.display =
+        "none";
+
+    inputMonto.value =
+        "";
+
+    inputMonto.style.display =
+        "none";
+
+    if(!idPedido){
+        return;
+    }
+
+    try{
+
+        const respuesta =
+            await fetch(
+                `/payments/${idPedido}`
+            );
+
+        const data =
+            await respuesta.json();
+
+        if(
+            !respuesta.ok ||
+            !data.ok
+        ){
+
+            mostrarMensaje(
+                data.mensaje ||
+                "No se pudieron cargar los abonos"
+            );
+
+            return;
+
+        }
+
+        if(
+            !data.abonos ||
+            data.abonos.length === 0
+        ){
+
+            mostrarMensaje(
+                "Este artículo no tiene abonos registrados"
+            );
+
+            return;
+
+        }
+
+        data.abonos.forEach(
+            abono => {
+
+                const opcion =
+                    document.createElement(
+                        "option"
+                    );
+
+                opcion.value =
+                    abono.id_abono;
+
+                opcion.dataset.monto =
+                    abono.monto_abono;
+
+                const fechaLimpia =
+                    String(
+                        abono.fecha_abono
+                    ).split("T")[0];
+
+                opcion.textContent =
+                    `${moneda(abono.monto_abono)} - ${fechaLimpia}`;
+
+                selectAbono.appendChild(
+                    opcion
+                );
+
+            }
+        );
+
+        selectAbono.style.display =
+            "block";
+
+    }catch(error){
+
+        console.error(
+            "Error cargando abonos:",
+            error
+        );
+
+        mostrarMensaje(
+            "No se pudieron cargar los abonos"
+        );
+
+    }
+
+}
+function cerrarEditarAbono(){
+
+    document.getElementById(
+        "modalEditarAbono"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "editarAbonoArticulo"
+    ).value =
+        "";
+
+    document.getElementById(
+        "editarAbonoRegistro"
+    ).innerHTML = `
+        <option value="">
+            Seleccione el abono
+        </option>
+    `;
+
+    document.getElementById(
+        "editarAbonoRegistro"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "editarAbonoMonto"
+    ).value =
+        "";
+
+    document.getElementById(
+        "editarAbonoMonto"
+    ).style.display =
+        "none";
+
+}
+async function guardarEdicionAbono(){
+
+    const selectAbono =
+        document.getElementById(
+            "editarAbonoRegistro"
+        );
+
+    const inputMonto =
+        document.getElementById(
+            "editarAbonoMonto"
+        );
+
+    const idAbono =
+        Number(
+            selectAbono.value
+        );
+
+    const nuevoMonto =
+        Number(
+            inputMonto.value
+        );
 
 
+    if(
+        !idAbono ||
+        !Number.isFinite(nuevoMonto) ||
+        nuevoMonto <= 0
+    ){
+
+        mostrarMensaje(
+            "Seleccione un abono e ingrese un monto válido"
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/update-payment",
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            id_abono:
+                                idAbono,
+
+                            monto_abono:
+                                nuevoMonto
+                        })
+
+                }
+            );
+
+
+        const data =
+            await respuesta.json();
+
+
+        if(
+            !respuesta.ok ||
+            !data.ok
+        ){
+
+            mostrarMensaje(
+                data.mensaje ||
+                "No se pudo actualizar el abono"
+            );
+
+            return;
+
+        }
+
+
+        cerrarEditarAbono();
+
+        cerrarModal();
+
+        await cargarPedidos();
+
+        mostrarMensaje(
+            "Su cambio ha sido guardado"
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Error editando abono:",
+            error
+        );
+
+        mostrarMensaje(
+            "No se pudo actualizar el abono"
+        );
+
+    }
+
+}
+function mostrarMontoAbonoEditar(){
+
+    const selectAbono =
+        document.getElementById(
+            "editarAbonoRegistro"
+        );
+
+    const inputMonto =
+        document.getElementById(
+            "editarAbonoMonto"
+        );
+
+    const opcionSeleccionada =
+        selectAbono.options[
+            selectAbono.selectedIndex
+        ];
+
+    if(
+        !selectAbono.value ||
+        !opcionSeleccionada
+    ){
+
+        inputMonto.value =
+            "";
+
+        inputMonto.style.display =
+            "none";
+
+        return;
+
+    }
+
+    inputMonto.value =
+        opcionSeleccionada.dataset.monto;
+
+    inputMonto.style.display =
+        "block";
+
+}
+function abrirEditarAbono(){
+
+    const modal =
+        document.getElementById(
+            "modalEditarAbono"
+        );
+
+    const selectArticulo =
+        document.getElementById(
+            "editarAbonoArticulo"
+        );
+
+    const selectAbono =
+        document.getElementById(
+            "editarAbonoRegistro"
+        );
+
+    const inputMonto =
+        document.getElementById(
+            "editarAbonoMonto"
+        );
+
+    selectArticulo.innerHTML = `
+        <option value="">
+            Seleccione el artículo
+        </option>
+    `;
+
+    selectAbono.innerHTML = `
+        <option value="">
+            Seleccione el abono
+        </option>
+    `;
+
+    selectAbono.style.display =
+        "none";
+
+    inputMonto.value =
+        "";
+
+    inputMonto.style.display =
+        "none";
+
+
+    const cliente =
+        pedidosPorCliente[
+            clienteSeleccionado
+        ];
+
+    if(!cliente){
+
+        mostrarMensaje(
+            "No se encontró el cliente"
+        );
+
+        return;
+
+    }
+
+
+    const grupo =
+        cliente.grupos[
+            String(grupoSeleccionado)
+        ];
+
+    if(!grupo){
+
+        mostrarMensaje(
+            "No se encontró la factura seleccionada"
+        );
+
+        return;
+
+    }
+
+
+    grupo.pedidos.forEach(
+        pedido => {
+
+            const opcion =
+                document.createElement(
+                    "option"
+                );
+
+            opcion.value =
+                pedido.id_pedido;
+
+            opcion.textContent =
+                `${pedido.articulo} - Cantidad ${pedido.cantidad}`;
+
+            selectArticulo.appendChild(
+                opcion
+            );
+
+        }
+    );
+
+
+    modal.style.display =
+        "flex";
+
+}
 
 /* =========================================================
    CONFIRMAR
@@ -2823,17 +3424,41 @@ async function confirmar(){
 
     }
 
+/* ===================================================== 
+   ACTUALIZAR TABLA 
+===================================================== */
 
-    /* =====================================================
-       ACTUALIZAR TABLA
-    ===================================================== */
+const tipoGuardado = tipo;
 
-    cerrarModal();
+cerrarModal();
 
-    await cargarPedidos();
+await cargarPedidos();
+
+if(tipoGuardado === "peso"){
+
+    mostrarMensaje(
+        "Peso guardado exitosamente"
+    );
 
 }
 
+if(tipoGuardado === "pago"){
+
+    mostrarMensaje(
+        "Abono guardado exitosamente"
+    );
+
+}
+
+if(tipoGuardado === "estado"){
+
+    mostrarMensaje(
+        "Estado guardado exitosamente"
+    );
+
+}
+
+}
 /* =========================================================
    CONFIRMAR ELIMINACIÓN DE PEDIDO
 ========================================================= */
@@ -3065,7 +3690,15 @@ const pesoInput =
     document.getElementById(
         "editarPeso"
     );
+const labelCantidad =
+    document.getElementById(
+        "labelEditarCantidad"
+    );
 
+const labelPeso =
+    document.getElementById(
+        "labelEditarPeso"
+    );
     /* =====================================================
        LIMPIAR MODAL
     ===================================================== */
@@ -3106,8 +3739,15 @@ const pesoInput =
         "none";
 
 
+
     cantidadInput.style.display =
         "none";
+
+    labelCantidad.style.display =
+       "none";
+
+    labelPeso.style.display =
+      "none";
 
     pesoInput.style.display =
         "none";
@@ -3381,7 +4021,15 @@ function cargarPedidoEditar(){
         document.getElementById(
          "editarPeso"
         );
+const labelCantidad =
+    document.getElementById(
+        "labelEditarCantidad"
+    );
 
+const labelPeso =
+    document.getElementById(
+        "labelEditarPeso"
+    );
 
     const idPedido =
         Number(
@@ -3476,6 +4124,12 @@ function cargarPedidoEditar(){
 
     cantidadInput.style.display =
         "block";
+
+    labelCantidad.style.display =
+       "block";
+
+    labelPeso.style.display =
+      "block";
 
     pesoInput.style.display =
         "block";
@@ -3857,6 +4511,16 @@ async function guardarEdicionPedido(){
         ).style.display =
             "none";
         
+document.getElementById(
+    "labelEditarCantidad"
+).style.display =
+    "none";
+
+document.getElementById(
+    "labelEditarPeso"
+).style.display =
+    "none";
+
         document.getElementById(
             "editarPeso"
         ).style.display =
@@ -3940,6 +4604,16 @@ function cerrarEditar(){
         "editarCantidad"
     ).style.display =
         "none";
+
+document.getElementById(
+    "labelEditarCantidad"
+).style.display =
+    "none";
+
+document.getElementById(
+    "labelEditarPeso"
+).style.display =
+    "none";
 
     document.getElementById(
        "editarPeso"
