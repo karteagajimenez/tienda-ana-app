@@ -356,27 +356,50 @@ body.menu-abierto {
         padding-left: 12px;
     }
 
-    .menu-lateral {
-        width: 0;
-        padding-top: 0;
-        overflow: visible;
-        background: transparent;
-    }
+   .menu-lateral {
+    width: 0;
+    padding-top: 0;
+    overflow: visible;
+    background: transparent;
+    z-index: 1100;
+}
 
-    .menu-lateral.abierto {
-        width: 220px;
-        padding-top: 20px;
-        background: rgba(196, 139, 159, 0.95);
-    }
+.menu-lateral.abierto {
+    width: 230px;
+    height: 100vh;
+    padding-top: 75px;
+    background: rgba(196, 139, 159, 0.97);
+    box-shadow: 4px 0 12px rgba(0,0,0,0.18);
+}
 
-    .btn-menu-lateral {
-        position: fixed;
-        top: 85px;
-        left: 10px;
-        z-index: 1200;
-        background: transparent;
-    }
+.btn-menu-lateral {
+    position: fixed;
+    top: 92px;
+    left: 16px;
+    z-index: 1300;
+    background: transparent;
+    margin: 0;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.menu-lateral.abierto .menu-lateral-superior {
+    position: absolute;
+    top: 18px;
+    left: 10px;
+}
 
+.menu-lateral.abierto .menu-lateral-contenido {
+    margin-top: 40px;
+}
+
+.menu-lateral.abierto .btn-menu-lateral {
+    position: absolute;
+    top: 18px;
+    left: 14px;
+}
     .header {
         padding-left: 55px;
         gap: 8px;
