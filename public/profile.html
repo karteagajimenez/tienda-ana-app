@@ -495,7 +495,14 @@ button {
     <option value="">
         Seleccione distrito
     </option>
+<label for="direccion">
+    Dirección exacta
+</label>
 
+<input
+    type="text"
+    id="direccion"
+>
 </select>
         <div class="separador">
 
@@ -658,9 +665,16 @@ button {
 
 </div>
 
+<script src="/ubicaciones-cr.js"></script>
 
 
 <script>
+
+configurarUbicaciones(
+    "provincia",
+    "canton",
+    "distrito"
+);
 // ========================================
 // 🔹 OBTENER ID
 // ========================================
@@ -722,24 +736,40 @@ async function cargarPerfil(){
         ).value =
             usuario.correo || "";
 
+const provincia =
+    document.getElementById(
+        "provincia"
+    );
 
-        document.getElementById(
-            "provincia"
-        ).value =
-            usuario.provincia || "";
+const canton =
+    document.getElementById(
+        "canton"
+    );
+
+const distrito =
+    document.getElementById(
+        "distrito"
+    );
 
 
-        document.getElementById(
-            "canton"
-        ).value =
-            usuario.canton || "";
+provincia.value =
+    usuario.provincia || "";
+
+provincia.dispatchEvent(
+    new Event("change")
+);
 
 
-        document.getElementById(
-            "distrito"
-        ).value =
-            usuario.distrito || "";
+canton.value =
+    usuario.canton || "";
 
+canton.dispatchEvent(
+    new Event("change")
+);
+
+
+distrito.value =
+    usuario.distrito || "";
 
         document.getElementById(
             "direccion"
@@ -926,33 +956,34 @@ document.getElementById(
                             )
                     }
                 );
-
-
-            if (!respuesta.ok) {
-
-                const error =
-                    await respuesta.text();
-
-                mensaje.className =
-                    "error";
-
-                mensaje.innerText =
-                    "❌ " + error;
-
-                return;
-            }
-
-const error =
+const resultado =
     await respuesta.json();
 
+
+if (!respuesta.ok) {
+
+    mensaje.className =
+        "error";
+
+    mensaje.innerText =
+        "❌ " +
+        (
+            resultado.mensaje ||
+            "No se pudieron guardar los cambios."
+        );
+
+    return;
+}
+
+
 mensaje.className =
-    "error";
+    "exito";
 
 mensaje.innerText =
-    "❌ " +
+    "✅ " +
     (
-        error.mensaje ||
-        "No se pudieron guardar los cambios."
+        resultado.mensaje ||
+        "Perfil actualizado correctamente"
     );
 
             // ========================================
