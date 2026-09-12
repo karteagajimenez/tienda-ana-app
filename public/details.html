@@ -871,7 +871,7 @@ function moneda(valor){
         Number(valor) || 0;
 
 
-    return "CR ₡" +
+    return "₡" +
         numero.toLocaleString(
             "es-CR",
             {
@@ -1336,6 +1336,7 @@ const pedidos =
             "totalFactura"
         ).innerText =
             moneda(subtotal);
+            "CR " + moneda(subtotal);
 
 
 
