@@ -590,19 +590,16 @@
        MENÚ MÓVIL LATERAL
     ======================================== */
 
-    .menu-movil {
+   .menu-movil {
+    display: block;
 
-        display: block;
+    position: absolute;
 
-        position: absolute;
+    right: 10px;
+    top: calc(50% - 22px);
 
-        right: 10px;
-        top: 50%;
-
-        transform: translateY(-50%);
-
-        z-index: 4000;
-    }
+    z-index: 4000;
+}
 
 
     /* BOTÓN TRES RAYAS */
@@ -629,35 +626,32 @@
 
 
     /* PANEL LATERAL */
+#menuMovilOpciones {
+    display: none;
 
-    #menuMovilOpciones {
+    position: fixed;
 
-        display: none;
+    top: 0;
+    right: 0;
 
-        position: fixed;
+    width: 72%;
+    max-width: 280px;
+    height: 100vh;
 
-        top: 0;
-        right: 0;
+    background: #fffaf8;
 
-        width: 72%;
-        max-width: 280px;
+    border-left: 1px solid #f2d5dd;
 
-        height: 100vh;
+    box-shadow:
+        -8px 0 22px
+        rgba(120, 70, 90, 0.22);
 
-        background: #fffaf8;
+    padding: 75px 16px 20px 16px;
 
-        border-left: 1px solid #f2d5dd;
+    z-index: 3000;
 
-        box-shadow:
-            -8px 0 22px
-            rgba(120, 70, 90, 0.22);
-
-        padding: 75px 16px 20px 16px;
-
-        z-index: 3000;
-
-        overflow-y: auto;
-    }
+    overflow-y: auto;
+}
 
 #menuMovilOpciones button {
     width: 100%;
@@ -1550,7 +1544,6 @@ botonMenuMovil.addEventListener(
 // ========================================
 // 🔹 CERRAR MENÚ AL TOCAR AFUERA
 // ========================================
-
 document.addEventListener(
     "click",
     (event) => {
@@ -1567,6 +1560,13 @@ document.addEventListener(
             menuMovilOpciones.style.display =
                 "none";
 
+            botonMenuMovil.textContent =
+                "☰";
+
+            botonMenuMovil.setAttribute(
+                "aria-label",
+                "Abrir menú"
+            );
         }
 
     }
