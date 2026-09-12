@@ -1696,7 +1696,507 @@ app.post(
 
     }
 );
+// ======================================================
+// 🔴 ELIMINAR CLIENTE COMPLETAMENTE
+// ======================================================
 
+app.post(
+    '/delete-client',
+    protegerAdmin,
+    (req, res) => {
+
+        const idUsuario =
+            Number(
+                req.body.id_usuario
+            );
+
+
+        // ======================================================
+        // VALIDAR CLIENTE
+        // ======================================================
+
+        if(
+            !Number.isInteger(idUsuario) ||
+            idUsuario <= 0
+        ){
+
+            return res
+                .status(400)
+                .json({
+                    ok: false,
+                    mensaje:
+                        "Cliente inválido"
+                });
+
+        }
+
+
+        // ======================================================
+        // INICIAR TRANSACCIÓN
+        // ======================================================
+
+        conexion.beginTransaction(
+            (errorTransaccion) => {
+
+                if(errorTransaccion){
+
+                    console.log(
+                        "❌ Error iniciando eliminación del cliente:",
+                        errorTransaccion
+                    );
+
+                    return res
+                        .status(500)
+                        .json({
+                            ok: false,
+                            mensaje:
+                                "No se pudo iniciar la eliminación"
+                        });
+
+                }
+
+
+                // ======================================================
+                // COMPROBAR QUE EL CLIENTE EXISTE
+                // ======================================================
+
+                conexion.query(
+                    `
+                    SELECT id_usuario
+                    FROM usuarios
+                    WHERE id_usuario = ?
+                    AND tipo_usuario = 'cliente'
+                    LIMIT 1
+                    `,
+                    [
+                        idUsuario
+                    ],
+                    (
+                        errorCliente,
+                        clientes
+                    ) => {
+
+                        if(errorCliente){
+
+                            return conexion.rollback(
+                                () => {
+
+                                    console.log(
+                                        "❌ Error buscando cliente:",
+                                        errorCliente
+                                    );
+
+                                    return res
+                                        .status(500)
+                                        .json({
+                                            ok: false,
+                                            mensaje:
+                                                "No se pudo buscar el cliente"
+                                        });
+
+                                }
+                            );
+
+                        }
+
+
+                        if(
+                            !clientes ||
+                            clientes.length === 0
+                        ){
+
+                            return conexion.rollback(
+                                () => {
+
+                                    return res
+                                        .status(404)
+                                        .json({
+                                            ok: false,
+                                            mensaje:
+                                                "Cliente no encontrado"
+                                        });
+
+                                }
+                            );
+
+                        }
+
+
+                        // ======================================================
+                        // BUSCAR PEDIDOS Y GRUPOS DEL CLIENTE
+                        // ======================================================
+
+                        conexion.query(
+                            `
+                            SELECT
+                                id_pedido,
+                                grupo_compra
+                            FROM pedidos
+                            WHERE id_usuario = ?
+                            `,
+                            [
+                                idUsuario
+                            ],
+                            (
+                                errorPedidos,
+                                pedidos
+                            ) => {
+
+                                if(errorPedidos){
+
+                                    return conexion.rollback(
+                                        () => {
+
+                                            console.log(
+                                                "❌ Error buscando pedidos del cliente:",
+                                                errorPedidos
+                                            );
+
+                                            return res
+                                                .status(500)
+                                                .json({
+                                                    ok: false,
+                                                    mensaje:
+                                                        "No se pudieron buscar los pedidos del cliente"
+                                                });
+
+                                        }
+                                    );
+
+                                }
+
+
+                                const idsPedidos =
+                                    pedidos.map(
+                                        pedido =>
+                                            pedido.id_pedido
+                                    );
+
+
+                                const idsGrupos =
+                                    [
+                                        ...new Set(
+                                            pedidos
+                                                .map(
+                                                    pedido =>
+                                                        Number(
+                                                            pedido.grupo_compra
+                                                        )
+                                                )
+                                                .filter(
+                                                    idGrupo =>
+                                                        Number.isInteger(
+                                                            idGrupo
+                                                        ) &&
+                                                        idGrupo > 0
+                                                )
+                                        )
+                                    ];
+
+
+                                // ======================================================
+                                // ELIMINAR PEDIDOS
+                                // ======================================================
+
+                                const eliminarPedidos =
+                                    () => {
+
+                                        conexion.query(
+                                            `
+                                            DELETE FROM pedidos
+                                            WHERE id_usuario = ?
+                                            `,
+                                            [
+                                                idUsuario
+                                            ],
+                                            (
+                                                errorEliminarPedidos
+                                            ) => {
+
+                                                if(
+                                                    errorEliminarPedidos
+                                                ){
+
+                                                    return conexion.rollback(
+                                                        () => {
+
+                                                            console.log(
+                                                                "❌ Error eliminando pedidos:",
+                                                                errorEliminarPedidos
+                                                            );
+
+                                                            return res
+                                                                .status(500)
+                                                                .json({
+                                                                    ok: false,
+                                                                    mensaje:
+                                                                        "No se pudieron eliminar los pedidos del cliente"
+                                                                });
+
+                                                        }
+                                                    );
+
+                                                }
+
+
+                                                eliminarGrupos();
+
+                                            }
+                                        );
+
+                                    };
+
+
+                                // ======================================================
+                                // ELIMINAR GRUPOS QUE QUEDARON VACÍOS
+                                // ======================================================
+
+                                const eliminarGrupos =
+                                    () => {
+
+                                        if(
+                                            idsGrupos.length === 0
+                                        ){
+
+                                            return eliminarUsuario();
+
+                                        }
+
+
+                                        conexion.query(
+                                            `
+                                            DELETE g
+                                            FROM grupos_compra g
+
+                                            LEFT JOIN pedidos p
+                                                ON p.grupo_compra =
+                                                   g.id_grupo
+
+                                            WHERE g.id_grupo IN (?)
+                                            AND p.id_pedido IS NULL
+                                            `,
+                                            [
+                                                idsGrupos
+                                            ],
+                                            (
+                                                errorGrupos
+                                            ) => {
+
+                                                if(errorGrupos){
+
+                                                    return conexion.rollback(
+                                                        () => {
+
+                                                            console.log(
+                                                                "❌ Error eliminando grupos:",
+                                                                errorGrupos
+                                                            );
+
+                                                            return res
+                                                                .status(500)
+                                                                .json({
+                                                                    ok: false,
+                                                                    mensaje:
+                                                                        "No se pudieron eliminar las facturas del cliente"
+                                                                });
+
+                                                        }
+                                                    );
+
+                                                }
+
+
+                                                eliminarUsuario();
+
+                                            }
+                                        );
+
+                                    };
+
+
+                                // ======================================================
+                                // ELIMINAR USUARIO
+                                // ======================================================
+
+                                const eliminarUsuario =
+                                    () => {
+
+                                        conexion.query(
+                                            `
+                                            DELETE FROM usuarios
+                                            WHERE id_usuario = ?
+                                            AND tipo_usuario = 'cliente'
+                                            `,
+                                            [
+                                                idUsuario
+                                            ],
+                                            (
+                                                errorUsuario,
+                                                resultadoUsuario
+                                            ) => {
+
+                                                if(errorUsuario){
+
+                                                    return conexion.rollback(
+                                                        () => {
+
+                                                            console.log(
+                                                                "❌ Error eliminando cliente:",
+                                                                errorUsuario
+                                                            );
+
+                                                            return res
+                                                                .status(500)
+                                                                .json({
+                                                                    ok: false,
+                                                                    mensaje:
+                                                                        "No se pudo eliminar el cliente"
+                                                                });
+
+                                                        }
+                                                    );
+
+                                                }
+
+
+                                                if(
+                                                    resultadoUsuario
+                                                        .affectedRows === 0
+                                                ){
+
+                                                    return conexion.rollback(
+                                                        () => {
+
+                                                            return res
+                                                                .status(404)
+                                                                .json({
+                                                                    ok: false,
+                                                                    mensaje:
+                                                                        "Cliente no encontrado"
+                                                                });
+
+                                                        }
+                                                    );
+
+                                                }
+
+
+                                                // ======================================================
+                                                // CONFIRMAR TODO
+                                                // ======================================================
+
+                                                conexion.commit(
+                                                    (
+                                                        errorCommit
+                                                    ) => {
+
+                                                        if(
+                                                            errorCommit
+                                                        ){
+
+                                                            return conexion.rollback(
+                                                                () => {
+
+                                                                    console.log(
+                                                                        "❌ Error confirmando eliminación:",
+                                                                        errorCommit
+                                                                    );
+
+                                                                    return res
+                                                                        .status(500)
+                                                                        .json({
+                                                                            ok: false,
+                                                                            mensaje:
+                                                                                "No se pudo completar la eliminación"
+                                                                        });
+
+                                                                }
+                                                            );
+
+                                                        }
+
+
+                                                        return res.json({
+                                                            ok: true,
+                                                            mensaje:
+                                                                "Cliente eliminado completamente"
+                                                        });
+
+                                                    }
+                                                );
+
+                                            }
+                                        );
+
+                                    };
+
+
+                                // ======================================================
+                                // ELIMINAR ABONOS PRIMERO
+                                // ======================================================
+
+                                if(
+                                    idsPedidos.length > 0
+                                ){
+
+                                    conexion.query(
+                                        `
+                                        DELETE FROM abonos
+                                        WHERE id_pedido IN (?)
+                                        `,
+                                        [
+                                            idsPedidos
+                                        ],
+                                        (
+                                            errorAbonos
+                                        ) => {
+
+                                            if(errorAbonos){
+
+                                                return conexion.rollback(
+                                                    () => {
+
+                                                        console.log(
+                                                            "❌ Error eliminando abonos:",
+                                                            errorAbonos
+                                                        );
+
+                                                        return res
+                                                            .status(500)
+                                                            .json({
+                                                                ok: false,
+                                                                mensaje:
+                                                                    "No se pudieron eliminar los abonos del cliente"
+                                                            });
+
+                                                    }
+                                                );
+
+                                            }
+
+
+                                            eliminarPedidos();
+
+                                        }
+                                    );
+
+                                }else{
+
+                                    eliminarPedidos();
+
+                                }
+
+                            }
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+    }
+);
 // 🔹 ARTÍCULOS
 // Carga los artículos guardados en el catálogo.
 app.get('/articulos', protegerAdmin, (req, res) => {

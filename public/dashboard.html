@@ -409,7 +409,120 @@ body.menu-abierto {
 .modal-cliente-botones-superiores button{
     min-width:120px;
 }
+.btn-eliminar-cliente {
+    background: #e57373;
+    color: white;
+}
 
+.btn-eliminar-cliente:hover {
+    background: #d85c5c;
+}
+
+/* =========================================================
+   CONFIRMAR ELIMINAR CLIENTE
+========================================================= */
+
+.modal-confirmar-eliminar {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.45);
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+    box-sizing: border-box;
+
+    z-index: 5000;
+}
+
+.modal-confirmar-eliminar.activo {
+    display: flex;
+}
+
+.confirmar-eliminar-contenido {
+    width: 100%;
+    max-width: 420px;
+
+    background: white;
+
+    padding: 28px;
+
+    border-radius: 14px;
+
+    text-align: center;
+
+    box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+}
+
+.icono-advertencia {
+    width: 55px;
+    height: 55px;
+
+    margin: 0 auto 15px auto;
+
+    border-radius: 50%;
+
+    background: #fff0f0;
+    color: #e57373;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.confirmar-eliminar-contenido h3 {
+    color: #c48b9f;
+    margin: 0 0 15px 0;
+}
+
+.confirmar-eliminar-contenido p {
+    color: #555;
+    line-height: 1.5;
+}
+
+.nombre-cliente-eliminar {
+    font-weight: bold;
+    color: #333 !important;
+    font-size: 18px;
+}
+
+.advertencia-eliminar {
+    background: #fff5f5;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 13px;
+    color: #c62828 !important;
+}
+
+.botones-confirmar-eliminar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-confirmar-eliminar {
+    background: #e57373;
+}
+
+.btn-confirmar-eliminar:hover {
+    background: #d85c5c;
+}
+
+.btn-cancelar-eliminar {
+    background: #999;
+}
+
+.btn-cancelar-eliminar:hover {
+    background: #777;
+}
 /* =========================================================
    CONTRASEÑA CLIENTE + OJO
 ========================================================= */
@@ -1008,6 +1121,14 @@ body.menu-abierto {
             >
                 Actualizar cliente
             </button>
+            
+            <button
+             type="button"
+              class="btn-eliminar-cliente"
+              onclick="abrirConfirmacionEliminarCliente()"
+            >
+              Eliminar cliente
+            </button>
 
             <button
                 type="button"
@@ -1016,10 +1137,69 @@ body.menu-abierto {
                 Cancelar
             </button>
 
+                </div>
+
+    </div>
+
+</div>
+
+<!-- ======================================================
+     CONFIRMAR ELIMINAR CLIENTE
+====================================================== -->
+
+<div
+    id="modalConfirmarEliminarCliente"
+    class="modal-confirmar-eliminar"
+>
+
+    <div class="confirmar-eliminar-contenido">
+
+        <div class="icono-advertencia">
+            !
+        </div>
+
+        <h3>Eliminar cliente</h3>
+
+        <p>
+            ¿Estás seguro de que quieres eliminar este cliente?
+        </p>
+
+        <p
+            id="nombreClienteEliminar"
+            class="nombre-cliente-eliminar"
+        ></p>
+
+        <p class="advertencia-eliminar">
+            Esta acción eliminará permanentemente al cliente,
+            sus pedidos, facturas y abonos.
+            Esta acción no se puede deshacer.
+        </p>
+
+        <div class="botones-confirmar-eliminar">
+
+            <button
+                type="button"
+                id="btnConfirmarEliminarCliente"
+                class="btn-confirmar-eliminar"
+                onclick="eliminarClienteManual()"
+            >
+                Sí, eliminar
+            </button>
+
+            <button
+                type="button"
+                class="btn-cancelar-eliminar"
+                onclick="cerrarConfirmacionEliminarCliente()"
+            >
+                Cancelar
+            </button>
+
         </div>
 
     </div>
+
 </div>
+
 <!-- 🔥 HEADER DERECHA -->
 <div class="header">
     <span class="admin">📊 Panel Administrador</span>
@@ -2255,7 +2435,158 @@ async function actualizarClienteManual(){
     }
 
 }
+// =========================================================
+// ELIMINAR CLIENTE
+// =========================================================
 
+function abrirConfirmacionEliminarCliente(){
+
+    if(
+        !clienteEditarSeleccionado ||
+        !clienteEditarSeleccionado.id_usuario
+    ){
+
+        mostrarMensaje(
+            "Seleccione un cliente para eliminar",
+            "error"
+        );
+
+        return;
+    }
+
+
+    document.getElementById(
+        "nombreClienteEliminar"
+    ).textContent =
+        `${clienteEditarSeleccionado.nombre} ${clienteEditarSeleccionado.apellido}`;
+
+
+    document.getElementById(
+        "modalConfirmarEliminarCliente"
+    ).classList.add(
+        "activo"
+    );
+
+}
+
+
+function cerrarConfirmacionEliminarCliente(){
+
+    document.getElementById(
+        "modalConfirmarEliminarCliente"
+    ).classList.remove(
+        "activo"
+    );
+
+}
+
+
+async function eliminarClienteManual(){
+
+    if(
+        !clienteEditarSeleccionado ||
+        !clienteEditarSeleccionado.id_usuario
+    ){
+
+        cerrarConfirmacionEliminarCliente();
+
+        mostrarMensaje(
+            "Seleccione un cliente para eliminar",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const boton =
+        document.getElementById(
+            "btnConfirmarEliminarCliente"
+        );
+
+
+    const idUsuario =
+        clienteEditarSeleccionado.id_usuario;
+
+
+    boton.disabled = true;
+    boton.textContent = "Eliminando...";
+
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/delete-client",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        id_usuario: idUsuario
+                    })
+                }
+            );
+
+
+        const data =
+            await respuesta.json();
+
+
+        if(
+            !respuesta.ok ||
+            !data.ok
+        ){
+
+            mostrarMensaje(
+                data.mensaje ||
+                "No se pudo eliminar el cliente",
+                "error"
+            );
+
+            return;
+        }
+
+
+        cerrarConfirmacionEliminarCliente();
+
+        cerrarEditarCliente();
+
+        await cargarClientes();
+
+        mostrarMensaje(
+            "Cliente eliminado correctamente"
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Error eliminando cliente:",
+            error
+        );
+
+
+        mostrarMensaje(
+            "No se pudo eliminar el cliente",
+            "error"
+        );
+
+
+    }finally{
+
+        boton.disabled = false;
+
+        boton.textContent =
+            "Sí, eliminar";
+
+    }
+
+}
 let clienteSeleccionado = null;
 let articuloSeleccionado = null;
 let precioUnitarioSeleccionado = null;
