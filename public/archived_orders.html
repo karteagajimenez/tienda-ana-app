@@ -908,6 +908,7 @@ th {
         </button>
 
         <button
+             id="btnExpandirMovil"
             type="button"
             onclick="toggleTodosClientesArchivados()"
         >
@@ -1886,7 +1887,6 @@ function toggleClienteArchivado(
 
 }
 
-
 /* =========================================================
    EXPANDIR / COLAPSAR TODOS LOS CLIENTES ARCHIVADOS
 ========================================================= */
@@ -1898,14 +1898,29 @@ function toggleTodosClientesArchivados(){
             "btnExpandir"
         );
 
+    const botonMovil =
+        document.getElementById(
+            "btnExpandirMovil"
+        );
+
     const filasDetalle =
         document.querySelectorAll(
             '[id^="detalle-cliente-archivado-"]'
         );
 
+
+    /* Saber si actualmente toca expandir o colapsar */
+
+    const textoActual =
+        boton
+            ? boton.textContent.trim()
+            : botonMovil
+                ? botonMovil.textContent.trim()
+                : "Expandir";
+
+
     const abrirTodos =
-        boton.textContent.trim() ===
-        "Expandir";
+        textoActual === "Expandir";
 
 
     filasDetalle.forEach(
@@ -1929,23 +1944,30 @@ function toggleTodosClientesArchivados(){
                     "table-row";
 
                 if(flecha){
+
                     flecha.textContent =
                         "▼";
+
                 }
+
 
                 mostrarFacturasArchivadasCliente(
                     Number(idUsuario),
                     true
                 );
 
+
             }else{
 
                 fila.style.display =
                     "none";
 
+
                 if(flecha){
+
                     flecha.textContent =
                         "▶";
+
                 }
 
             }
@@ -1954,12 +1976,32 @@ function toggleTodosClientesArchivados(){
     );
 
 
-    boton.textContent =
+    /* Cambiar texto de ambos botones */
+
+    const textoBoton =
         abrirTodos
             ? "Colapsar"
             : "Expandir";
 
+
+    if(boton){
+
+        boton.textContent =
+            textoBoton;
+
+    }
+
+
+    if(botonMovil){
+
+        botonMovil.textContent =
+            textoBoton;
+
+    }
+
 }
+
+
 /* =========================================================
    VOLVER A LISTA DE CLIENTES ARCHIVADOS
 ========================================================= */
