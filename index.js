@@ -21,15 +21,20 @@ const sessionStore = new MySQLStore({
 const app = express();
 app.set('trust proxy', 1);
 
-
 app.use(session({
     store: sessionStore,
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+
+    // 🔐 Renovar la duración mientras el usuario siga activo
+    rolling: true,
+
     cookie: {
         httpOnly: true,
         sameSite: 'lax',
+
+        // Tiempo predeterminado
         maxAge: 1000 * 60 * 60 * 8
     }
 }));
@@ -668,6 +673,29 @@ app.post('/login', loginLimiter, (req, res) => {
                     tipo_usuario: usuario.tipo_usuario,
                     nombre: usuario.nombre
                 };
+
+// ======================================================
+// ⏱️ DURACIÓN DE SESIÓN SEGÚN TIPO DE USUARIO
+// ======================================================
+
+// 👤 CLIENTE: 5 minutos
+if (usuario.tipo_usuario === 'cliente') {
+
+    req.session.cookie.maxAge =
+        1000 * 60 * 5;
+
+}
+
+// 👑 ADMIN / SUPERADMIN: 8 horas
+else if (
+    usuario.tipo_usuario === 'admin' ||
+    usuario.tipo_usuario === 'superadmin'
+) {
+
+    req.session.cookie.maxAge =
+        1000 * 60 * 60 * 8;
+
+}
 
                 req.session.save((err) => {
 
