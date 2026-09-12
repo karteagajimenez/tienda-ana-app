@@ -160,41 +160,6 @@
     background-color: #b3748a;
 
     transform: translateY(-1px);
-
-}
-/* 🔹 Mi perfil */
-
-#miPerfil {
-
-    background-color: #c48b9f;
-
-    color: white;
-
-    border: none;
-
-    padding: 9px 17px;
-
-    border-radius: 7px;
-
-    cursor: pointer;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    margin-right: 10px;
-
-    transition:
-        background-color 0.3s,
-        transform 0.2s;
-}
-
-
-#miPerfil:hover {
-
-    background-color: #b3748a;
-
-    transform: translateY(-1px);
 }
 
 
@@ -560,12 +525,15 @@
 
         font-size: 12px;
     }
+.menu-movil {
+    display: none;
+}
 
 
+/* ========================================
+   🔹 RESPONSIVE
+======================================== */
 
-    /* ========================================
-       🔹 RESPONSIVE
-    ======================================== */
 @media(max-width:700px){
 
     body {
@@ -573,171 +541,176 @@
         overflow-x: hidden;
     }
 
+
     /* ========================================
-   HEADER MÓVIL
-======================================== */
+       HEADER MÓVIL
+    ======================================== */
 
-#header {
+    #header {
 
-    width: 100%;
-    max-width: 100%;
+        width: 100%;
+        max-width: 100%;
 
-    position: relative;
+        position: relative;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-    padding: 12px 52px 12px 52px;
+        padding: 12px 52px;
 
-    overflow: visible;
+        overflow: visible;
 
-    white-space: normal;
-}
+        white-space: normal;
+    }
 
 
-/* Nombre centrado */
+    /* Nombre */
 
-#nombreCliente {
+    #nombreCliente {
 
-    margin: 0;
+        margin: 0;
 
-    font-size: 14px;
+        font-size: 14px;
 
-    text-align: center;
+        text-align: center;
 
-    white-space: nowrap;
+        white-space: nowrap;
+    }
 
-}
 
+    /* Ocultar botones normales */
 
-/* Ocultar botones normales en celular */
+    .acciones-escritorio {
+        display: none;
+    }
 
-.acciones-escritorio {
 
-    display: none;
+    /* ========================================
+       MENÚ MÓVIL LATERAL
+    ======================================== */
 
-}
+    .menu-movil {
 
+        display: block;
 
-/* Mostrar menú móvil */
+        position: absolute;
 
-.menu-movil {
+        right: 10px;
+        top: 50%;
 
-    display: block;
+        transform: translateY(-50%);
 
-    position: absolute;
+        z-index: 2000;
+    }
 
-    right: 12px;
 
-    top: 50%;
+    /* BOTÓN TRES RAYAS */
 
-    transform: translateY(-50%);
+    #botonMenuMovil {
 
-}
+        background: transparent;
 
+        color: #714f5b;
 
-/* Botón hamburguesa */
+        border: none;
 
-#botonMenuMovil {
+        padding: 6px 8px;
 
-    background: transparent;
+        font-size: 28px;
 
-    color: #714f5b;
+        line-height: 1;
 
-    border: none;
+        cursor: pointer;
+    }
 
-    padding: 6px 8px;
 
-    font-size: 26px;
+    /* PANEL LATERAL */
 
-    cursor: pointer;
+    #menuMovilOpciones {
 
-}
+        display: none;
 
+        position: fixed;
 
-/* Menú desplegable */
+        top: 0;
+        right: 0;
 
-#menuMovilOpciones {
+        width: 78%;
+        max-width: 320px;
 
-    display: none;
+        height: 100vh;
 
-    position: absolute;
+        background: #fffaf8;
 
-    top: 45px;
+        border-left: 1px solid #f2d5dd;
 
-    right: 0;
+        box-shadow:
+            -8px 0 22px
+            rgba(120, 70, 90, 0.22);
 
-    width: 170px;
+        padding: 90px 18px 20px 18px;
 
-    background: #fffaf8;
+        z-index: 3000;
 
-    border: 1px solid #f2d5dd;
+        overflow-y: auto;
+    }
 
-    border-radius: 10px;
 
-    box-shadow:
-        0 5px 15px
-        rgba(150, 90, 110, 0.18);
+    #menuMovilOpciones button {
 
-    padding: 8px;
+        width: 100%;
 
-    z-index: 1000;
+        display: block;
 
-}
+        margin: 0 0 12px 0;
 
+        padding: 14px 16px;
 
-/* Botones del menú */
+        border: none;
 
-#menuMovilOpciones button {
+        border-radius: 8px;
 
-    width: 100%;
+        font-size: 16px;
 
-    display: block;
+        font-weight: 600;
 
-    margin: 4px 0;
+        text-align: left;
 
-    padding: 10px 12px;
+        cursor: pointer;
+    }
 
-    border-radius: 7px;
 
-    font-size: 14px;
+    #miPerfilMovil {
 
-    text-align: left;
+        background: #c48b9f;
 
-}
+        color: white;
+    }
 
 
-/* Colores */
+    #archivosMovil {
 
-#miPerfilMovil {
+        background: #d990a4;
 
-    background: #c48b9f;
+        color: white;
+    }
 
-    color: white;
 
-}
+    #cerrarSesionMovil {
 
-#archivosMovil {
+        background: #d95c68;
 
-    background: #d990a4;
+        color: white;
+    }
 
-    color: white;
 
-}
-
-#cerrarSesionMovil {
-
-    background: #d95c68;
-
-    color: white;
-
-}
     /* ========================================
        TABLA
     ======================================== */
 
     .tabla-container {
+
         width: 100%;
         max-width: 100%;
 
@@ -749,7 +722,9 @@
         -webkit-overflow-scrolling: touch;
     }
 
+
     table {
+
         width: 760px;
         min-width: 760px;
 
@@ -758,8 +733,10 @@
         white-space: nowrap;
     }
 
+
     th,
     td {
+
         padding: 10px 12px;
 
         font-size: 13px;
@@ -773,16 +750,23 @@
     ======================================== */
 
     .redes {
+
         gap: 18px;
+
         flex-wrap: nowrap;
     }
 
+
     .red-social {
+
         min-width: 75px;
     }
 
+
     .contacto {
+
         width: 100%;
+
         max-width: 100%;
 
         margin-top: 70px;
@@ -795,38 +779,78 @@
 
 
 <body>
-
-
 <!-- ========================================
      🔹 HEADER
 ======================================== -->
 <div id="header">
 
     <span id="nombreCliente">
-
-        👤 Cargando cliente...
-
+        👤 Cliente
     </span>
 
-    <button id="miPerfil">
 
-        Mi perfil
+    <!-- ========================================
+         BOTONES NORMALES - COMPUTADORA
+    ======================================== -->
+    <div class="acciones-escritorio">
 
-    </button>
+        <button id="miPerfil">
+            Mi perfil
+        </button>
 
-    <button id="archivos">
+        <button id="archivos">
+            Archivos
+        </button>
 
-        Archivos
+        <button id="cerrarSesion">
+            Cerrar sesión
+        </button>
 
-    </button>
+    </div>
 
-    <button id="cerrarSesion">
 
-        Cerrar sesión
+    <!-- ========================================
+         MENÚ MÓVIL
+    ======================================== -->
+    <div class="menu-movil">
 
-    </button>
+        <button
+            id="botonMenuMovil"
+            type="button"
+            aria-label="Abrir menú"
+        >
+            ☰
+        </button>
+
+        <div id="menuMovilOpciones">
+
+            <button
+                id="miPerfilMovil"
+                type="button"
+            >
+                Mi perfil
+            </button>
+
+            <button
+                id="archivosMovil"
+                type="button"
+            >
+                Archivos
+            </button>
+
+            <button
+                id="cerrarSesionMovil"
+                type="button"
+            >
+                Cerrar sesión
+            </button>
+
+        </div>
+
+    </div>
 
 </div>
+
 
 <!-- ========================================
      🔹 TABLA DE PEDIDOS
@@ -1002,7 +1026,6 @@
 
 <script>
 
-
 // ========================================
 // 🔹 OBTENER ID DEL CLIENTE
 // ========================================
@@ -1038,6 +1061,8 @@ function traducirPaisOrigen(pais){
     }
 
 }
+
+
 
 // ========================================
 // 🔹 TRADUCIR ESTADO
@@ -1097,6 +1122,7 @@ function traducirEstado(e){
     }
 
 }
+
 
 
 // ========================================
@@ -1162,6 +1188,7 @@ async function cargarNombreCliente(){
     }
 
 }
+
 
 
 // ========================================
@@ -1253,9 +1280,6 @@ async function cargar(){
 
             /* ========================================
                🔹 PAÍS DE ORIGEN
-
-               Este valor es fijo.
-               No cambia cuando cambia el estado.
             ======================================== */
 
             const paisOrigen =
@@ -1267,10 +1291,6 @@ async function cargar(){
 
             /* ========================================
                🔹 ESTADO DEL PAQUETE
-
-               Este valor sí cambia:
-               En origen, En camino,
-               Costa Rica, Empacado, Entregado.
             ======================================== */
 
             const estado =
@@ -1389,6 +1409,8 @@ async function cargar(){
 
 }
 
+
+
 // ========================================
 // 🔹 ABRIR ARCHIVOS DEL CLIENTE
 // ========================================
@@ -1405,6 +1427,8 @@ document.getElementById(
     }
 );
 
+
+
 // ========================================
 // 🔹 ABRIR MI PERFIL
 // ========================================
@@ -1420,6 +1444,7 @@ document.getElementById(
 
     }
 );
+
 
 
 // ========================================
@@ -1439,6 +1464,7 @@ document.getElementById(
 );
 
 
+
 // ========================================
 // 🔹 AUTO CIERRE TRAS 10 MINUTOS
 // ========================================
@@ -1454,6 +1480,7 @@ setTimeout(
 );
 
 
+
 // ========================================
 // 🔹 MENÚ MÓVIL
 // ========================================
@@ -1463,19 +1490,25 @@ const botonMenuMovil =
         "botonMenuMovil"
     );
 
+
 const menuMovilOpciones =
     document.getElementById(
         "menuMovilOpciones"
     );
 
 
+
 botonMenuMovil.addEventListener(
     "click",
-    () => {
+    (event) => {
+
+        event.stopPropagation();
+
 
         const abierto =
             menuMovilOpciones.style.display ===
             "block";
+
 
         menuMovilOpciones.style.display =
             abierto
@@ -1486,7 +1519,37 @@ botonMenuMovil.addEventListener(
 );
 
 
-// Mi perfil
+
+// ========================================
+// 🔹 CERRAR MENÚ AL TOCAR AFUERA
+// ========================================
+
+document.addEventListener(
+    "click",
+    (event) => {
+
+        if(
+            !menuMovilOpciones.contains(
+                event.target
+            ) &&
+            !botonMenuMovil.contains(
+                event.target
+            )
+        ){
+
+            menuMovilOpciones.style.display =
+                "none";
+
+        }
+
+    }
+);
+
+
+
+// ========================================
+// 🔹 MI PERFIL - MÓVIL
+// ========================================
 
 document.getElementById(
     "miPerfilMovil"
@@ -1501,7 +1564,10 @@ document.getElementById(
 );
 
 
-// Archivos
+
+// ========================================
+// 🔹 ARCHIVOS - MÓVIL
+// ========================================
 
 document.getElementById(
     "archivosMovil"
@@ -1516,7 +1582,10 @@ document.getElementById(
 );
 
 
-// Cerrar sesión
+
+// ========================================
+// 🔹 CERRAR SESIÓN - MÓVIL
+// ========================================
 
 document.getElementById(
     "cerrarSesionMovil"
@@ -1529,6 +1598,9 @@ document.getElementById(
 
     }
 );
+
+
+
 // ========================================
 // 🔹 INICIAR
 // ========================================
@@ -1536,7 +1608,6 @@ document.getElementById(
 cargarNombreCliente();
 
 cargar();
-
 
 </script>
 
