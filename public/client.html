@@ -626,27 +626,30 @@
 
 
     /* PANEL LATERAL */
-#menuMovilOpciones {
+ #menuMovilOpciones {
     display: none;
 
     position: fixed;
 
-    top: 0;
-    right: 0;
+    top: 16px;
+    right: 12px;
 
     width: 72%;
     max-width: 280px;
-    height: 100vh;
+
+    height: auto;
+    max-height: calc(100vh - 32px);
 
     background: #fffaf8;
 
-    border-left: 1px solid #f2d5dd;
+    border: 1px solid #f2d5dd;
+    border-radius: 12px;
 
     box-shadow:
-        -8px 0 22px
+        -6px 6px 20px
         rgba(120, 70, 90, 0.22);
 
-    padding: 75px 16px 20px 16px;
+    padding: 70px 14px 16px 14px;
 
     z-index: 3000;
 
