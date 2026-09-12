@@ -721,6 +721,7 @@ td button {
         </button>
 
         <button
+            id="btnExpandirMovil"
             type="button"
             onclick="toggleTodosClientes()"
         >
@@ -2258,8 +2259,6 @@ siguiente.style.visibility =
         ? "hidden"
         : "visible";
 }
-
-
 function paginaAnterior(){
 
     if(paginaActual <= 1){
@@ -2270,6 +2269,7 @@ function paginaAnterior(){
 
     mostrarListaClientes();
 }
+
 
 function paginaSiguiente(){
 
@@ -2293,6 +2293,8 @@ function paginaSiguiente(){
 
     mostrarListaClientes();
 }
+
+
 function toggleTodosClientes(){
 
     const boton =
@@ -2300,14 +2302,27 @@ function toggleTodosClientes(){
             "btnExpandir"
         );
 
+    const botonMovil =
+        document.getElementById(
+            "btnExpandirMovil"
+        );
+
     const filasDetalle =
         document.querySelectorAll(
             '[id^="detalle-cliente-"]'
         );
 
+    const textoBoton =
+        boton
+            ? boton.textContent.trim()
+            : (
+                botonMovil
+                    ? botonMovil.textContent.trim()
+                    : "Expandir"
+            );
+
     const abrirTodos =
-        boton.textContent.trim() ===
-        "Expandir";
+        textoBoton === "Expandir";
 
 
     filasDetalle.forEach(
@@ -2356,10 +2371,25 @@ function toggleTodosClientes(){
     );
 
 
-    boton.textContent =
-        abrirTodos
-            ? "Colapsar"
-            : "Expandir";
+    if(boton){
+
+        boton.textContent =
+            abrirTodos
+                ? "Colapsar"
+                : "Expandir";
+
+    }
+
+
+    if(botonMovil){
+
+        botonMovil.textContent =
+            abrirTodos
+                ? "Colapsar"
+                : "Expandir";
+
+    }
+
 }
 
 
@@ -2382,6 +2412,7 @@ function toggleCliente(idUsuario){
     const estaAbierto =
         fila.style.display === "table-row";
 
+
     if(estaAbierto){
 
         fila.style.display =
@@ -2402,7 +2433,9 @@ function toggleCliente(idUsuario){
             idUsuario,
             true
         );
+
     }
+
 }
 /* =========================================================
    ABRIR CLIENTE
