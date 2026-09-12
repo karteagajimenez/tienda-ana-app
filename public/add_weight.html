@@ -5239,90 +5239,55 @@ async function guardarEdicionPedido(){
 
         }
 
-
-        /*
-            Actualizar la tabla principal
-            sin cerrar la ventana de edición.
-        */
-
-        await cargarPedidos();
+// Guardar qué cliente debe permanecer abierto
+const clienteMantenerAbierto =
+    clienteSeleccionado;
 
 
-        /*
-            Mostrar mensaje bonito.
-        */
-
-        mostrarMensaje(
-            "Pedido actualizado exitosamente"
-        );
+// Cerrar y limpiar el modal de edición
+cerrarEditar();
 
 
-        /*
-            Limpiar el formulario de edición
-            para poder editar otro pedido.
-        */
-
-        document.getElementById(
-            "editarPedidoSelect"
-        ).value =
-            "";
+// Actualizar los pedidos
+await cargarPedidos();
 
 
-        document.getElementById(
-            "editarBuscarArticulo"
-        ).value =
-            "";
+// Mantener abierto el acordeón del cliente
+const filaCliente =
+    document.getElementById(
+        `detalle-cliente-${clienteMantenerAbierto}`
+    );
+
+const flechaCliente =
+    document.getElementById(
+        `flecha-${clienteMantenerAbierto}`
+    );
 
 
-        document.getElementById(
-            "editarArticuloSelect"
-        ).value =
-            "";
+if(filaCliente){
+
+    filaCliente.style.display =
+        "table-row";
+
+    if(flechaCliente){
+
+        flechaCliente.textContent =
+            "▼";
+
+    }
+
+    mostrarFacturasCliente(
+        clienteMantenerAbierto,
+        true
+    );
+
+}
 
 
-        document.getElementById(
-            "editarCantidad"
-        ).value =
-            "";
-        document.getElementById(
-           "editarPeso"
-        ).value =
-            "";
-
-
-        document.getElementById(
-            "editarBuscadorContenedor"
-        ).style.display =
-            "none";
-
-
-        document.getElementById(
-            "editarCantidad"
-        ).style.display =
-            "none";
-        
-document.getElementById(
-    "labelEditarCantidad"
-).style.display =
-    "none";
-
-document.getElementById(
-    "labelEditarPeso"
-).style.display =
-    "none";
-
-        document.getElementById(
-            "editarPeso"
-        ).style.display =
-            "none";
-
-
-        document.getElementById(
-            "editarListaArticulos"
-        ).classList.remove(
-            "mostrar"
-        );
-
+// Mensaje de confirmación
+mostrarMensaje(
+    "Pedido actualizado exitosamente"
+);
 
     }catch(error){
 
