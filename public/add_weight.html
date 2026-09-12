@@ -8,6 +8,9 @@
 
 <style>
 
+.acciones-pedido {
+    white-space: nowrap;
+}
 .paginacion-clientes {
     position: fixed;
     bottom: 0;
@@ -1751,20 +1754,46 @@ function renderizarVista(){
                 ) + 1;
 
             mostrarListaClientes();
+setTimeout(
+    () => {
 
-
-            setTimeout(
-                () => {
-
-                    toggleCliente(
-                        Number(
-                            clienteVistaActual
-                        )
-                    );
-
-                },
-                0
+        const idUsuario =
+            Number(
+                clienteVistaActual
             );
+
+        const fila =
+            document.getElementById(
+                `detalle-cliente-${idUsuario}`
+            );
+
+        const flecha =
+            document.getElementById(
+                `flecha-${idUsuario}`
+            );
+
+        if(fila){
+
+            fila.style.display =
+                "table-row";
+
+            if(flecha){
+
+                flecha.textContent =
+                    "▼";
+
+            }
+
+            mostrarFacturasCliente(
+                idUsuario,
+                true
+            );
+
+        }
+
+    },
+    0
+);
         }
     }
 }
@@ -2491,7 +2520,7 @@ let html = "";
                     </td>
 
 
-                    <td>
+                    <td class="acciones-pedido">
 
                         ${
                             grupo.grupo_compra
