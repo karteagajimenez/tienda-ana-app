@@ -601,7 +601,7 @@
 
         transform: translateY(-50%);
 
-        z-index: 2000;
+        z-index: 4000;
     }
 
 
@@ -621,7 +621,10 @@
 
         line-height: 1;
 
-        cursor: pointer;
+        cursor: pointer; 
+
+        position: relative;
+        z-index: 4000;
     }
 
 
@@ -636,8 +639,8 @@
         top: 0;
         right: 0;
 
-        width: 78%;
-        max-width: 320px;
+        width: 72%;
+        max-width: 280px;
 
         height: 100vh;
 
@@ -649,38 +652,44 @@
             -8px 0 22px
             rgba(120, 70, 90, 0.22);
 
-        padding: 90px 18px 20px 18px;
+        padding: 75px 16px 20px 16px;
 
         z-index: 3000;
 
         overflow-y: auto;
     }
 
+#menuMovilOpciones button {
+    width: 100%;
 
-    #menuMovilOpciones button {
+    display: block;
 
-        width: 100%;
+    margin: 0 0 12px 0;
+    padding: 12px 14px;
 
-        display: block;
+    border: none;
+    border-radius: 8px;
 
-        margin: 0 0 12px 0;
+    font-size: 15px;
+    font-weight: 600;
 
-        padding: 14px 16px;
+    text-align: center;
 
-        border: none;
+    cursor: pointer;
 
-        border-radius: 8px;
+    box-sizing: border-box;
+}
 
-        font-size: 16px;
+#miPerfilMovil,
+#archivosMovil {
+    background: #c48b9f;
+    color: white;
+}
 
-        font-weight: 600;
-
-        text-align: left;
-
-        cursor: pointer;
-    }
-
-
+#cerrarSesionMovil {
+    background: #e74c3c;
+    color: white;
+}
     #miPerfilMovil {
 
         background: #c48b9f;
@@ -1497,28 +1506,46 @@ const menuMovilOpciones =
     );
 
 
-
 botonMenuMovil.addEventListener(
     "click",
     (event) => {
 
         event.stopPropagation();
 
-
         const abierto =
             menuMovilOpciones.style.display ===
             "block";
 
+        if(abierto){
 
-        menuMovilOpciones.style.display =
-            abierto
-                ? "none"
-                : "block";
+            menuMovilOpciones.style.display =
+                "none";
+
+            botonMenuMovil.textContent =
+                "☰";
+
+            botonMenuMovil.setAttribute(
+                "aria-label",
+                "Abrir menú"
+            );
+
+        }else{
+
+            menuMovilOpciones.style.display =
+                "block";
+
+            botonMenuMovil.textContent =
+                "✕";
+
+            botonMenuMovil.setAttribute(
+                "aria-label",
+                "Cerrar menú"
+            );
+
+        }
 
     }
 );
-
-
 
 // ========================================
 // 🔹 CERRAR MENÚ AL TOCAR AFUERA
