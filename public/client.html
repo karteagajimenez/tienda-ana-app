@@ -574,55 +574,165 @@
     }
 
     /* ========================================
-       HEADER MÓVIL
-    ======================================== */
+   HEADER MÓVIL
+======================================== */
 
-    #header {
-        width: 100%;
-        max-width: 100%;
+#header {
 
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-start;
+    width: 100%;
+    max-width: 100%;
 
-        gap: 8px;
+    position: relative;
 
-        padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-        overflow-x: auto;
-        overflow-y: hidden;
+    padding: 12px 52px 12px 52px;
 
-        -webkit-overflow-scrolling: touch;
+    overflow: visible;
 
-        white-space: nowrap;
-    }
-
-    #nombreCliente {
-        flex: 0 0 auto;
-
-        margin-right: 5px;
-
-        font-size: 14px;
-
-        white-space: nowrap;
-    }
-
-    #miPerfil,
-    #archivos,
-    #cerrarSesion {
-        flex: 0 0 auto;
-
-        margin-right: 5px;
-
-        padding: 8px 12px;
-
-        font-size: 12px;
-
-        white-space: nowrap;
-    }
+    white-space: normal;
+}
 
 
+/* Nombre centrado */
+
+#nombreCliente {
+
+    margin: 0;
+
+    font-size: 14px;
+
+    text-align: center;
+
+    white-space: nowrap;
+
+}
+
+
+/* Ocultar botones normales en celular */
+
+.acciones-escritorio {
+
+    display: none;
+
+}
+
+
+/* Mostrar menú móvil */
+
+.menu-movil {
+
+    display: block;
+
+    position: absolute;
+
+    right: 12px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+}
+
+
+/* Botón hamburguesa */
+
+#botonMenuMovil {
+
+    background: transparent;
+
+    color: #714f5b;
+
+    border: none;
+
+    padding: 6px 8px;
+
+    font-size: 26px;
+
+    cursor: pointer;
+
+}
+
+
+/* Menú desplegable */
+
+#menuMovilOpciones {
+
+    display: none;
+
+    position: absolute;
+
+    top: 45px;
+
+    right: 0;
+
+    width: 170px;
+
+    background: #fffaf8;
+
+    border: 1px solid #f2d5dd;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 5px 15px
+        rgba(150, 90, 110, 0.18);
+
+    padding: 8px;
+
+    z-index: 1000;
+
+}
+
+
+/* Botones del menú */
+
+#menuMovilOpciones button {
+
+    width: 100%;
+
+    display: block;
+
+    margin: 4px 0;
+
+    padding: 10px 12px;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+
+    text-align: left;
+
+}
+
+
+/* Colores */
+
+#miPerfilMovil {
+
+    background: #c48b9f;
+
+    color: white;
+
+}
+
+#archivosMovil {
+
+    background: #d990a4;
+
+    color: white;
+
+}
+
+#cerrarSesionMovil {
+
+    background: #d95c68;
+
+    color: white;
+
+}
     /* ========================================
        TABLA
     ======================================== */
@@ -1344,7 +1454,81 @@ setTimeout(
 );
 
 
+// ========================================
+// 🔹 MENÚ MÓVIL
+// ========================================
 
+const botonMenuMovil =
+    document.getElementById(
+        "botonMenuMovil"
+    );
+
+const menuMovilOpciones =
+    document.getElementById(
+        "menuMovilOpciones"
+    );
+
+
+botonMenuMovil.addEventListener(
+    "click",
+    () => {
+
+        const abierto =
+            menuMovilOpciones.style.display ===
+            "block";
+
+        menuMovilOpciones.style.display =
+            abierto
+                ? "none"
+                : "block";
+
+    }
+);
+
+
+// Mi perfil
+
+document.getElementById(
+    "miPerfilMovil"
+).addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            `/profile.html?id=${id}`;
+
+    }
+);
+
+
+// Archivos
+
+document.getElementById(
+    "archivosMovil"
+).addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            `/client_archived.html?id=${encodeURIComponent(id)}`;
+
+    }
+);
+
+
+// Cerrar sesión
+
+document.getElementById(
+    "cerrarSesionMovil"
+).addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            "/logout";
+
+    }
+);
 // ========================================
 // 🔹 INICIAR
 // ========================================
