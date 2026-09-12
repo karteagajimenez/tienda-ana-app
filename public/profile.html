@@ -951,18 +951,18 @@ document.getElementById(
                 return;
             }
 
+const error =
+    await respuesta.json();
 
-            const resultado =
-                await respuesta.json();
+mensaje.className =
+    "error";
 
-
-            mensaje.className =
-                "exito";
-
-            mensaje.innerText =
-                "✅ " +
-                resultado.mensaje;
-
+mensaje.innerText =
+    "❌ " +
+    (
+        error.mensaje ||
+        "No se pudieron guardar los cambios."
+    );
 
             // ========================================
             // 🔐 SI CAMBIÓ EL CORREO
