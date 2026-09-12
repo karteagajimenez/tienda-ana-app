@@ -583,12 +583,11 @@ app.post('/register', registerLimiter, async (req, res) => {
 
 });
 // 🔐 LÍMITE DE INTENTOS DE LOGIN
-
 const loginLimiter = rateLimit({
 
     windowMs: 15 * 60 * 1000, // 15 minutos
 
-    max: 5, // máximo 5 intentos fallidos
+    max: 5, // máximo 5 intentos fallidos por cuenta
 
     standardHeaders: true,
 
@@ -597,7 +596,20 @@ const loginLimiter = rateLimit({
     // 🔐 Los inicios de sesión correctos no cuentan
     skipSuccessfulRequests: true,
 
-    message: "Demasiados intentos de inicio de sesión. Intente nuevamente en 15 minutos."
+    // 🔐 Cada correo tiene su propio contador de intentos
+    keyGenerator: (req) => {
+
+        const correo =
+            String(req.body?.correo || '')
+                .trim()
+                .toLowerCase();
+
+        return correo || req.ip;
+
+    },
+
+    message:
+        "Demasiados intentos de inicio de sesión para esta cuenta. Intente nuevamente en 15 minutos."
 
 });
 
