@@ -1681,7 +1681,724 @@ app.get('/articulos', protegerAdmin, (req, res) => {
     });
 
 });
+// ======================================================
+// 👤 ACTUALIZAR PERFIL DEL CLIENTE
+// ======================================================
 
+app.post(
+    '/update-profile',
+    protegerCliente,
+    async (req, res) => {
+
+        try {
+
+            const idUsuario =
+                Number(
+                    req.session.usuario.id_usuario
+                );
+
+
+            const {
+                nombre,
+                apellido,
+                telefono,
+                correo,
+                provincia,
+                canton,
+                distrito,
+                direccion_exacta,
+                passwordActual,
+                passwordNueva,
+                passwordConfirmar
+            } = req.body;
+
+
+            // ======================================================
+            // NORMALIZAR DATOS
+            // ======================================================
+
+            const nombreLimpio =
+                String(nombre || '').trim();
+
+            const apellidoLimpio =
+                String(apellido || '').trim();
+
+            const telefonoLimpio =
+                String(telefono || '').trim();
+
+            const correoLimpio =
+                String(correo || '')
+                    .trim()
+                    .toLowerCase();
+
+            const provinciaLimpia =
+                String(provincia || '').trim();
+
+            const cantonLimpio =
+                String(canton || '').trim();
+
+            const distritoLimpio =
+                String(distrito || '').trim();
+
+            const direccionLimpia =
+                String(
+                    direccion_exacta || ''
+                ).trim();
+
+            const passwordActualLimpio =
+                String(passwordActual || '');
+
+            const passwordNuevaLimpio =
+                String(passwordNueva || '');
+
+            const passwordConfirmarLimpio =
+                String(passwordConfirmar || '');
+
+
+            // ======================================================
+            // VALIDAR CAMPOS OBLIGATORIOS
+            // ======================================================
+
+            if (
+                !nombreLimpio ||
+                !apellidoLimpio ||
+                !telefonoLimpio ||
+                !correoLimpio ||
+                !provinciaLimpia ||
+                !cantonLimpio ||
+                !distritoLimpio
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+                        ok: false,
+                        mensaje:
+                            "Complete todos los campos obligatorios"
+                    });
+
+            }
+
+
+            // ======================================================
+            // NOMBRE Y APELLIDO SOLO LETRAS
+            // ======================================================
+
+            const soloLetras =
+                /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+$/;
+
+
+            if (
+                !soloLetras.test(
+                    nombreLimpio
+                )
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+                        ok: false,
+                        mensaje:
+                            "En el nombre solo se permiten letras"
+                    });
+
+            }
+
+
+            if (
+                !soloLetras.test(
+                    apellidoLimpio
+                )
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+                        ok: false,
+                        mensaje:
+                            "En el apellido solo se permiten letras"
+                    });
+
+            }
+
+
+            // ======================================================
+            // TELÉFONO SOLO NÚMEROS
+            // ======================================================
+
+            if (
+                !/^\d+$/.test(
+                    telefonoLimpio
+                )
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+                        ok: false,
+                        mensaje:
+                            "En el teléfono solo se permiten números"
+                    });
+
+            }
+
+
+            // ======================================================
+            // CORREO
+            // ======================================================
+
+            const correoValido =
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+            if (
+                !correoValido.test(
+                    correoLimpio
+                )
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+                        ok: false,
+                        mensaje:
+                            "Ingrese un correo electrónico válido"
+                    });
+
+            }
+
+
+            // ======================================================
+            // PROVINCIA
+            // ======================================================
+
+            const provinciasValidas = [
+                "San José",
+                "Alajuela",
+                "Cartago",
+                "Heredia",
+                "Guanacaste",
+                "Puntarenas",
+                "Limón"
+            ];
+
+
+            if (
+                !provinciasValidas.includes(
+                    provinciaLimpia
+                )
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+                        ok: false,
+                        mensaje:
+                            "Seleccione una provincia válida"
+                    });
+
+            }
+
+
+            // ======================================================
+            // NUEVA CONTRASEÑA
+            // ======================================================
+
+            if (passwordNuevaLimpio) {
+
+                const passwordValido =
+                    /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
+
+                if (
+                    !passwordValido.test(
+                        passwordNuevaLimpio
+                    )
+                ) {
+
+                    return res
+                        .status(400)
+                        .json({
+                            ok: false,
+                            mensaje:
+                                "La nueva contraseña debe tener mínimo 8 caracteres, al menos una letra y un número"
+                        });
+
+                }
+
+
+                if (
+                    passwordNuevaLimpio !==
+                    passwordConfirmarLimpio
+                ) {
+
+                    return res
+                        .status(400)
+                        .json({
+                            ok: false,
+                            mensaje:
+                                "Las nuevas contraseñas no coinciden"
+                        });
+
+                }
+
+            }
+
+
+            // ======================================================
+            // BUSCAR DATOS ACTUALES DEL CLIENTE
+            // ======================================================
+
+            conexion.query(
+                `
+                SELECT
+                    id_usuario,
+                    correo,
+                    password,
+                    ultimo_cambio_password
+                FROM usuarios
+                WHERE id_usuario = ?
+                AND tipo_usuario = 'cliente'
+                LIMIT 1
+                `,
+                [
+                    idUsuario
+                ],
+                async (
+                    errorBuscar,
+                    resultados
+                ) => {
+
+                    if (errorBuscar) {
+
+                        console.log(
+                            "❌ Error buscando perfil:",
+                            errorBuscar
+                        );
+
+                        return res
+                            .status(500)
+                            .json({
+                                ok: false,
+                                mensaje:
+                                    "No se pudo cargar el perfil"
+                            });
+
+                    }
+
+
+                    if (
+                        resultados.length === 0
+                    ) {
+
+                        return res
+                            .status(404)
+                            .json({
+                                ok: false,
+                                mensaje:
+                                    "Cliente no encontrado"
+                            });
+
+                    }
+
+
+                    const usuarioActual =
+                        resultados[0];
+
+
+                    const correoActual =
+                        String(
+                            usuarioActual.correo || ''
+                        )
+                        .trim()
+                        .toLowerCase();
+
+
+                    const cambioCorreo =
+                        correoLimpio !==
+                        correoActual;
+
+
+                    const cambioPassword =
+                        passwordNuevaLimpio !== '';
+
+
+                    // ======================================================
+                    // SI CAMBIA CORREO, DEBE CAMBIAR CONTRASEÑA
+                    // ======================================================
+
+                    if (
+                        cambioCorreo &&
+                        !cambioPassword
+                    ) {
+
+                        return res
+                            .status(400)
+                            .json({
+                                ok: false,
+                                mensaje:
+                                    "Si cambia el correo debe establecer una nueva contraseña"
+                            });
+
+                    }
+
+
+                    // ======================================================
+                    // SI CAMBIA CORREO O CONTRASEÑA,
+                    // PEDIR CONTRASEÑA ACTUAL
+                    // ======================================================
+
+                    if (
+                        (
+                            cambioCorreo ||
+                            cambioPassword
+                        ) &&
+                        !passwordActualLimpio
+                    ) {
+
+                        return res
+                            .status(400)
+                            .json({
+                                ok: false,
+                                mensaje:
+                                    "Ingrese su contraseña actual"
+                            });
+
+                    }
+
+
+                    // ======================================================
+                    // VERIFICAR CONTRASEÑA ACTUAL
+                    // ======================================================
+
+                    if (
+                        cambioCorreo ||
+                        cambioPassword
+                    ) {
+
+                        const passwordCorrecta =
+                            await bcrypt.compare(
+                                passwordActualLimpio,
+                                usuarioActual.password
+                            );
+
+
+                        if (!passwordCorrecta) {
+
+                            return res
+                                .status(401)
+                                .json({
+                                    ok: false,
+                                    mensaje:
+                                        "La contraseña actual es incorrecta"
+                                });
+
+                        }
+
+                    }
+
+
+                    // ======================================================
+                    // LÍMITE DE CAMBIO DE CONTRASEÑA:
+                    // 1 CADA 24 HORAS
+                    // ======================================================
+
+                    if (
+                        cambioPassword &&
+                        usuarioActual
+                            .ultimo_cambio_password
+                    ) {
+
+                        const ultimoCambio =
+                            new Date(
+                                usuarioActual
+                                    .ultimo_cambio_password
+                            );
+
+                        const ahora =
+                            new Date();
+
+                        const diferencia =
+                            ahora.getTime() -
+                            ultimoCambio.getTime();
+
+                        const veinticuatroHoras =
+                            24 * 60 * 60 * 1000;
+
+
+                        if (
+                            diferencia <
+                            veinticuatroHoras
+                        ) {
+
+                            const restante =
+                                veinticuatroHoras -
+                                diferencia;
+
+                            const horasRestantes =
+                                Math.ceil(
+                                    restante /
+                                    (
+                                        60 *
+                                        60 *
+                                        1000
+                                    )
+                                );
+
+
+                            return res
+                                .status(429)
+                                .json({
+                                    ok: false,
+                                    mensaje:
+                                        `Solo puede cambiar la contraseña una vez cada 24 horas. Intente nuevamente en aproximadamente ${horasRestantes} hora(s).`
+                                });
+
+                        }
+
+                    }
+
+
+                    // ======================================================
+                    // VERIFICAR QUE EL NUEVO CORREO
+                    // NO PERTENEZCA A OTRO USUARIO
+                    // ======================================================
+
+                    conexion.query(
+                        `
+                        SELECT id_usuario
+                        FROM usuarios
+                        WHERE LOWER(TRIM(correo)) = ?
+                        AND id_usuario <> ?
+                        LIMIT 1
+                        `,
+                        [
+                            correoLimpio,
+                            idUsuario
+                        ],
+                        async (
+                            errorCorreo,
+                            correos
+                        ) => {
+
+                            if (errorCorreo) {
+
+                                console.log(
+                                    "❌ Error verificando correo:",
+                                    errorCorreo
+                                );
+
+                                return res
+                                    .status(500)
+                                    .json({
+                                        ok: false,
+                                        mensaje:
+                                            "No se pudo verificar el correo"
+                                    });
+
+                            }
+
+
+                            if (
+                                correos.length > 0
+                            ) {
+
+                                return res
+                                    .status(409)
+                                    .json({
+                                        ok: false,
+                                        mensaje:
+                                            "Este correo ya está registrado"
+                                    });
+
+                            }
+
+
+                            // ======================================================
+                            // PREPARAR CONTRASEÑA
+                            // ======================================================
+
+                            let nuevoHash =
+                                usuarioActual.password;
+
+
+                            if (cambioPassword) {
+
+                                nuevoHash =
+                                    await bcrypt.hash(
+                                        passwordNuevaLimpio,
+                                        10
+                                    );
+
+                            }
+
+
+                            // ======================================================
+                            // ACTUALIZAR PERFIL
+                            // ======================================================
+
+                            conexion.query(
+                                `
+                                UPDATE usuarios
+                                SET
+                                    nombre = ?,
+                                    apellido = ?,
+                                    telefono = ?,
+                                    correo = ?,
+                                    provincia = ?,
+                                    canton = ?,
+                                    distrito = ?,
+                                    direccion_exacta = ?,
+                                    password = ?,
+                                    ultimo_cambio_password =
+                                        CASE
+                                            WHEN ? = 1
+                                            THEN NOW()
+                                            ELSE ultimo_cambio_password
+                                        END
+                                WHERE id_usuario = ?
+                                AND tipo_usuario = 'cliente'
+                                `,
+                                [
+                                    nombreLimpio,
+                                    apellidoLimpio,
+                                    telefonoLimpio,
+                                    correoLimpio,
+                                    provinciaLimpia,
+                                    cantonLimpio,
+                                    distritoLimpio,
+                                    direccionLimpia || null,
+                                    nuevoHash,
+                                    cambioPassword ? 1 : 0,
+                                    idUsuario
+                                ],
+                                (
+                                    errorActualizar,
+                                    resultado
+                                ) => {
+
+                                    if (
+                                        errorActualizar
+                                    ) {
+
+                                        console.log(
+                                            "❌ Error actualizando perfil:",
+                                            errorActualizar
+                                        );
+
+                                        return res
+                                            .status(500)
+                                            .json({
+                                                ok: false,
+                                                mensaje:
+                                                    "No se pudo actualizar el perfil"
+                                            });
+
+                                    }
+
+
+                                    if (
+                                        resultado
+                                            .affectedRows === 0
+                                    ) {
+
+                                        return res
+                                            .status(404)
+                                            .json({
+                                                ok: false,
+                                                mensaje:
+                                                    "Cliente no encontrado"
+                                            });
+
+                                    }
+
+
+                                    // Actualizar nombre guardado
+                                    // en la sesión actual
+                                    req.session.usuario.nombre =
+                                        nombreLimpio;
+
+
+                                    // Si cambió correo o contraseña,
+                                    // cerrar la sesión por seguridad.
+                                    if (
+                                        cambioCorreo ||
+                                        cambioPassword
+                                    ) {
+
+                                        return req.session
+                                            .destroy(
+                                                (errorSesion) => {
+
+                                                    if (
+                                                        errorSesion
+                                                    ) {
+
+                                                        console.log(
+                                                            "❌ Error cerrando sesión después de actualizar perfil:",
+                                                            errorSesion
+                                                        );
+
+                                                    }
+
+
+                                                    res.clearCookie(
+                                                        'connect.sid'
+                                                    );
+
+
+                                                    return res.json({
+                                                        ok: true,
+                                                        mensaje:
+                                                            "Perfil actualizado correctamente. Inicie sesión nuevamente.",
+                                                        cerrarSesion:
+                                                            true
+                                                    });
+
+                                                }
+                                            );
+
+                                    }
+
+
+                                    return res.json({
+                                        ok: true,
+                                        mensaje:
+                                            "Perfil actualizado correctamente",
+                                        cerrarSesion:
+                                            false
+                                    });
+
+                                }
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+        } catch (error) {
+
+            console.log(
+                "❌ Error actualizando perfil:",
+                error
+            );
+
+
+            return res
+                .status(500)
+                .json({
+                    ok: false,
+                    mensaje:
+                        "No se pudo actualizar el perfil"
+                });
+
+        }
+
+    }
+);
 
 // 🔹 CREAR ARTÍCULO
 app.post('/create-article',protegerAdmin, (req, res) => {
