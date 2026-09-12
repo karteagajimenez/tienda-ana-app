@@ -624,9 +624,9 @@
         z-index: 4000;
     }
 
+/* PANEL LATERAL MÓVIL */
 
-    /* PANEL LATERAL */
- #menuMovilOpciones {
+#menuMovilOpciones {
     display: none;
 
     position: fixed;
@@ -634,9 +634,8 @@
     top: 0;
     right: 0;
 
-    width: 250px;
-    max-width: 72%;
-
+    width: 68%;
+    max-width: 270px;
     height: 100vh;
 
     background: #fffaf8;
@@ -647,7 +646,7 @@
         -8px 0 22px
         rgba(120, 70, 90, 0.22);
 
-    padding: 90px 12px 20px 12px;
+    padding: 20px 14px;
 
     box-sizing: border-box;
 
@@ -655,18 +654,48 @@
 
     overflow-y: auto;
 }
+
+
+/* LOGO ARRIBA */
+
+.cabecera-menu-movil {
+    width: 100%;
+    height: 80px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    padding-left: 8px;
+
+    box-sizing: border-box;
+}
+
+.logo-menu-movil {
+    width: 65px;
+    height: auto;
+
+    border-radius: 8px;
+}
+
+
+/* BOTONES DEL MENÚ */
+
 #menuMovilOpciones button {
-    width: 82%;
+    width: 76%;
+
     display: block;
 
-    margin: 0 auto 10px auto;
+    margin:
+        0 auto
+        9px auto;
 
-    padding: 10px 12px;
+    padding: 9px 10px;
 
     border: none;
     border-radius: 7px;
 
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
 
     text-align: center;
@@ -825,6 +854,14 @@
         </button>
 
         <div id="menuMovilOpciones">
+
+            <div class="cabecera-menu-movil">
+    <img
+        src="logo.jpg"
+        alt="Logo Tienda Ana"
+        class="logo-menu-movil"
+    >
+</div>
 
             <button
                 id="miPerfilMovil"
