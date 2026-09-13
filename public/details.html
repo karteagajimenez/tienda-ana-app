@@ -284,6 +284,14 @@ td {
 .fila-resumen strong {
     color: #444;
 }
+.peso-envio {
+    font-weight: 600;
+}
+
+.peso-envio strong,
+.peso-envio span {
+    color: #333;
+}
 
 .total {
     font-size: 19px;
@@ -699,27 +707,21 @@ td {
 <thead>
 
 <tr>
+<th style="width: 10%;">
+    #
+</th>
 
-    <th style="width: 10%;">
-        #
-    </th>
+<th style="width: 50%;">
+    Descripción
+</th>
 
-    <th style="width: 40%;">
-        Descripción
-    </th>
+<th style="width: 15%;">
+    Cant.
+</th>
 
-    <th style="width: 12%;">
-        Cant.
-    </th>
-
-    <th style="width: 18%;">
-        Precio
-    </th>
-
-    <th style="width: 20%;">
-        Tarifa total
-    </th>
-
+<th style="width: 25%;">
+    Precio
+</th>
 </tr>
 
 </thead>
@@ -729,7 +731,7 @@ td {
 
 <tr>
 
-    <td colspan="5">
+    <td colspan="4">
         Cargando artículos...
     </td>
 
@@ -747,9 +749,7 @@ td {
 <!-- =======================================================
      RESUMEN
 ======================================================= -->
-
 <div class="resumen">
-
 
     <div class="fila-resumen">
 
@@ -758,6 +758,19 @@ td {
         </strong>
 
         <span id="subtotal">
+            ₡0
+        </span>
+
+    </div>
+
+
+    <div class="fila-resumen peso-envio">
+
+        <strong>
+            Peso / envío
+        </strong>
+
+        <span id="totalPeso">
             ₡0
         </span>
 
@@ -805,10 +818,7 @@ td {
 
     </div>
 
-
 </div>
-
-
 
 <!-- =======================================================
      PIE
@@ -1087,18 +1097,21 @@ const pedidos =
             "";
 
 
-        /*
-            IMPORTANTE:
+       /*
+    IMPORTANTE:
 
-            subtotal representa únicamente
-            el total del peso / envío.
+    subtotal representa la suma
+    del precio de todos los productos.
 
-            El precio de los productos se muestra
-            en la tabla, pero NO se vuelve a cobrar.
-        */
+    El peso / envío se suma aparte
+    para obtener la tarifa total.
+*/
 
-        let subtotal =
-            0;
+let subtotal =
+    0;
+
+let totalPeso =
+    0;
 
 
         let totalAbonado =
@@ -1173,7 +1186,8 @@ const pedidos =
                 ========================================= */
 
                 const tarifaTotal =
-                    envio;
+                 precioArticulos +
+                 envio;
 
 
 
@@ -1189,14 +1203,19 @@ const pedidos =
 
 
                 /* =========================================
-                   ACUMULAR
+   ACUMULAR
 
-                   El subtotal de la factura corresponde
-                   únicamente al envío.
-                ========================================= */
+   El subtotal corresponde al precio
+   total de los productos.
+
+   El peso / envío se acumula aparte.
+========================================= */
 
                 subtotal +=
-                    tarifaTotal;
+                 precioArticulos;
+
+                totalPeso +=
+                  envio;
 
 
                 totalAbonado +=
@@ -1261,23 +1280,14 @@ const pedidos =
 
                     </td>
 
-
-                    <td>
-                        ${cantidad}
-                    </td>
-
-
-                    <td>
-                        ${moneda(precioArticulos)}
-                    </td>
+<td>
+    ${cantidad}
+</td>
 
 
-                    <td>
-                        ${moneda(tarifaTotal)}
-                    </td>
-
-                </tr>
-
+<td>
+    ${moneda(precioArticulos)}
+</td>
                 `;
 
 
@@ -1305,10 +1315,14 @@ const pedidos =
            El precio del producto NO entra aquí.
         ================================================= */
 
-        let saldo =
-            subtotal -
-            totalAbonado;
+const totalFactura =
+    subtotal +
+    totalPeso;
 
+
+let saldo =
+    totalPeso -
+    totalAbonado;
 
         if(saldo < 0){
 
@@ -1321,25 +1335,28 @@ const pedidos =
         /* =================================================
            MOSTRAR RESUMEN
         ================================================= */
-
-        document.getElementById(
-            "subtotal"
-        ).innerText =
-            moneda(subtotal);
-
-
-        document.getElementById(
-            "totalAbonado"
-        ).innerText =
-            moneda(totalAbonado);
+document.getElementById(
+    "subtotal"
+).innerText =
+    moneda(subtotal);
 
 
-        document.getElementById(
-            "totalFactura"
-        ).innerText =
-            "CR " + moneda(subtotal);
+document.getElementById(
+    "totalPeso"
+).innerText =
+    moneda(totalPeso);
 
 
+document.getElementById(
+    "totalAbonado"
+).innerText =
+    moneda(totalAbonado);
+
+
+document.getElementById(
+    "totalFactura"
+).innerText =
+    "CR " + moneda(totalFactura);
 
         /* =================================================
            SALDO
@@ -1510,7 +1527,7 @@ function mostrarError(mensaje){
         <tr>
 
             <td
-                colspan="5"
+                colspan="4"
                 class="mensaje error"
             >
 
