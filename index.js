@@ -4091,6 +4091,8 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
 });
 
+
+
 // 🔹 CALCULAR ENVÍO
 app.post('/calcular-envio', (req, res) => {
     const { peso_gramos } = req.body;
@@ -4100,6 +4102,210 @@ app.post('/calcular-envio', (req, res) => {
     res.json({ ok: true, envio });
 });
 
+// ======================================================
+// 🔹 CARGAR PEDIDO ACTIVO DE UN CLIENTE + PAÍS
+// ======================================================
+
+app.get(
+    '/active-order/:id_usuario',
+    protegerAdmin,
+    (req, res) => {
+
+        const idUsuario =
+            Number(
+                req.params.id_usuario
+            );
+
+
+        const paisOrigen =
+            String(
+                req.query.pais_origen || ''
+            )
+            .trim()
+            .toUpperCase();
+
+
+        // ======================================================
+        // 🔐 VALIDAR CLIENTE
+        // ======================================================
+
+        if(
+            !Number.isInteger(idUsuario) ||
+            idUsuario <= 0
+        ){
+
+            return res.status(400).json({
+                ok:false,
+                mensaje:'Cliente inválido'
+            });
+
+        }
+
+
+        // ======================================================
+        // 🔐 VALIDAR PAÍS
+        // ======================================================
+
+        const paisesValidos = [
+            'EEUU',
+            'COLOMBIA'
+        ];
+
+
+        if(
+            !paisesValidos.includes(
+                paisOrigen
+            )
+        ){
+
+            return res.status(400).json({
+                ok:false,
+                mensaje:'País de origen inválido'
+            });
+
+        }
+
+
+        // ======================================================
+        // 🔥 BUSCAR FACTURA ACTIVA DEL CLIENTE + PAÍS
+        // ======================================================
+
+        conexion.query(`
+            SELECT
+                p.grupo_compra,
+                p.pais_origen
+
+            FROM pedidos p
+
+            INNER JOIN grupos_compra g
+                ON g.id_grupo = p.grupo_compra
+
+            WHERE p.id_usuario = ?
+            AND p.pais_origen = ?
+            AND p.archivado = 0
+            AND p.grupo_compra IS NOT NULL
+            AND g.activo = 1
+
+            ORDER BY p.id_pedido DESC
+
+            LIMIT 1
+        `, [
+            idUsuario,
+            paisOrigen
+
+        ], (errorGrupo, grupos) => {
+
+
+            if(errorGrupo){
+
+                console.log(
+                    '❌ Error buscando pedido activo:',
+                    errorGrupo
+                );
+
+                return res.status(500).json({
+                    ok:false,
+                    mensaje:
+                        'No se pudo cargar el pedido activo'
+                });
+
+            }
+
+
+            if(
+                !grupos ||
+                grupos.length === 0
+            ){
+
+                return res.json({
+                    ok:true,
+                    existe:false,
+                    pais_origen:
+                        paisOrigen,
+                    pedidos:[]
+                });
+
+            }
+
+
+            const grupoCompra =
+                Number(
+                    grupos[0].grupo_compra
+                );
+
+
+            // ======================================================
+            // 🔥 CARGAR SOLO LOS ARTÍCULOS DE ESA FACTURA
+            // ======================================================
+
+            conexion.query(`
+                SELECT
+                    id_pedido,
+                    id_articulo,
+                    articulo,
+                    descripcion,
+                    cantidad,
+                    precio_unidad,
+                    total_precio,
+                    estado,
+                    pais_origen,
+                    grupo_compra
+
+                FROM pedidos
+
+                WHERE id_usuario = ?
+                AND grupo_compra = ?
+                AND pais_origen = ?
+                AND archivado = 0
+
+                ORDER BY id_pedido ASC
+            `, [
+                idUsuario,
+                grupoCompra,
+                paisOrigen
+
+            ], (errorPedidos, pedidos) => {
+
+
+                if(errorPedidos){
+
+                    console.log(
+                        '❌ Error cargando artículos del pedido:',
+                        errorPedidos
+                    );
+
+                    return res.status(500).json({
+                        ok:false,
+                        mensaje:
+                            'No se pudieron cargar los artículos'
+                    });
+
+                }
+
+
+                return res.json({
+
+                    ok:true,
+
+                    existe:true,
+
+                    grupo_compra:
+                        grupoCompra,
+
+                    pais_origen:
+                        paisOrigen,
+
+                    pedidos:
+                        pedidos
+
+                });
+
+            });
+
+        });
+
+    }
+);
 // ======================================================
 // 🔹 VER PEDIDOS ACTIVOS ADMIN
 // ======================================================

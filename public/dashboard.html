@@ -1235,46 +1235,9 @@ body.menu-abierto {
 
     </div>
 
-    <!-- 🔥 BUSCADOR ARTÍCULO -->
-    <div class="buscador-contenedor">
 
-        <input
-            type="text"
-            id="articulo"
-            placeholder="Buscar o escribir artículo..."
-            autocomplete="off"
-            required
-        >
-
-        <div
-            id="listaArticulos"
-            class="lista-buscador"
-        ></div>
-
-    </div>
-
-    <input
-        type="number"
-        id="cantidad"
-        placeholder="Cantidad"
-        min="1"
-        required
-    >
-
-    <input
-        type="number"
-        id="precio"
-        placeholder="Precio producto"
-        min="0"
-        step="0.01"
-        required
-    >
-
+    <!-- 🔥 PAÍS -->
     <div class="botones">
-
-        <button type="submit">
-            Guardar
-        </button>
 
         <button
             type="button"
@@ -1285,12 +1248,232 @@ body.menu-abierto {
 
     </div>
 
+
+    <!-- 🔥 AGREGAR ARTÍCULO -->
+    <button
+        type="button"
+        id="btnAbrirArticulo"
+        style="width:100%; margin-top:15px;"
+    >
+        + Agregar artículo
+    </button>
+
+
+    <!-- 🔥 DETALLE DEL PEDIDO -->
+    <div
+        id="detallePedido"
+        style="
+            margin-top:25px;
+            display:none;
+        "
+    >
+
+        <h3 style="text-align:center;">
+            Detalle del pedido
+        </h3>
+
+        <div
+            style="
+                overflow-x:auto;
+                margin-top:15px;
+            "
+        >
+
+            <table
+                style="
+                    width:100%;
+                    border-collapse:collapse;
+                "
+            >
+
+                <thead>
+
+                    <tr>
+
+                        <th style="text-align:left;">
+                            Artículo
+                        </th>
+
+                        <th>
+                            Cant.
+                        </th>
+
+                        <th>
+                            Precio
+                        </th>
+
+                        <th>
+                            ELiminar
+                        </th>
+
+                        
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="detallePedidoBody"
+                 style="border-top:1px solid #d8d8d8;"
+                >
+
+                    <!-- AQUÍ APARECERÁN LOS ARTÍCULOS -->
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div
+            style="
+                text-align:right;
+                margin-top:20px;
+                font-size:18px;
+                font-weight:bold;
+            "
+        >
+            TOTAL:
+            ₡<span id="totalPedido">0</span>
+        </div>
+
+    </div>
+
+
+    <!-- 🔥 BOTONES FINALES -->
+    <div
+        class="botones"
+        style="margin-top:25px;"
+    >
+
+        <button
+            type="submit"
+            id="btnGuardarPedido"
+        >
+            Guardar pedido
+        </button>
+
+        <button
+            type="button"
+            id="btnCancelarPedido"
+        >
+            Cancelar
+        </button>
+
+    </div>
+
 </form>
+
+
+<!-- =====================================================
+     🔥 MODAL AGREGAR ARTÍCULO
+===================================================== -->
+<div
+    id="modalAgregarArticulo"
+    style="
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.45);
+        z-index:9999;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+    "
+>
+
+    <div
+        style="
+            background:white;
+            width:100%;
+            max-width:450px;
+            border-radius:12px;
+            padding:25px;
+            box-shadow:0 10px 35px rgba(0,0,0,0.25);
+        "
+    >
+
+        <h3
+            style="
+                text-align:center;
+                margin-top:0;
+            "
+        >
+            Agregar artículo
+        </h3>
+
+
+        <!-- 🔥 BUSCADOR ARTÍCULO -->
+        <div class="buscador-contenedor">
+
+            <input
+                type="text"
+                id="articulo"
+                placeholder="Buscar artículo..."
+                autocomplete="off"
+            >
+
+            <div
+                id="listaArticulos"
+                class="lista-buscador"
+            ></div>
+
+        </div>
+
+
+        <!-- 🔥 CANTIDAD -->
+        <input
+            type="number"
+            id="cantidad"
+            placeholder="Cantidad"
+            min="1"
+            value="1"
+        >
+
+
+        <!-- 🔥 PRECIO -->
+        <input
+            type="number"
+            id="precio"
+            placeholder="Precio"
+            min="0"
+            step="0.01"
+            readonly
+        >
+
+
+        <!-- 🔥 BOTONES MODAL -->
+        <div
+            class="botones"
+            style="margin-top:20px;"
+        >
+
+            <button
+                type="button"
+                id="btnAgregarArticuloPedido"
+            >
+                Agregar
+            </button>
+
+            <button
+                type="button"
+                id="btnCerrarArticulo"
+            >
+                Cancelar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 <script src="ubicaciones-cr.js"></script>
 <script>
 
 let clientes = [];
 let articulos = [];
+let articulosPedido = [];
+let articulosEliminados = [];
 
 function toggleMenuLateral(){
 
@@ -2618,6 +2801,15 @@ const cantidadInput =
 const btnPaisOrigen =
     document.getElementById('btnPaisOrigen');
 
+const btnAbrirArticulo =
+    document.getElementById('btnAbrirArticulo');
+
+const modalAgregarArticulo =
+    document.getElementById('modalAgregarArticulo');
+
+const btnCerrarArticulo =
+    document.getElementById('btnCerrarArticulo');
+
 
 
 /*
@@ -2763,10 +2955,9 @@ async function crearGrupoCompra(){
     El siguiente pedido creará
     automáticamente una compra nueva.
 */
-
 btnPaisOrigen.addEventListener(
     'click',
-    () => {
+    async () => {
 
         if(
             paisOrigen ===
@@ -2790,11 +2981,25 @@ btnPaisOrigen.addEventListener(
         }
 
 
-        grupoCompraActual =
-            null;
+        grupoCompraActual = null;
+        paisGrupoActual = null;
 
-        paisGrupoActual =
-            null;
+        articulosPedido = [];
+        articulosEliminados = [];
+
+        renderizarDetallePedido();
+
+
+        if(
+            clienteSeleccionado &&
+            clienteSeleccionado.id_usuario
+        ){
+
+            await seleccionarCliente(
+                clienteSeleccionado
+            );
+
+        }
 
     }
 );
@@ -2952,9 +3157,11 @@ function mostrarClientes(filtro = ''){
     listaClientes.classList.add('mostrar');
 
 }
+// ======================================================
+// 🔥 SELECCIONAR CLIENTE Y CARGAR PEDIDO ACTIVO
+// ======================================================
 
-// 🔥 SELECCIONAR CLIENTE
-function seleccionarCliente(cliente){
+async function seleccionarCliente(cliente){
 
     const clienteAnterior =
         clienteSeleccionado
@@ -2983,26 +3190,177 @@ function seleccionarCliente(cliente){
     );
 
 
-    /*
-        🔥 SI CAMBIAMOS DE CLIENTE
-
-        Limpiamos la factura que estaba
-        guardada temporalmente.
-
-        Después el servidor buscará la factura
-        activa correcta del nuevo cliente + país.
-    */
-
     if(
         clienteAnterior !==
         clienteNuevo
     ){
 
+        grupoCompraActual = null;
+
+        paisGrupoActual = null;
+
+        articulosPedido = [];
+
+        articulosEliminados = [];
+
+        renderizarDetallePedido();
+
+    }
+
+
+    try{
+
+        const respuesta =
+            await fetch(
+                `/active-order/${clienteNuevo}?pais_origen=${obtenerPaisBase()}`
+            );
+
+
+        const data =
+            await respuesta.json();
+
+
+        if(!respuesta.ok){
+
+            mostrarMensaje(
+                data &&
+                data.mensaje
+                    ? data.mensaje
+                    : 'No se pudo cargar el pedido',
+                'error'
+            );
+
+            return;
+
+        }
+
+
+        /*
+            CLIENTE SIN PEDIDO ACTIVO
+        */
+
+        if(
+            !data.existe
+        ){
+
+            articulosPedido = [];
+            
+            articulosEliminados = [];
+
+            grupoCompraActual = null;
+
+            paisGrupoActual = null;
+
+            renderizarDetallePedido();
+
+            return;
+
+        }
+
+
+        /*
+            🔥 GRUPO / FACTURA ACTUAL
+        */
+
         grupoCompraActual =
-            null;
+            Number(
+                data.grupo_compra
+            );
 
         paisGrupoActual =
-            null;
+            data.pais_origen;
+
+
+        /*
+            🔥 CARGAR PAÍS
+        */
+
+        if(
+            String(
+                data.pais_origen
+            ).toUpperCase() ===
+            'COLOMBIA'
+        ){
+
+            paisOrigen =
+                'COLOMBIA';
+
+            btnPaisOrigen.textContent =
+                'País: Colombia';
+
+        }else{
+
+            paisOrigen =
+                'En_EEUU';
+
+            btnPaisOrigen.textContent =
+                'País: EEUU';
+
+        }
+
+
+        /*
+            🔥 CARGAR ARTÍCULOS GUARDADOS
+        */
+
+        articulosPedido =
+            (data.pedidos || [])
+            .map(
+                item => {
+
+                    return {
+
+                        id_pedido:
+                            item.id_pedido,
+
+                        id_articulo:
+                            item.id_articulo,
+
+                        articulo:
+                            item.articulo,
+
+                        descripcion:
+                            item.descripcion,
+
+                        cantidad:
+                            Number(
+                                item.cantidad
+                            ) || 1,
+
+                        precio_unidad:
+                            Number(
+                                item.precio_unidad
+                            ) || 0,
+
+                        total:
+                            Number(
+                                item.total_precio
+                            ) || 0,
+
+                        guardado:
+                            true
+
+                    };
+
+                }
+            );
+
+
+        renderizarDetallePedido();
+
+
+    }catch(error){
+
+        console.error(
+            'Error cargando pedido activo:',
+            error
+        );
+
+
+        mostrarMensaje(
+            'No se pudo cargar el pedido activo',
+            'error'
+        );
 
     }
 
@@ -3268,8 +3626,376 @@ function buscarCliente(nombreCompleto){
     );
 
 }
+// ======================================================
+// 🔥 ABRIR MODAL AGREGAR ARTÍCULO
+// ======================================================
 
-// 🔥 GUARDAR PEDIDO
+btnAbrirArticulo.addEventListener(
+    'click',
+    () => {
+
+        modalAgregarArticulo.style.display = 'flex';
+
+        articuloInput.value = '';
+        cantidadInput.value = 1;
+        precioInput.value = '';
+
+        articuloSeleccionado = null;
+        precioUnitarioSeleccionado = null;
+
+        listaArticulos.classList.remove('mostrar');
+
+        setTimeout(() => {
+            articuloInput.focus();
+        }, 100);
+
+    }
+);
+
+
+// ======================================================
+// 🔥 CERRAR MODAL AGREGAR ARTÍCULO
+// ======================================================
+
+function cerrarModalArticulo(){
+
+    modalAgregarArticulo.style.display = 'none';
+
+    articuloInput.value = '';
+    cantidadInput.value = 1;
+    precioInput.value = '';
+
+    articuloSeleccionado = null;
+    precioUnitarioSeleccionado = null;
+
+    listaArticulos.classList.remove('mostrar');
+}
+
+
+btnCerrarArticulo.addEventListener(
+    'click',
+    () => {
+        cerrarModalArticulo();
+    }
+);
+
+// ======================================================
+// 🔥 AGREGAR ARTÍCULO AL DETALLE DEL PEDIDO
+// ======================================================
+
+document
+.getElementById('btnAgregarArticuloPedido')
+.addEventListener(
+    'click',
+    () => {
+
+        const nombreArticulo =
+            articuloInput.value.trim();
+
+        const cantidad =
+            Math.max(
+                Number(cantidadInput.value) || 1,
+                1
+            );
+
+        if(!nombreArticulo){
+
+            mostrarMensaje(
+                'Seleccione o escriba un artículo',
+                'error'
+            );
+
+            articuloInput.focus();
+            return;
+        }
+
+        if(!articuloSeleccionado){
+
+            const encontrado =
+                buscarArticulo(
+                    nombreArticulo
+                );
+
+            if(encontrado){
+
+                articuloSeleccionado =
+                    encontrado;
+
+                precioUnitarioSeleccionado =
+                    Number(
+                        encontrado.tasa
+                    ) || 0;
+
+            }
+
+        }
+
+
+        const precioUnitario =
+            articuloSeleccionado &&
+            precioUnitarioSeleccionado !== null
+                ? Number(
+                    precioUnitarioSeleccionado
+                )
+                : Number(
+                    precioInput.value
+                ) || 0;
+
+
+        const totalLinea =
+            precioUnitario * cantidad;
+
+
+        articulosPedido.push({
+
+            id_articulo:
+                articuloSeleccionado
+                    ? articuloSeleccionado.id_articulo
+                    : null,
+
+            articulo:
+                nombreArticulo,
+
+            descripcion:
+                articuloSeleccionado
+                    ? articuloSeleccionado.descripcion || null
+                    : null,
+
+            cantidad:
+                cantidad,
+
+            precio_unidad:
+                precioUnitario,
+
+            total:
+                totalLinea,
+
+            guardado:
+                false
+
+        });
+
+
+        renderizarDetallePedido();
+
+        cerrarModalArticulo();
+
+    }
+);
+// ======================================================
+// 🔥 MOSTRAR DETALLE DEL PEDIDO
+// ======================================================
+
+function renderizarDetallePedido(){
+
+    const detallePedido =
+        document.getElementById(
+            'detallePedido'
+        );
+
+    const tbody =
+        document.getElementById(
+            'detallePedidoBody'
+        );
+
+    const totalPedido =
+        document.getElementById(
+            'totalPedido'
+        );
+
+
+    tbody.innerHTML = '';
+
+
+    if(
+        articulosPedido.length === 0
+    ){
+
+        detallePedido.style.display =
+            'none';
+
+        totalPedido.textContent =
+            '0';
+
+        return;
+    }
+
+
+    detallePedido.style.display =
+        'block';
+
+
+    let totalGeneral = 0;
+
+
+    articulosPedido.forEach(
+        (item, index) => {
+
+            totalGeneral +=
+                Number(
+                    item.total
+                ) || 0;
+
+
+            const fila =
+                document.createElement(
+                    'tr'
+                );
+
+
+            fila.style.borderBottom =
+                '1px solid #d8d8d8';
+
+
+            fila.innerHTML = `
+
+                <td
+                    style="
+                        padding:10px 5px;
+                        text-align:left;
+                    "
+                >
+
+                    <div
+                        style="
+                            font-weight:500;
+                        "
+                    >
+                        ${item.articulo}
+                    </div>
+
+                    ${
+                        item.descripcion
+                            ? `
+                                <div
+                                    style="
+                                        margin-top:4px;
+                                        font-size:14px;
+                                        color:#777;
+                                    "
+                                >
+                                    ${item.descripcion}
+                                </div>
+                            `
+                            : ''
+                    }
+
+                </td>
+
+
+                <td
+                    style="
+                        padding:10px 5px;
+                        text-align:center;
+                    "
+                >
+                    ${item.cantidad}
+                </td>
+
+
+                <td
+                    style="
+                        padding:10px 5px;
+                        text-align:center;
+                    "
+                >
+                    ₡${formatearMontoPedido(
+                        item.total
+                    )}
+                </td>
+
+
+                <td
+                    style="
+                        padding:10px 5px;
+                        text-align:center;
+                    "
+                >
+                    <span
+                        onclick="eliminarArticuloPedido(${index})"
+                        style="
+                            color:red;
+                            font-size:28px;
+                            font-weight:bold;
+                            cursor:pointer;
+                            user-select:none;
+                        "
+                        title="Eliminar artículo"
+                    >
+                        —
+                    </span>
+                </td>
+
+            `;
+
+
+            tbody.appendChild(
+                fila
+            );
+
+        }
+    );
+
+
+    totalPedido.textContent =
+        formatearMontoPedido(
+            totalGeneral
+        );
+
+}
+function eliminarArticuloPedido(index){
+
+    const item =
+        articulosPedido[index];
+
+    if(!item){
+        return;
+    }
+
+
+    if(
+        item.guardado === true &&
+        item.id_pedido
+    ){
+
+        articulosEliminados.push(
+            item.id_pedido
+        );
+
+    }
+
+
+    articulosPedido.splice(
+        index,
+        1
+    );
+
+
+    renderizarDetallePedido();
+
+}
+// ======================================================
+// 🔥 FORMATEAR MONTOS
+// ======================================================
+
+function formatearMontoPedido(monto){
+
+    return Number(
+        monto || 0
+    )
+    .toLocaleString(
+        'es-CR',
+        {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        }
+    );
+
+}
+// ======================================================
+// 🔥 GUARDAR PEDIDO COMPLETO
+// ======================================================
+
 document
 .getElementById('formPedido')
 .addEventListener(
@@ -3279,8 +4005,10 @@ document
         e.preventDefault();
 
 
-        // 🔥 BUSCAR CLIENTE SI LO ESCRIBIÓ
-        // EXACTAMENTE PERO NO HIZO CLICK
+        // ==================================================
+        // 🔥 VALIDAR CLIENTE
+        // ==================================================
+
         if(!clienteSeleccionado){
 
             clienteSeleccionado =
@@ -3305,271 +4033,280 @@ document
         }
 
 
-        const articulo =
-            articuloInput.value.trim();
+        // ==================================================
+        // 🔥 VALIDAR ARTÍCULOS
+        // ==================================================
 
-        const cantidad =
-            document
-            .getElementById('cantidad')
-            .value;
+      if(
+    (!articulosPedido ||
+    articulosPedido.length === 0) &&
+    articulosEliminados.length === 0
+){
+    mostrarMensaje(
+        'Agregue al menos un artículo al pedido',
+        'error'
+    );
 
-
-        if(!articulo){
-
-            mostrarMensaje(
-                'Ingrese un artículo',
-                'error'
-            );
-
-            return;
-
-        }
-
-
-        /*
-            🔥 SI ESCRIBIÓ EXACTAMENTE
-            UN ARTÍCULO EXISTENTE,
-            LO SELECCIONAMOS AUTOMÁTICAMENTE
-        */
-        if(!articuloSeleccionado){
-
-            const encontrado =
-                buscarArticulo(articulo);
-
-            if(encontrado){
-
-                articuloSeleccionado =
-                    encontrado;
-
-                precioUnitarioSeleccionado =
-                    Number(encontrado.tasa) || 0;
-
-                actualizarPrecioPorCantidad();
-
-            }
-
-        }
-
-
-        /*
-            🔥 PRECIO A GUARDAR
-
-            SI EL ARTÍCULO VIENE DEL CATÁLOGO,
-            SE GUARDA EL PRECIO UNITARIO.
-
-            EL CAMPO VISIBLE MUESTRA EL TOTAL
-            SEGÚN LA CANTIDAD.
-        */
-        const precio =
-            articuloSeleccionado &&
-            precioUnitarioSeleccionado !== null
-                ? precioUnitarioSeleccionado
-                : precioInput.value;
-
-
-        /*
-            🔥 DESCRIPCIÓN
-
-            NO SE MUESTRA EN EL DASHBOARD.
-
-            SE OBTIENE DEL ARTÍCULO GUARDADO.
-        */
-        const descripcion =
-            articuloSeleccionado
-                ? articuloSeleccionado.descripcion || null
-                : null;
-
-
-         /*
-            🔥 OBTENER SIEMPRE LA FACTURA CORRECTA
-
-            Antes de guardar cada pedido,
-            el servidor busca la factura activa
-            correspondiente al CLIENTE + PAÍS.
-
-            Si ya existe, la reutiliza.
-            Si no existe, crea una nueva.
-        */
-
-        const grupoCorrecto =
-            await crearGrupoCompra();
-
-
-        if(!grupoCorrecto){
-
-            return;
-
-        }
-
-
-        /*
-            🔥 DATOS DEL PEDIDO
-        */
-        const data = {
-
-            id_usuario:
-                clienteSeleccionado.id_usuario,
-
-            id_articulo:
-                articuloSeleccionado
-                    ? articuloSeleccionado.id_articulo
-                    : null,
-
-            articulo:
-                articulo,
-
-            descripcion:
-                descripcion,
-
-            cantidad:
-                cantidad,
-
-            precio_unidad:
-                precio,
-
-            estado:
-                paisOrigen,
-
-            pais_origen:
-                obtenerPaisBase(),
-
-            grupo_compra:
-                grupoCompraActual
-
-        };
-
-
-        console.log(
-            "📦 Enviando pedido:",
-            data
-        );
-
+    return;
+}
 
         try{
 
-            const res =
-                await fetch(
-                    '/create-order',
-                    {
-                        method:'POST',
 
-                        headers:{
-                            'Content-Type':
-                                'application/json'
-                        },
+            // ==================================================
+            // 🔥 OBTENER FACTURA / GRUPO DEL CLIENTE + PAÍS
+            // ==================================================
 
-                        body:
-                            JSON.stringify(data)
-                    }
-                );
+            const grupoCorrecto =
+                await crearGrupoCompra();
 
 
-            let respuesta = null;
+            if(!grupoCorrecto){
 
-
-            try{
-
-                respuesta =
-                    await res.json();
-
-            }catch(error){
-
-                respuesta = null;
+                return;
 
             }
 
+// ==================================================
+// 🔥 ELIMINAR ARTÍCULOS QUITADOS DEL PEDIDO
+// ==================================================
 
-            if(res.ok){
+for(
+    const idPedido of articulosEliminados
+){
 
-                mostrarMensaje(
-                    'Pedido guardado correctamente'
-                );
+    const respuestaEliminar =
+        await fetch(
+            '/delete-order',
+            {
+                method:'POST',
+
+                headers:{
+                    'Content-Type':
+                        'application/json'
+                },
+
+                body:
+                    JSON.stringify({
+                        id_pedido:
+                            idPedido
+                    })
+            }
+        );
 
 
-                document
-                    .getElementById('formPedido')
-                    .reset();
+    let dataEliminar = null;
 
 
-                clienteSeleccionado = null;
+    try{
 
-                articuloSeleccionado = null;
+        dataEliminar =
+            await respuestaEliminar.json();
 
-                precioUnitarioSeleccionado = null;
+    }catch(error){
+
+        dataEliminar = null;
+
+    }
 
 
-                listaClientes
-                    .classList
-                    .remove('mostrar');
+    if(!respuestaEliminar.ok){
 
+        throw new Error(
+            dataEliminar &&
+            dataEliminar.mensaje
+                ? dataEliminar.mensaje
+                : 'No se pudo eliminar el artículo'
+        );
 
-                listaArticulos
-                    .classList
-                    .remove('mostrar');
+    }
+
+}
+            // ==================================================
+            // 🔥 GUARDAR TODOS LOS ARTÍCULOS NUEVOS
+            // ==================================================
+
+            for(
+                const item of articulosPedido
+            ){
 
 
                 /*
-                    🔥 IMPORTANTE
-
-                    NO reiniciamos:
-
-                    grupoCompraActual
-                    paisGrupoActual
-                    paisOrigen
-
-                    Así los siguientes pedidos
-                    continúan dentro de la misma
-                    compra/factura.
+                    Más adelante, cuando carguemos
+                    pedidos ya existentes,
+                    los que tengan guardado:true
+                    NO se volverán a insertar.
                 */
 
+                if(item.guardado === true){
 
-                /*
-                    🔥 RESTAURAR TEXTO DEL PAÍS
-
-                    form.reset() no cambia la variable,
-                    pero dejamos visualmente el botón
-                    sincronizado con el país actual.
-                */
-                if(
-                    paisOrigen === 'COLOMBIA'
-                ){
-
-                    btnPaisOrigen.textContent =
-                        'País: Colombia';
-
-                }else{
-
-                    btnPaisOrigen.textContent =
-                        'País: EEUU';
+                    continue;
 
                 }
 
 
-                await cargarArticulos();
+                const data = {
+
+                    id_usuario:
+                        clienteSeleccionado.id_usuario,
+
+                    id_articulo:
+                        item.id_articulo,
+
+                    articulo:
+                        item.articulo,
+
+                    descripcion:
+                        item.descripcion,
+
+                    cantidad:
+                        item.cantidad,
+
+                    precio_unidad:
+                        item.precio_unidad,
+
+                    estado:
+                        paisOrigen,
+
+                    pais_origen:
+                        obtenerPaisBase(),
+
+                    grupo_compra:
+                        grupoCompraActual
+
+                };
 
 
-            }else{
-
-                mostrarMensaje(
-                    respuesta &&
-                    respuesta.mensaje
-                        ? respuesta.mensaje
-                        : 'Error al guardar el pedido',
-                    'error'
+                console.log(
+                    '📦 Guardando artículo:',
+                    data
                 );
+
+
+                const res =
+                    await fetch(
+                        '/create-order',
+                        {
+                            method:'POST',
+
+                            headers:{
+                                'Content-Type':
+                                    'application/json'
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    data
+                                )
+                        }
+                    );
+
+
+                let respuesta = null;
+
+
+                try{
+
+                    respuesta =
+                        await res.json();
+
+                }catch(error){
+
+                    respuesta = null;
+
+                }
+
+
+                if(!res.ok){
+
+                    throw new Error(
+                        respuesta &&
+                        respuesta.mensaje
+                            ? respuesta.mensaje
+                            : 'Error al guardar artículo'
+                    );
+
+                }
+
+
+                item.guardado = true;
 
             }
 
 
+            // ==================================================
+            // 🔥 PEDIDO GUARDADO
+            // ==================================================
+
+            mostrarMensaje(
+                'Pedido guardado correctamente'
+            );
+
+
+            articulosPedido = [];
+            articulosEliminados = [];
+
+
+            renderizarDetallePedido();
+
+
+            // ==================================================
+            // 🔥 LIMPIAR CLIENTE
+            // ==================================================
+
+            clienteInput.value = '';
+
+            clienteSeleccionado = null;
+
+
+            listaClientes
+                .classList
+                .remove('mostrar');
+
+
+            // ==================================================
+            // 🔥 LIMPIAR ARTÍCULO DEL MODAL
+            // ==================================================
+
+            articuloSeleccionado = null;
+
+            precioUnitarioSeleccionado = null;
+
+            articuloInput.value = '';
+
+            cantidadInput.value = 1;
+
+            precioInput.value = '';
+
+
+            listaArticulos
+                .classList
+                .remove('mostrar');
+
+
+            // ==================================================
+            // 🔥 REINICIAR GRUPO
+            // ==================================================
+
+            grupoCompraActual = null;
+
+            paisGrupoActual = null;
+
+
+            await cargarArticulos();
+
+
         }catch(error){
 
+
             console.error(
-                'Error al guardar:',
+                'Error al guardar pedido:',
                 error
             );
 
 
             mostrarMensaje(
+                error.message ||
                 'No se pudo guardar el pedido',
                 'error'
             );
@@ -3578,8 +4315,6 @@ document
 
     }
 );
-
-
 // 🔥 INICIO
 async function iniciar(){
 
