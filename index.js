@@ -628,10 +628,6 @@ const correoNormalizado =
         .trim()
         .toLowerCase();
 
-console.log("===== PRUEBA LOGIN =====");
-console.log("Correo recibido:", JSON.stringify(correoNormalizado));
-console.log("Longitud correo:", correoNormalizado.length);
-console.log("Longitud password:", String(password || "").length);
 
 conexion.query(
     "SELECT * FROM usuarios WHERE LOWER(TRIM(correo)) = ?",
@@ -652,14 +648,14 @@ conexion.query(
 
             const usuario = results[0];
 
-            console.log("Usuario encontrado:", usuario.id_usuario);
+            
 
             const ok = await bcrypt.compare(
                 password,
                 usuario.password
             );
 
-            console.log("Password correcto:", ok);
+        
 
             if (!ok) {
                 return res
