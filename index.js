@@ -623,9 +623,14 @@ app.post('/login', loginLimiter, (req, res) => {
 
     const { correo, password } = req.body;
 
-    conexion.query(
-        "SELECT * FROM usuarios WHERE correo = ?",
-        [correo],
+const correoNormalizado =
+    String(correo || '')
+        .trim()
+        .toLowerCase();
+
+conexion.query(
+    "SELECT * FROM usuarios WHERE LOWER(TRIM(correo)) = ?",
+    [correoNormalizado],
         async (err, results) => {
 
             if (err) {
