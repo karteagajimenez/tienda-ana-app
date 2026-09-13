@@ -19,17 +19,30 @@
         } 
  
         /* 🔥 TEXTO PRINCIPAL */ 
-        .titulo { 
-            font-size: 40px; 
-            color: #c48b9f; 
-            margin-bottom: 10px; 
-        } 
- 
-        /* 🔥 LOGO CENTRO */ 
-        .logo-center img { 
-            width: 180px; 
-            margin-bottom: 20px; 
-        } 
+.encabezado-principal {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.logo-principal {
+    width: 210px;
+    display: block;
+    margin: 0 auto 10px auto;
+}
+
+.titulo {
+    font-size: 40px;
+    color: #c48b9f;
+    margin: 0;
+    font-weight: 500;
+}
+
+.subtitulo {
+    margin-top: 6px;
+    color: #8a7b80;
+    font-size: 17px;
+    font-weight: 500;
+}
  
         /* 🔥 BOTONES PRINCIPALES */ 
         .boton-principal { 
@@ -154,9 +167,9 @@
                 font-size: 32px;
             }
 
-            .logo-center img {
-                width: 150px;
-            }
+            .logo-principal {
+             width: 170px;
+             }
 
         }
 
@@ -184,22 +197,24 @@
  
     <div class="container"> 
  
-        <!-- 🔥 TEXTO ARRIBA --> 
-        <div class="titulo">
-            ANA DE COMPRAS 🛍️
-        </div> 
- 
- 
-        <!-- 🔥 LOGO CENTRO --> 
-        <div class="logo-center"> 
+    <!-- 🔥 LOGO + TÍTULO -->
+<div class="encabezado-principal">
 
-            <img
-                src="logo.jpg"
-                alt="Logo"
-            > 
+    <img
+        src="logo.jpg"
+        alt="Logo"
+        class="logo-principal"
+    >
 
-        </div> 
- 
+    <div class="titulo">
+        ANA DE COMPRAS 🛍️
+    </div>
+
+    <div class="subtitulo">
+        Personal Shopper
+    </div>
+
+</div>
  
         <!-- 🔥 TU H1 ORIGINAL -->
         <!-- no se elimina, solo oculto -->
