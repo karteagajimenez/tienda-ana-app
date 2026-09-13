@@ -857,36 +857,44 @@ td button {
 
 
     <!-- ESTADO -->
+<select
+    id="estadoSelect"
+    style="display:none;"
+>
 
-    <select
-        id="estadoSelect"
-        style="display:none;"
-    >
+    <option value="">
+        Seleccione estado
+    </option>
 
-        <option value="">
-            Seleccione estado
-        </option>
+    <option value="EN_CAMINO">
+        En Camino
+    </option>
 
-        <option value="EN_CAMINO">
-            En camino
-        </option>
+    <option value="LISTO_BOCA_ARENAL">
+        Listo para retirar en Boca de Arenal
+    </option>
 
-        <option value="COSTA_RICA">
-            Costa Rica
-        </option>
+    <option value="LISTO_SANTA_ROSA">
+        Listo para retirar en Santa Rosa
+    </option>
 
-        <option value="EMPACADO">
-            Empacado
-        </option>
+    <option value="LISTO_SAN_JOSE">
+        Listo para retirar en San José
+    </option>    
 
-        <option value="ENTREGADO">
-            Entregado
-        </option>
+    <option value="ENTREGADO_CORREOS_CR">
+     Entregado a Correos de Costa Rica
+    </option>
 
-    </select>
+    <option value="ENTREGADO_TRANS_ARGUEDAS">
+      Entregado a Transportes Arguedas
+    </option>
 
+    <option value="ENTREGADO">
+        Entregado
+    </option>
 
-    <br>
+</select>
 
 <button
     class="ok"
@@ -1412,23 +1420,33 @@ const clientesPorPagina = 20;
 /* =========================================================
    ESTADOS
 ========================================================= */
-
 function traducirEstado(estado){
 
     switch(estado){
 
         case "En_EEUU":
+            return "Estados Unidos";
+
         case "COLOMBIA":
-            return "En origen";
+            return "Colombia";
 
         case "EN_CAMINO":
-            return "En camino";
+            return "En Camino";
 
-        case "COSTA_RICA":
-            return "Costa Rica";
+        case "LISTO_BOCA_ARENAL":
+            return "Listo para retirar en Boca de Arenal";
 
-        case "EMPACADO":
-            return "Empacado";
+        case "LISTO_SANTA_ROSA":
+            return "Listo para retirar en Santa Rosa";
+
+        case "LISTO_SAN_JOSE":
+            return "Listo para retirar en San José";
+
+        case "ENTREGADO_CORREOS_CR":
+            return "Entregado a Correos de Costa Rica";
+
+        case "ENTREGADO_TRANS_ARGUEDAS":
+            return "Entregado a Transportes Arguedas";
 
         case "ENTREGADO":
             return "Entregado";
@@ -1439,7 +1457,6 @@ function traducirEstado(estado){
     }
 
 }
-
 
 
 /* =========================================================
