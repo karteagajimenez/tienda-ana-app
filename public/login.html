@@ -20,20 +20,29 @@
             box-sizing: border-box;
         }
 
-        /* 🔥 ENCABEZADO CON LOGO */
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+   /* 🔥 ENCABEZADO CON LOGO */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
 
-        .header h1 {
-            color: #c48b9f;
-            margin-bottom: 10px;
-        }
+.header .logo-principal {
+    width: 135px;
+    display: block;
+    margin: 0 auto 8px auto;
+}
 
-        .header img {
-            width: 100px;
-        }
+.header h1 {
+    color: #c48b9f;
+    margin: 0;
+}
+
+.subtitulo-header {
+    margin: 5px 0 0 0;
+    color: #8a7b80;
+    font-size: 16px;
+    font-weight: 500;
+}
 
         .container {
             background: white;
@@ -288,9 +297,23 @@
 <body>
 
 <!-- 🔥 ENCABEZADO -->
+
 <div class="header">
-    <h1>Ana De Compras 🛍️</h1>
-    <img src="logo.jpg" alt="Logo">
+
+    <img
+        src="logo.jpg"
+        alt="Logo"
+        class="logo-principal"
+    >
+
+    <h1>
+        Ana De Compras 🛍️
+    </h1>
+
+    <p class="subtitulo-header">
+        Personal Shopper
+    </p>
+
 </div>
 
 <div class="container">
