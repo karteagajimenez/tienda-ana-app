@@ -1060,7 +1060,7 @@ td button {
         font-weight:bold;
     "
 >
-    Peso viejo
+    Peso Actual
 </label>
 
 <input
@@ -1088,7 +1088,7 @@ td button {
 <input
     type="number"
     id="editarPesoNuevo"
-    placeholder="Ingrese el nuevo peso en gramos"
+    placeholder="Digite el nuevo peso en gramos"
     min="1"
     step="1"
     style="display:none;"
@@ -1250,32 +1250,6 @@ td button {
     placeholder="Cantidad"
     style="display:none;"  
 >
-
-<label
-    id="labelEditarPeso"
-    style="
-        display:none;
-        width:95%;
-        margin:8px auto 0;
-        text-align:left;
-        font-size:13px;
-        color:#555;
-        font-weight:bold;
-    "
->
-    Peso del nuevo artículo
-</label>
-        <!-- PESO -->
-        <input
-
-        
-            type="number"
-            id="editarPeso"
-            min="1"
-            placeholder="Peso en gramos"
-            style="display:none;"
-        >
-
   
         <br>  
   
@@ -3126,11 +3100,14 @@ function abrirModal(
 /* =====================================================
    PESO
 ===================================================== */
-
 if(tipo === "peso"){
 
     titulo.innerText =
-        "Seleccione artículo e ingrese el peso";
+        "Peso general";
+
+
+    pedidoSelect.style.display =
+        "none";
 
 
     inputValor.style.display =
@@ -3138,7 +3115,23 @@ if(tipo === "peso"){
 
 
     inputValor.placeholder =
-        "Peso en gramos";
+        "Digite el peso en gramos";
+
+
+    /* =========================================
+       GUARDAR INTERNAMENTE EL PESO GENERAL
+       EN EL PRIMER PEDIDO DE LA FACTURA
+    ========================================= */
+
+    if(
+        grupo.pedidos &&
+        grupo.pedidos.length > 0
+    ){
+
+        pedidoId =
+            grupo.pedidos[0].id_pedido;
+
+    }
 
 
     btnEditarAbono.style.display =
@@ -3643,7 +3636,6 @@ function abrirEdicionSegunTipo(){
     }
 
 }
-
 function abrirEditarPeso(){
 
     const modal =
@@ -3656,27 +3648,32 @@ function abrirEditarPeso(){
             "editarPesoArticulo"
         );
 
-    const inputPeso =
+    const inputPesoViejo =
+        document.getElementById(
+            "editarPesoViejo"
+        );
+
+    const inputPesoNuevo =
         document.getElementById(
             "editarPesoNuevo"
         );
 
-    selectArticulo.innerHTML = `
-        <option value="">
-            Seleccione el artículo
-        </option>
-    `;
+    const labelPesoViejo =
+        document.getElementById(
+            "labelPesoViejo"
+        );
 
-    inputPeso.value =
-        "";
+    const labelPesoNuevo =
+        document.getElementById(
+            "labelPesoNuevo"
+        );
 
-    inputPeso.style.display =
-        "none";
 
     const cliente =
         pedidosPorCliente[
             clienteSeleccionado
         ];
+
 
     if(!cliente){
 
@@ -3687,12 +3684,18 @@ function abrirEditarPeso(){
         return;
     }
 
+
     const grupo =
         cliente.grupos[
             String(grupoSeleccionado)
         ];
 
-    if(!grupo){
+
+    if(
+        !grupo ||
+        !grupo.pedidos ||
+        grupo.pedidos.length === 0
+    ){
 
         mostrarMensaje(
             "No se encontró la factura seleccionada"
@@ -3701,25 +3704,54 @@ function abrirEditarPeso(){
         return;
     }
 
-    grupo.pedidos.forEach(
-        pedido => {
 
-            const opcion =
-                document.createElement(
-                    "option"
-                );
+    /* =========================================
+       PRIMER PEDIDO = SOPORTE INTERNO
+       DEL PESO GENERAL
+    ========================================= */
 
-            opcion.value =
-                pedido.id_pedido;
+    const pedido =
+        grupo.pedidos[0];
 
-            opcion.textContent =
-                `${pedido.articulo} - Cantidad ${pedido.cantidad}`;
 
-            selectArticulo.appendChild(
-                opcion
-            );
-        }
-    );
+    selectArticulo.innerHTML = `
+        <option value="${pedido.id_pedido}">
+            Peso general
+        </option>
+    `;
+
+
+    selectArticulo.value =
+        pedido.id_pedido;
+
+
+    selectArticulo.style.display =
+        "none";
+
+
+    inputPesoViejo.value =
+        Number(
+            pedido.peso_gramos
+        ) || 0;
+
+
+    inputPesoNuevo.value =
+        "";
+
+
+    labelPesoViejo.style.display =
+        "block";
+
+    inputPesoViejo.style.display =
+        "block";
+
+
+    labelPesoNuevo.style.display =
+        "block";
+
+    inputPesoNuevo.style.display =
+        "block";
+
 
     modal.style.display =
         "flex";
@@ -4174,7 +4206,7 @@ if(tipo === "peso"){
     ){
 
         mostrarMensaje(
-            "Este artículo ya tiene un peso registrado. Use el botón Editar para cambiarlo."
+            "Esta factura ya tiene un peso general registrado. Use el botón Editar para cambiarlo."
         );
 
         return;
@@ -4764,19 +4796,13 @@ async function abrirEditar(
     );
 
 
-const pesoInput =
-    document.getElementById(
-        "editarPeso"
-    );
+
 const labelCantidad =
     document.getElementById(
         "labelEditarCantidad"
     );
 
-const labelPeso =
-    document.getElementById(
-        "labelEditarPeso"
-    );
+
     /* =====================================================
        LIMPIAR MODAL
     ===================================================== */
@@ -4801,8 +4827,7 @@ const labelPeso =
     cantidadInput.value =
         "";
 
-    pesoInput.value =
-       "";
+
 
 
     listaArticulos.innerHTML =
@@ -4824,11 +4849,6 @@ const labelPeso =
     labelCantidad.style.display =
        "none";
 
-    labelPeso.style.display =
-      "none";
-
-    pesoInput.style.display =
-        "none";
 
 
     /* =====================================================
@@ -5095,19 +5115,12 @@ function cargarPedidoEditar(){
             "editarCantidad"
         );
 
-    const pesoInput =
-        document.getElementById(
-         "editarPeso"
-        );
+  
 const labelCantidad =
     document.getElementById(
         "labelEditarCantidad"
     );
 
-const labelPeso =
-    document.getElementById(
-        "labelEditarPeso"
-    );
 
     const idPedido =
         Number(
@@ -5159,9 +5172,6 @@ const labelPeso =
 
         cantidadInput.style.display =
             "none";
-        
-        pesoInput.style.display =
-            "none";
 
 
         buscarArticulo.value =
@@ -5173,8 +5183,6 @@ const labelPeso =
 
 
         cantidadInput.value =
-            "";
-        pesoInput.value =
             "";
 
 
@@ -5205,12 +5213,6 @@ const labelPeso =
 
     labelCantidad.style.display =
        "block";
-
-    labelPeso.style.display =
-      "block";
-
-    pesoInput.style.display =
-        "block";
 
 
     /*
@@ -5244,10 +5246,6 @@ const labelPeso =
     cantidadInput.value =
         pedido.cantidad;
     
-    pesoInput.value =
-     Number(
-        pedido.peso_gramos
-       ) || "";
 
 
     /*
@@ -5394,12 +5392,6 @@ async function guardarEdicionPedido(){
             ).value
         );
     
-    const peso =
-        Number(
-            document.getElementById(
-                "editarPeso"
-            ).value
-        );
 
 
     if(!idPedido){
@@ -5465,18 +5457,7 @@ async function guardarEdicionPedido(){
 
     }
 
-    if(
-    !Number.isFinite(peso) ||
-    peso <= 0
-){
-
-    mostrarMensaje(
-        "Ingrese un peso válido en gramos"
-    );
-
-    return;
-
-}
+  
 
 
     try{
@@ -5491,20 +5472,16 @@ async function guardarEdicionPedido(){
                         "Content-Type":
                             "application/json"
                     },
+body: JSON.stringify({
+    id_pedido:
+        idPedido,
 
-                    body: JSON.stringify({
-                        id_pedido:
-                            idPedido,
+    id_articulo:
+        idArticulo,
 
-                        id_articulo:
-                            idArticulo,
-
-                        cantidad:
-                            cantidad,
-
-                        peso_gramos:
-                            peso
-                    })
+    cantidad:
+        cantidad
+})
                 }
             );
 
@@ -5625,10 +5602,6 @@ function cerrarEditar(){
     ).value =
         "";
 
-    document.getElementById(
-        "editarPeso"
-    ).value =
-        "";
 
 
     document.getElementById(
@@ -5653,15 +5626,6 @@ document.getElementById(
 ).style.display =
     "none";
 
-document.getElementById(
-    "labelEditarPeso"
-).style.display =
-    "none";
-
-    document.getElementById(
-       "editarPeso"
-    ).style.display =
-        "none";
 
 
     document.getElementById(

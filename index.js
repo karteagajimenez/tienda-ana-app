@@ -3179,155 +3179,208 @@ app.post(
 
     }
 );
-
 // 🔹 EDITAR PEDIDO
-app.post('/update-order', protegerAdmin, (req, res) => {
+app.post(
+    '/update-order',
+    protegerAdmin,
+    (req, res) => {
 
-    const {
-        id_pedido,
-        id_articulo,
-        cantidad,
-        peso_gramos
-    } = req.body;
-
-    const idPedido =
-        Number(id_pedido);
-
-    const idArticulo =
-        Number(id_articulo);
-
-    const cantidadNumero =
-        Number(cantidad);
-
-    const pesoNumero =
-        Number(peso_gramos);
-
-
-    if (
-        !Number.isInteger(idPedido) ||
-        idPedido <= 0 ||
-        !Number.isInteger(idArticulo) ||
-        idArticulo <= 0 ||
-        !Number.isInteger(cantidadNumero) ||
-        cantidadNumero <= 0 ||
-        !Number.isFinite(pesoNumero) ||
-        pesoNumero <= 0
-    ) {
-
-        return res.status(400).json({
-            ok: false,
-            mensaje: "Datos inválidos"
-        });
-
-    }
-
-
-    // Buscar el artículo seleccionado
-    conexion.query(`
-        SELECT
+        const {
+            id_pedido,
             id_articulo,
-            nombre,
-            tasa,
-            descripcion
-        FROM articulos
-        WHERE id_articulo = ?
-        LIMIT 1
-    `, [idArticulo], (err, resultados) => {
+            cantidad
+        } = req.body;
 
-        if (err) {
 
-            console.log(
-                "❌ Error buscando artículo:",
-                err
-            );
+        const idPedido =
+            Number(id_pedido);
 
-            return res.status(500).json({
-                ok: false,
-                mensaje: "Error al buscar el artículo"
-            });
+        const idArticulo =
+            Number(id_articulo);
+
+        const cantidadNumero =
+            Number(cantidad);
+
+
+        /* =====================================================
+           VALIDAR DATOS
+        ===================================================== */
+
+        if(
+            !Number.isInteger(idPedido) ||
+            idPedido <= 0 ||
+            !Number.isInteger(idArticulo) ||
+            idArticulo <= 0 ||
+            !Number.isInteger(cantidadNumero) ||
+            cantidadNumero <= 0
+        ){
+
+            return res
+                .status(400)
+                .json({
+                    ok: false,
+                    mensaje:
+                        "Datos inválidos"
+                });
 
         }
 
 
-        if (resultados.length === 0) {
+        /* =====================================================
+           BUSCAR ARTÍCULO DEL CATÁLOGO
+        ===================================================== */
 
-            return res.status(404).json({
-                ok: false,
-                mensaje: "Artículo no encontrado"
-            });
+        conexion.query(
+            `
+                SELECT
+                    id_articulo,
+                    nombre,
+                    tasa,
+                    descripcion
+                FROM articulos
+                WHERE id_articulo = ?
+                LIMIT 1
+            `,
+            [
+                idArticulo
+            ],
+            (
+                err,
+                resultados
+            ) => {
 
-        }
+                if(err){
+
+                    console.log(
+                        "❌ Error buscando artículo:",
+                        err
+                    );
+
+                    return res
+                        .status(500)
+                        .json({
+                            ok: false,
+                            mensaje:
+                                "Error al buscar el artículo"
+                        });
+
+                }
 
 
-        const articulo =
-            resultados[0];
+                if(
+                    !resultados ||
+                    resultados.length === 0
+                ){
 
-        const precioUnidad =
-            Number(articulo.tasa) || 0;
+                    return res
+                        .status(404)
+                        .json({
+                            ok: false,
+                            mensaje:
+                                "Artículo no encontrado"
+                        });
 
-        const totalPrecio =
-            cantidadNumero * precioUnidad;
+                }
 
 
-        // Actualizar el pedido
-        // El nuevo peso REEMPLAZA el peso anterior.
-        conexion.query(`
-            UPDATE pedidos
-            SET
-                id_articulo = ?,
-                articulo = ?,
-                descripcion = ?,
-                cantidad = ?,
-                precio_unidad = ?,
-                total_precio = ?,
-                peso_gramos = ?
-            WHERE id_pedido = ?
-        `, [
-            articulo.id_articulo,
-            articulo.nombre,
-            articulo.descripcion || null,
-            cantidadNumero,
-            precioUnidad,
-            totalPrecio,
-            pesoNumero,
-            idPedido
-        ], (err, resultado) => {
+                const articulo =
+                    resultados[0];
 
-            if (err) {
 
-                console.log(
-                    "❌ Error actualizando pedido:",
-                    err
+                const precioUnidad =
+                    Number(
+                        articulo.tasa
+                    ) || 0;
+
+
+                const totalPrecio =
+                    cantidadNumero *
+                    precioUnidad;
+
+
+                /* =====================================================
+                   ACTUALIZAR SOLO ARTÍCULO Y CANTIDAD
+
+                   IMPORTANTE:
+                   NO TOCAR peso_gramos.
+
+                   El peso ahora se maneja aparte
+                   como peso general de la factura.
+                ===================================================== */
+
+                conexion.query(
+                    `
+                        UPDATE pedidos
+                        SET
+                            id_articulo = ?,
+                            articulo = ?,
+                            descripcion = ?,
+                            cantidad = ?,
+                            precio_unidad = ?,
+                            total_precio = ?
+                        WHERE id_pedido = ?
+                    `,
+                    [
+                        articulo.id_articulo,
+                        articulo.nombre,
+                        articulo.descripcion || null,
+                        cantidadNumero,
+                        precioUnidad,
+                        totalPrecio,
+                        idPedido
+                    ],
+                    (
+                        err,
+                        resultado
+                    ) => {
+
+                        if(err){
+
+                            console.log(
+                                "❌ Error actualizando pedido:",
+                                err
+                            );
+
+                            return res
+                                .status(500)
+                                .json({
+                                    ok: false,
+                                    mensaje:
+                                        "Error al actualizar el pedido"
+                                });
+
+                        }
+
+
+                        if(
+                            resultado.affectedRows === 0
+                        ){
+
+                            return res
+                                .status(404)
+                                .json({
+                                    ok: false,
+                                    mensaje:
+                                        "Pedido no encontrado"
+                                });
+
+                        }
+
+
+                        return res.json({
+                            ok: true,
+                            mensaje:
+                                "Pedido actualizado correctamente"
+                        });
+
+                    }
                 );
 
-                return res.status(500).json({
-                    ok: false,
-                    mensaje: "Error al actualizar el pedido"
-                });
-
             }
+        );
 
-
-            if (resultado.affectedRows === 0) {
-
-                return res.status(404).json({
-                    ok: false,
-                    mensaje: "Pedido no encontrado"
-                });
-
-            }
-
-
-            res.json({
-                ok: true,
-                mensaje: "Pedido actualizado correctamente"
-            });
-
-        });
-
-    });
-
-});
+    }
+);
 // 🔹 OBTENER USUARIO
 app.get('/user/:id', (req, res) => {
 
