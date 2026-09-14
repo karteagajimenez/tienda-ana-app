@@ -939,24 +939,6 @@ td button {
             Editar abono
         </h3>
 
-        <select
-            id="editarAbonoArticulo"
-            onchange="cargarAbonosParaEditar()"
-        >
-            <option value="">
-                Seleccione el artículo
-            </option>
-        </select>
-
-        <select
-            id="editarAbonoRegistro"
-            style="display:none;"
-             onchange="mostrarMontoAbonoEditar()"
-        >
-            <option value="">
-                Seleccione el abono
-            </option>
-        </select>
 
     <label
     id="labelAbonoViejo"
@@ -970,7 +952,7 @@ td button {
         font-weight:bold;
     "
 >
-    Abono viejo
+    Abono Actual
 </label>
 
 <input
@@ -3141,29 +3123,48 @@ if(tipo === "peso"){
     /* =====================================================
        ABONO
     ===================================================== */
+if(tipo === "pago"){
 
-    if(tipo === "pago"){
-
-        titulo.innerText =
-            "Seleccione artículo e ingrese el abono";
-
-
-        inputValor.style.display =
-            "block";
+    titulo.innerText =
+        "Abono general";
 
 
-        metodoPago.style.display =
-            "block";
+    /* NO MOSTRAR ARTÍCULOS */
 
-        btnEditarAbono.style.display =
-         "inline-block";         
+    pedidoSelect.style.display =
+        "none";
 
-        inputValor.placeholder =
-            "Monto del abono";
+
+    /* USAR INTERNAMENTE EL PRIMER PEDIDO
+       DE ESTA FACTURA */
+
+    if(
+        grupo.pedidos &&
+        grupo.pedidos.length > 0
+    ){
+
+        pedidoId =
+            grupo.pedidos[0].id_pedido;
 
     }
 
 
+    inputValor.style.display =
+        "block";
+
+
+    inputValor.placeholder =
+        "Monto general";
+
+
+    metodoPago.style.display =
+        "block";
+
+
+    btnEditarAbono.style.display =
+        "inline-block";
+
+}
     /* =====================================================
        ESTADO
     ===================================================== */
@@ -3264,182 +3265,72 @@ function cerrarModal(){
         "";
 
 }
-async function cargarAbonosParaEditar(){
 
-    const selectArticulo =
-        document.getElementById(
-            "editarAbonoArticulo"
-        );
-
-    const selectAbono =
-        document.getElementById(
-            "editarAbonoRegistro"
-        );
-
-    const inputMonto =
-        document.getElementById(
-            "editarAbonoMonto"
-        );
-
-    const idPedido =
-        Number(
-            selectArticulo.value
-        );
-
-    selectAbono.innerHTML = `
-        <option value="">
-            Seleccione el abono
-        </option>
-    `;
-
-    selectAbono.style.display =
-        "none";
-
-    inputMonto.value =
-        "";
-
-    inputMonto.style.display =
-        "none";
-
-    if(!idPedido){
-        return;
-    }
-
-    try{
-
-        const respuesta =
-            await fetch(
-                `/payments/${idPedido}`
-            );
-
-        const data =
-            await respuesta.json();
-
-        if(
-            !respuesta.ok ||
-            !data.ok
-        ){
-
-            mostrarMensaje(
-                data.mensaje ||
-                "No se pudieron cargar los abonos"
-            );
-
-            return;
-
-        }
-
-        if(
-            !data.abonos ||
-            data.abonos.length === 0
-        ){
-
-            mostrarMensaje(
-                "Este artículo no tiene abonos registrados"
-            );
-
-            return;
-
-        }
-
-        data.abonos.forEach(
-            abono => {
-
-                const opcion =
-                    document.createElement(
-                        "option"
-                    );
-
-                opcion.value =
-                    abono.id_abono;
-
-                opcion.dataset.monto =
-                    abono.monto_abono;
-
-                const fechaLimpia =
-                    String(
-                        abono.fecha_abono
-                    ).split("T")[0];
-
-                opcion.textContent =
-                    `${moneda(abono.monto_abono)} - ${fechaLimpia}`;
-
-                selectAbono.appendChild(
-                    opcion
-                );
-
-            }
-        );
-
-        selectAbono.style.display =
-            "block";
-
-    }catch(error){
-
-        console.error(
-            "Error cargando abonos:",
-            error
-        );
-
-        mostrarMensaje(
-            "No se pudieron cargar los abonos"
-        );
-
-    }
-
-}
 function cerrarEditarAbono(){
 
-    document.getElementById(
-        "modalEditarAbono"
-    ).style.display =
-        "none";
-
-    document.getElementById(
-        "editarAbonoArticulo"
-    ).value =
-        "";
-
-    document.getElementById(
-        "editarAbonoRegistro"
-    ).innerHTML = `
-        <option value="">
-            Seleccione el abono
-        </option>
-    `;
-
-    document.getElementById(
-        "editarAbonoRegistro"
-    ).style.display =
-        "none";
-
-    document.getElementById(
-        "editarAbonoMonto"
-    ).value =
-        "";
-
-    document.getElementById(
-        "editarAbonoMonto"
-    ).style.display =
-        "none";
-
-}
-async function guardarEdicionAbono(){
-
-    const selectAbono =
+    const modal =
         document.getElementById(
-            "editarAbonoRegistro"
+            "modalEditarAbono"
+        );
+
+
+    modal.style.display =
+        "none";
+
+
+    delete modal.dataset.idAbono;
+
+
+    document.getElementById(
+        "editarAbonoViejo"
+    ).value =
+        "";
+
+    document.getElementById(
+        "editarAbonoMonto"
+    ).value =
+        "";
+
+
+    document.getElementById(
+        "editarAbonoViejo"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "editarAbonoMonto"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "labelAbonoViejo"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "labelAbonoNuevo"
+    ).style.display =
+        "none";
+
+}async function guardarEdicionAbono(){
+
+    const modal =
+        document.getElementById(
+            "modalEditarAbono"
         );
 
     const inputMonto =
         document.getElementById(
             "editarAbonoMonto"
         );
+
 
     const idAbono =
         Number(
-            selectAbono.value
+            modal.dataset.idAbono
         );
+
 
     const nuevoMonto =
         Number(
@@ -3454,11 +3345,10 @@ async function guardarEdicionAbono(){
     ){
 
         mostrarMensaje(
-            "Seleccione un abono e ingrese un monto válido"
+            "Ingrese un monto válido"
         );
 
         return;
-
     }
 
 
@@ -3479,11 +3369,13 @@ async function guardarEdicionAbono(){
 
                     body:
                         JSON.stringify({
+
                             id_abono:
                                 idAbono,
 
                             monto_abono:
                                 nuevoMonto
+
                         })
 
                 }
@@ -3505,7 +3397,6 @@ async function guardarEdicionAbono(){
             );
 
             return;
-
         }
 
 
@@ -3514,6 +3405,7 @@ async function guardarEdicionAbono(){
         cerrarModal();
 
         await cargarPedidos();
+
 
         mostrarMensaje(
             "Su cambio ha sido guardado"
@@ -3532,91 +3424,6 @@ async function guardarEdicionAbono(){
         );
 
     }
-
-}function mostrarMontoAbonoEditar(){
-
-    const selectAbono =
-        document.getElementById(
-            "editarAbonoRegistro"
-        );
-
-    const inputMontoViejo =
-        document.getElementById(
-            "editarAbonoViejo"
-        );
-
-    const inputMontoNuevo =
-        document.getElementById(
-            "editarAbonoMonto"
-        );
-
-    const labelAbonoViejo =
-        document.getElementById(
-            "labelAbonoViejo"
-        );
-
-    const labelAbonoNuevo =
-        document.getElementById(
-            "labelAbonoNuevo"
-        );
-
-    const opcionSeleccionada =
-        selectAbono.options[
-            selectAbono.selectedIndex
-        ];
-
-
-    inputMontoViejo.value =
-        "";
-
-    inputMontoNuevo.value =
-        "";
-
-    inputMontoViejo.style.display =
-        "none";
-
-    inputMontoNuevo.style.display =
-        "none";
-
-    labelAbonoViejo.style.display =
-        "none";
-
-    labelAbonoNuevo.style.display =
-        "none";
-
-
-    if(
-        !selectAbono.value ||
-        !opcionSeleccionada
-    ){
-
-        return;
-    }
-
-
-    /* ABONO ACTUAL - SOLO LECTURA */
-
-    inputMontoViejo.value =
-        opcionSeleccionada.dataset.monto;
-
-    labelAbonoViejo.style.display =
-        "block";
-
-    inputMontoViejo.style.display =
-        "block";
-
-
-    /* ABONO NUEVO - EDITABLE */
-
-    inputMontoNuevo.value =
-        "";
-
-    labelAbonoNuevo.style.display =
-        "block";
-
-    inputMontoNuevo.style.display =
-        "block";
-
 
 }
 function abrirEdicionSegunTipo(){
@@ -3992,21 +3799,11 @@ function cerrarEditarPeso(){
     ).style.display =
         "none";
 }
-function abrirEditarAbono(){
+async function abrirEditarAbono(){
 
     const modal =
         document.getElementById(
             "modalEditarAbono"
-        );
-
-    const selectArticulo =
-        document.getElementById(
-            "editarAbonoArticulo"
-        );
-
-    const selectAbono =
-        document.getElementById(
-            "editarAbonoRegistro"
         );
 
     const inputMontoViejo =
@@ -4030,49 +3827,11 @@ function abrirEditarAbono(){
         );
 
 
-    selectArticulo.innerHTML = `
-        <option value="">
-            Seleccione el artículo
-        </option>
-    `;
-
-
-    selectAbono.innerHTML = `
-        <option value="">
-            Seleccione el abono
-        </option>
-    `;
-
-
-    selectAbono.style.display =
-        "none";
-
-
-    inputMontoViejo.value =
-        "";
-
-    inputMontoNuevo.value =
-        "";
-
-
-    inputMontoViejo.style.display =
-        "none";
-
-    inputMontoNuevo.style.display =
-        "none";
-
-
-    labelAbonoViejo.style.display =
-        "none";
-
-    labelAbonoNuevo.style.display =
-        "none";
-
-
     const cliente =
         pedidosPorCliente[
             clienteSeleccionado
         ];
+
 
     if(!cliente){
 
@@ -4089,7 +3848,12 @@ function abrirEditarAbono(){
             String(grupoSeleccionado)
         ];
 
-    if(!grupo){
+
+    if(
+        !grupo ||
+        !grupo.pedidos ||
+        grupo.pedidos.length === 0
+    ){
 
         mostrarMensaje(
             "No se encontró la factura seleccionada"
@@ -4099,30 +3863,147 @@ function abrirEditarAbono(){
     }
 
 
-    grupo.pedidos.forEach(
-        pedido => {
+    try{
 
-            const opcion =
-                document.createElement(
-                    "option"
-                );
+        /*
+            BUSCAR LOS ABONOS DE TODOS
+            LOS PEDIDOS DE ESTA FACTURA
+        */
 
-            opcion.value =
-                pedido.id_pedido;
+        const respuestas =
+            await Promise.all(
 
-            opcion.textContent =
-                `${pedido.articulo} - Cantidad ${pedido.cantidad}`;
+                grupo.pedidos.map(
+                    pedido =>
+                        fetch(
+                            `/payments/${pedido.id_pedido}`
+                        )
+                )
 
-            selectArticulo.appendChild(
-                opcion
             );
 
+
+        const todosLosAbonos =
+            [];
+
+
+        for(
+            const respuesta of respuestas
+        ){
+
+            if(!respuesta.ok){
+                continue;
+            }
+
+
+            const data =
+                await respuesta.json();
+
+
+            if(
+                data.ok &&
+                Array.isArray(data.abonos)
+            ){
+
+                todosLosAbonos.push(
+                    ...data.abonos
+                );
+
+            }
+
         }
-    );
 
 
-    modal.style.display =
-        "flex";
+        /*
+            SI LA FACTURA NO TIENE ABONOS
+        */
+
+        if(
+            todosLosAbonos.length === 0
+        ){
+
+            mostrarMensaje(
+                "Esta factura no tiene abonos registrados"
+            );
+
+            return;
+        }
+
+
+        /*
+            ORDENAR DEL MÁS RECIENTE
+            AL MÁS ANTIGUO.
+
+            id_abono es autoincremental,
+            por eso el id más alto corresponde
+            al último abono registrado.
+        */
+
+        todosLosAbonos.sort(
+            (a, b) =>
+                Number(b.id_abono) -
+                Number(a.id_abono)
+        );
+
+
+        const ultimoAbono =
+            todosLosAbonos[0];
+
+
+        /*
+            GUARDAR INTERNAMENTE
+            EL ABONO QUE SE VA A EDITAR
+        */
+
+        modal.dataset.idAbono =
+            ultimoAbono.id_abono;
+
+
+        /*
+            MOSTRAR MONTO ACTUAL
+        */
+
+        inputMontoViejo.value =
+            Number(
+                ultimoAbono.monto_abono
+            ) || 0;
+
+
+        inputMontoNuevo.value =
+            "";
+
+
+        labelAbonoViejo.style.display =
+            "block";
+
+        inputMontoViejo.style.display =
+            "block";
+
+
+        labelAbonoNuevo.style.display =
+            "block";
+
+        inputMontoNuevo.style.display =
+            "block";
+
+
+        modal.style.display =
+            "flex";
+
+
+    }catch(error){
+
+        console.error(
+            "Error cargando abono:",
+            error
+        );
+
+        mostrarMensaje(
+            "No se pudo cargar el abono"
+        );
+
+    }
+
 }
 /* =========================================================
    CONFIRMAR
@@ -4295,77 +4176,65 @@ if(!metodo){
     return;
 }
 
+/* =====================================================
+   ABONO GENERAL DE LA FACTURA
+===================================================== */
 
-        /* BUSCAR SOLO DENTRO DE ESTA FACTURA */
+/*
+    El saldo ya no se calcula por artículo.
 
-        const pedido =
-            grupo.pedidos.find(
-                p =>
-                    Number(
-                        p.id_pedido
-                    ) ===
-                    Number(
-                        pedidoId
-                    )
-            );
+    Ahora usamos directamente los totales
+    generales de esta factura:
+*/
 
-
-        if(!pedido){
-
-            return;
-
-        }
+const envioGeneral =
+    Number(
+        grupo.envio_total
+    ) || 0;
 
 
-        /* CALCULAR ENVÍO DE ESTE ARTÍCULO */
-
-        const peso =
-            Number(
-                pedido.peso_gramos
-            ) || 0;
+const abonadoGeneral =
+    Number(
+        grupo.total_abonado
+    ) || 0;
 
 
-        const envio =
-            (peso / 1000) *
-            6000;
+const saldoPendiente =
+    envioGeneral -
+    abonadoGeneral;
 
 
-        /* ABONOS ACTUALES DEL ARTÍCULO */
+/* =====================================================
+   VALIDAR SI YA ESTÁ PAGADA
+===================================================== */
 
-        const abonado =
-            Number(
-                pedido.total_abonado
-            ) || 0;
+if(
+    saldoPendiente <= 0
+){
 
+    mostrarMensaje(
+        "Esta factura ya está completamente pagada."
+    );
 
-        /* SALDO PENDIENTE */
-
-        const saldoPendiente =
-            envio -
-            abonado;
-
-
-        if(saldoPendiente <= 0){
-
-            mostrarMensaje(
-                "Este artículo ya está completamente pagado."
-            );
-
-            return;
-
-        }
+    return;
+}
 
 
-        if(valor > saldoPendiente){
+/* =====================================================
+   NO PERMITIR ABONAR MÁS DEL SALDO
+===================================================== */
 
-            mostrarMensaje(
-                `El saldo pendiente de este artículo es ${moneda(saldoPendiente)}. No puede ingresar un abono mayor.`
-            );
+if(
+    valor >
+    saldoPendiente
+){
 
-            return;
+    mostrarMensaje(
+        `El saldo pendiente de esta factura es ${moneda(saldoPendiente)}. No puede ingresar un abono mayor.`
+    );
 
-        }
-
+    return;
+}
 
         const respuesta =
             await fetch(

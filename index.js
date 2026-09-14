@@ -4910,332 +4910,672 @@ app.post(
 
     }
 );
-app.post('/add-payment', protegerAdmin, (req, res) => {
-    const idPedido =
-        Number(req.body.id_pedido);
+app.post(
+    '/add-payment',
+    protegerAdmin,
+    (req, res) => {
 
-    const montoAbono =
-        Number(req.body.monto_abono);
-
-    const metodoPago =
-        String(
-            req.body.metodo_pago || ''
-        ).trim();
-
-
-    if (
-        !idPedido ||
-        !Number.isFinite(montoAbono) ||
-        montoAbono <= 0 ||
-        !metodoPago
-    ) {
-
-        return res.status(400).json({
-            ok: false,
-            mensaje: "Datos de abono inválidos."
-        });
-
-    }
-
-
-    conexion.beginTransaction((errorTransaccion) => {
-
-        if (errorTransaccion) {
-
-            console.log(
-                "❌ Error iniciando transacción de abono:",
-                errorTransaccion
+        const idPedido =
+            Number(
+                req.body.id_pedido
             );
 
-            return res.status(500).json({
-                ok: false,
-                mensaje: "No se pudo iniciar el abono."
-            });
+        const montoAbono =
+            Number(
+                req.body.monto_abono
+            );
 
-        }
+        const metodoPago =
+            String(
+                req.body.metodo_pago || ''
+            ).trim();
 
 
         /* =================================================
-           BUSCAR PEDIDO Y BLOQUEARLO
+           VALIDAR DATOS
         ================================================= */
 
-        conexion.query(`
-            SELECT
-                id_pedido,
-                peso_gramos,
-                archivado
-            FROM pedidos
-            WHERE id_pedido = ?
-            LIMIT 1
-            FOR UPDATE
-        `, [idPedido], (errorPedido, pedidos) => {
+        if(
+            !Number.isInteger(idPedido) ||
+            idPedido <= 0 ||
+            !Number.isFinite(montoAbono) ||
+            montoAbono <= 0 ||
+            !metodoPago
+        ){
 
-            if (errorPedido) {
+            return res
+                .status(400)
+                .json({
+                    ok: false,
+                    mensaje:
+                        "Datos de abono inválidos."
+                });
 
-                return conexion.rollback(() => {
+        }
+
+
+        conexion.beginTransaction(
+            (errorTransaccion) => {
+
+                if(errorTransaccion){
 
                     console.log(
-                        "❌ Error buscando pedido:",
-                        errorPedido
+                        "❌ Error iniciando transacción de abono:",
+                        errorTransaccion
                     );
 
-                    return res.status(500).json({
-                        ok: false,
-                        mensaje: "No se pudo verificar el pedido."
-                    });
-
-                });
-
-            }
-
-
-            if (pedidos.length === 0) {
-
-                return conexion.rollback(() => {
-
-                    return res.status(404).json({
-                        ok: false,
-                        mensaje: "Pedido no encontrado."
-                    });
-
-                });
-
-            }
-
-
-            const pedido =
-                pedidos[0];
-
-
-            if (Number(pedido.archivado) === 1) {
-
-                return conexion.rollback(() => {
-
-                    return res.status(400).json({
-                        ok: false,
-                        mensaje: "No se pueden agregar abonos a un pedido archivado."
-                    });
-
-                });
-
-            }
-
-
-            /* =================================================
-               CALCULAR ENVÍO DEL ARTÍCULO
-            ================================================= */
-
-            const peso =
-                Number(
-                    pedido.peso_gramos
-                ) || 0;
-
-            const envio =
-                (peso / 1000) * 6000;
-
-
-            /* =================================================
-               OBTENER ABONOS EXISTENTES
-            ================================================= */
-
-            conexion.query(`
-                SELECT
-                    IFNULL(
-                        SUM(monto_abono),
-                        0
-                    ) AS total_abonado
-                FROM abonos
-                WHERE id_pedido = ?
-            `, [idPedido], (errorAbonos, resultadosAbonos) => {
-
-                if (errorAbonos) {
-
-                    return conexion.rollback(() => {
-
-                        console.log(
-                            "❌ Error consultando abonos:",
-                            errorAbonos
-                        );
-
-                        return res.status(500).json({
-                            ok: false,
-                            mensaje: "No se pudo verificar el saldo."
-                        });
-
-                    });
-
-                }
-
-
-                const totalAbonado =
-                    Number(
-                        resultadosAbonos[0].total_abonado
-                    ) || 0;
-
-
-                const saldoPendiente =
-                    envio - totalAbonado;
-
-
-                /* =================================================
-                   ARTÍCULO YA PAGADO
-                ================================================= */
-
-                if (saldoPendiente <= 0) {
-
-                    return conexion.rollback(() => {
-
-                        return res.status(400).json({
-                            ok: false,
-                            mensaje: "Este artículo ya está completamente pagado."
-                        });
-
-                    });
-
-                }
-
-
-                /* =================================================
-                   NO PERMITIR ABONO MAYOR AL SALDO
-                ================================================= */
-
-                if (montoAbono > saldoPendiente) {
-
-                    return conexion.rollback(() => {
-
-                        return res.status(400).json({
+                    return res
+                        .status(500)
+                        .json({
                             ok: false,
                             mensaje:
-                                `El saldo pendiente de este artículo es ₡${saldoPendiente.toLocaleString('es-CR')}. No puede ingresar un abono mayor.`
+                                "No se pudo iniciar el abono."
                         });
-
-                    });
 
                 }
 
 
                 /* =================================================
-                   GUARDAR ABONO
+                   BUSCAR LA FACTURA DEL PEDIDO
                 ================================================= */
 
-                const fecha =
-    new Intl.DateTimeFormat(
-        'en-CA',
-        {
-            timeZone: 'America/Costa_Rica',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-        }
-    ).format(new Date());
+                conexion.query(
+                    `
+                        SELECT
+                            id_pedido,
+                            id_usuario,
+                            grupo_compra,
+                            archivado
 
-                conexion.query(`
-                    INSERT INTO abonos
+                        FROM pedidos
+
+                        WHERE id_pedido = ?
+
+                        LIMIT 1
+                    `,
+                    [
+                        idPedido
+                    ],
                     (
-                        id_pedido,
-                        monto_abono,
-                        fecha_abono,
-                        metodo_pago
-                    )
-                    VALUES (?, ?, ?, ?)
-                `, [
-                    idPedido,
-                    montoAbono,
-                    fecha,
-                    metodoPago
-                ], (errorInsertar) => {
+                        errorPedido,
+                        pedidos
+                    ) => {
 
-                    if (errorInsertar) {
+                        if(errorPedido){
 
-                        return conexion.rollback(() => {
+                            return conexion.rollback(
+                                () => {
 
-                            console.log(
-                                "❌ Error guardando abono:",
-                                errorInsertar
+                                    console.log(
+                                        "❌ Error buscando pedido:",
+                                        errorPedido
+                                    );
+
+                                    return res
+                                        .status(500)
+                                        .json({
+                                            ok: false,
+                                            mensaje:
+                                                "No se pudo verificar la factura."
+                                        });
+
+                                }
                             );
-
-                            return res.status(500).json({
-                                ok: false,
-                                mensaje: "No se pudo guardar el abono."
-                            });
-
-                        });
-
-                    }
-
-
-                    conexion.commit((errorCommit) => {
-
-                        if (errorCommit) {
-
-                            return conexion.rollback(() => {
-
-                                console.log(
-                                    "❌ Error confirmando abono:",
-                                    errorCommit
-                                );
-
-                                return res.status(500).json({
-                                    ok: false,
-                                    mensaje: "No se pudo completar el abono."
-                                });
-
-                            });
 
                         }
 
 
-                        return res.json({
-                            ok: true,
-                            mensaje: "Abono guardado correctamente."
-                        });
+                        if(
+                            !pedidos ||
+                            pedidos.length === 0
+                        ){
 
-                    });
+                            return conexion.rollback(
+                                () => {
 
+                                    return res
+                                        .status(404)
+                                        .json({
+                                            ok: false,
+                                            mensaje:
+                                                "Factura no encontrada."
+                                        });
+
+                                }
+                            );
+
+                        }
+
+
+                        const pedidoBase =
+                            pedidos[0];
+
+
+                        if(
+                            Number(
+                                pedidoBase.archivado
+                            ) === 1
+                        ){
+
+                            return conexion.rollback(
+                                () => {
+
+                                    return res
+                                        .status(400)
+                                        .json({
+                                            ok: false,
+                                            mensaje:
+                                                "No se pueden agregar abonos a una factura archivada."
+                                        });
+
+                                }
+                            );
+
+                        }
+
+
+                        const idUsuario =
+                            Number(
+                                pedidoBase.id_usuario
+                            );
+
+                        const grupoCompra =
+                            Number(
+                                pedidoBase.grupo_compra
+                            );
+
+
+                        if(
+                            !Number.isInteger(grupoCompra) ||
+                            grupoCompra <= 0
+                        ){
+
+                            return conexion.rollback(
+                                () => {
+
+                                    return res
+                                        .status(400)
+                                        .json({
+                                            ok: false,
+                                            mensaje:
+                                                "La factura seleccionada no tiene un grupo válido."
+                                        });
+
+                                }
+                            );
+
+                        }
+
+
+                        /* =================================================
+                           BUSCAR TODOS LOS PEDIDOS
+                           DE ESTA FACTURA
+
+                           También los bloqueamos mientras
+                           se registra el abono.
+                        ================================================= */
+
+                        conexion.query(
+                            `
+                                SELECT
+                                    id_pedido,
+                                    peso_gramos
+
+                                FROM pedidos
+
+                                WHERE id_usuario = ?
+                                AND grupo_compra = ?
+                                AND archivado = 0
+
+                                FOR UPDATE
+                            `,
+                            [
+                                idUsuario,
+                                grupoCompra
+                            ],
+                            (
+                                errorFactura,
+                                pedidosFactura
+                            ) => {
+
+                                if(errorFactura){
+
+                                    return conexion.rollback(
+                                        () => {
+
+                                            console.log(
+                                                "❌ Error buscando factura:",
+                                                errorFactura
+                                            );
+
+                                            return res
+                                                .status(500)
+                                                .json({
+                                                    ok: false,
+                                                    mensaje:
+                                                        "No se pudo verificar la factura."
+                                                });
+
+                                        }
+                                    );
+
+                                }
+
+
+                                if(
+                                    !pedidosFactura ||
+                                    pedidosFactura.length === 0
+                                ){
+
+                                    return conexion.rollback(
+                                        () => {
+
+                                            return res
+                                                .status(404)
+                                                .json({
+                                                    ok: false,
+                                                    mensaje:
+                                                        "Factura no encontrada."
+                                                });
+
+                                        }
+                                    );
+
+                                }
+
+
+                                /* =================================================
+                                   IDS DE TODOS LOS PEDIDOS
+                                   DE ESTA FACTURA
+                                ================================================= */
+
+                                const idsPedidos =
+                                    pedidosFactura.map(
+                                        pedido =>
+                                            pedido.id_pedido
+                                    );
+
+
+                                /* =================================================
+                                   PESO GENERAL / ENVÍO GENERAL
+
+                                   Normalmente el peso general
+                                   está guardado en el primer pedido.
+
+                                   Sumamos todos para mantener
+                                   compatibilidad con registros anteriores.
+                                ================================================= */
+
+                                const pesoGeneral =
+                                    pedidosFactura.reduce(
+                                        (
+                                            acumulado,
+                                            pedido
+                                        ) => {
+
+                                            return acumulado +
+                                                (
+                                                    Number(
+                                                        pedido.peso_gramos
+                                                    ) || 0
+                                                );
+
+                                        },
+                                        0
+                                    );
+
+
+                                const envioGeneral =
+                                    (
+                                        pesoGeneral /
+                                        1000
+                                    ) * 6000;
+
+
+                                /* =================================================
+                                   SUMAR TODOS LOS ABONOS
+                                   DE TODA LA FACTURA
+                                ================================================= */
+
+                                conexion.query(
+                                    `
+                                        SELECT
+                                            IFNULL(
+                                                SUM(monto_abono),
+                                                0
+                                            ) AS total_abonado
+
+                                        FROM abonos
+
+                                        WHERE id_pedido IN (?)
+                                    `,
+                                    [
+                                        idsPedidos
+                                    ],
+                                    (
+                                        errorAbonos,
+                                        resultadosAbonos
+                                    ) => {
+
+                                        if(errorAbonos){
+
+                                            return conexion.rollback(
+                                                () => {
+
+                                                    console.log(
+                                                        "❌ Error consultando abonos:",
+                                                        errorAbonos
+                                                    );
+
+                                                    return res
+                                                        .status(500)
+                                                        .json({
+                                                            ok: false,
+                                                            mensaje:
+                                                                "No se pudo verificar el saldo de la factura."
+                                                        });
+
+                                                }
+                                            );
+
+                                        }
+
+
+                                        const totalAbonado =
+                                            Number(
+                                                resultadosAbonos[0]
+                                                    .total_abonado
+                                            ) || 0;
+
+
+                                        const saldoPendiente =
+                                            envioGeneral -
+                                            totalAbonado;
+
+
+                                        /* =================================================
+                                           FACTURA YA PAGADA
+                                        ================================================= */
+
+                                        if(
+                                            saldoPendiente <= 0
+                                        ){
+
+                                            return conexion.rollback(
+                                                () => {
+
+                                                    return res
+                                                        .status(400)
+                                                        .json({
+                                                            ok: false,
+                                                            mensaje:
+                                                                "Esta factura ya está completamente pagada."
+                                                        });
+
+                                                }
+                                            );
+
+                                        }
+
+
+                                        /* =================================================
+                                           NO PERMITIR ABONO
+                                           MAYOR AL SALDO GENERAL
+                                        ================================================= */
+
+                                        if(
+                                            montoAbono >
+                                            saldoPendiente
+                                        ){
+
+                                            return conexion.rollback(
+                                                () => {
+
+                                                    return res
+                                                        .status(400)
+                                                        .json({
+                                                            ok: false,
+                                                            mensaje:
+                                                                `El saldo pendiente de esta factura es ₡${saldoPendiente.toLocaleString('es-CR')}. No puede ingresar un abono mayor.`
+                                                        });
+
+                                                }
+                                            );
+
+                                        }
+
+
+                                        /* =================================================
+                                           FECHA COSTA RICA
+                                        ================================================= */
+
+                                        const fecha =
+                                            new Intl.DateTimeFormat(
+                                                'en-CA',
+                                                {
+                                                    timeZone:
+                                                        'America/Costa_Rica',
+
+                                                    year:
+                                                        'numeric',
+
+                                                    month:
+                                                        '2-digit',
+
+                                                    day:
+                                                        '2-digit'
+                                                }
+                                            ).format(
+                                                new Date()
+                                            );
+
+
+                                        /* =================================================
+                                           GUARDAR ABONO
+
+                                           Se guarda en el pedido recibido,
+                                           pero financieramente pertenece
+                                           a toda la factura.
+                                        ================================================= */
+
+                                        conexion.query(
+                                            `
+                                                INSERT INTO abonos
+                                                (
+                                                    id_pedido,
+                                                    monto_abono,
+                                                    fecha_abono,
+                                                    metodo_pago
+                                                )
+
+                                                VALUES (?, ?, ?, ?)
+                                            `,
+                                            [
+                                                idPedido,
+                                                montoAbono,
+                                                fecha,
+                                                metodoPago
+                                            ],
+                                            (
+                                                errorInsertar
+                                            ) => {
+
+                                                if(errorInsertar){
+
+                                                    return conexion.rollback(
+                                                        () => {
+
+                                                            console.log(
+                                                                "❌ Error guardando abono:",
+                                                                errorInsertar
+                                                            );
+
+                                                            return res
+                                                                .status(500)
+                                                                .json({
+                                                                    ok: false,
+                                                                    mensaje:
+                                                                        "No se pudo guardar el abono."
+                                                                });
+
+                                                        }
+                                                    );
+
+                                                }
+
+
+                                                conexion.commit(
+                                                    (
+                                                        errorCommit
+                                                    ) => {
+
+                                                        if(errorCommit){
+
+                                                            return conexion.rollback(
+                                                                () => {
+
+                                                                    console.log(
+                                                                        "❌ Error confirmando abono:",
+                                                                        errorCommit
+                                                                    );
+
+                                                                    return res
+                                                                        .status(500)
+                                                                        .json({
+                                                                            ok: false,
+                                                                            mensaje:
+                                                                                "No se pudo completar el abono."
+                                                                        });
+
+                                                                }
+                                                            );
+
+                                                        }
+
+
+                                                        return res.json({
+                                                            ok: true,
+                                                            mensaje:
+                                                                "Abono guardado correctamente."
+                                                        });
+
+                                                    }
+                                                );
+
+                                            }
+                                        );
+
+                                    }
+                                );
+
+                            }
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+    }
+);
+// 🔥 ACTUALIZAR PESO GENERAL
+app.post(
+    '/update-weight',
+    protegerAdmin,
+    (req, res) => {
+
+        const idPedido =
+            Number(
+                req.body.id_pedido
+            );
+
+        const peso =
+            Number(
+                req.body.peso_gramos
+            );
+
+
+        if(
+            !Number.isInteger(idPedido) ||
+            idPedido <= 0 ||
+            !Number.isFinite(peso) ||
+            peso <= 0
+        ){
+
+            return res
+                .status(400)
+                .json({
+                    ok: false,
+                    mensaje:
+                        "Datos de peso inválidos"
                 });
 
-            });
-
-        });
-
-    });
-
-});
-
-
-// 🔥 ACTUALIZAR PESO
-app.post('/update-weight',protegerAdmin,  (req, res) => {
-    const { id_pedido, peso_gramos } = req.body;
-
-    const peso = Number(peso_gramos) || 0;
-    const envio = (peso / 1000) * 6000;
-
-    conexion.query(`
-        SELECT cantidad, precio_unidad 
-        FROM pedidos 
-        WHERE id_pedido = ?
-    `, [id_pedido], (err, results) => {
-
-        if (err || results.length === 0) {
-            return res.send("Error ❌");
         }
 
-        const pedido = results[0];
-        const subtotal = pedido.cantidad * pedido.precio_unidad;
-        const total = subtotal + envio;
 
-        conexion.query(`
-            UPDATE pedidos 
-            SET peso_gramos = ?, total_precio = ?
-            WHERE id_pedido = ?
-        `, [peso, total, id_pedido], (err) => {
+        conexion.query(
+            `
+                UPDATE pedidos
 
-            if (err) return res.send("Error ❌");
+                SET
+                    peso_gramos = ?
 
-            res.json({ ok: true });
-        });
-    });
-});
+                WHERE id_pedido = ?
+            `,
+            [
+                peso,
+                idPedido
+            ],
+            (
+                err,
+                resultado
+            ) => {
+
+                if(err){
+
+                    console.log(
+                        "❌ Error actualizando peso:",
+                        err
+                    );
+
+                    return res
+                        .status(500)
+                        .json({
+                            ok: false,
+                            mensaje:
+                                "No se pudo actualizar el peso"
+                        });
+
+                }
+
+
+                if(
+                    resultado.affectedRows === 0
+                ){
+
+                    return res
+                        .status(404)
+                        .json({
+                            ok: false,
+                            mensaje:
+                                "Pedido no encontrado"
+                        });
+
+                }
+
+
+                return res.json({
+                    ok: true,
+                    mensaje:
+                        "Peso actualizado correctamente"
+                });
+
+            }
+        );
+
+    }
+);
 
 
 // 🔹 CAMBIAR ESTADO
