@@ -633,6 +633,10 @@ td {
             ANA DE COMPRAS
         </h2>
 
+        <p id="numeroFactura">
+           Factura N.º --
+       </p>  
+
         <p>
             Detalle de compra
         </p>
@@ -666,11 +670,17 @@ td {
         </div>
 
 
-        <div
-            id="direccionCliente"
-            class="direccion-cliente"
-        >
-        </div>
+ <div
+    id="direccionCliente"
+    class="direccion-cliente"
+>
+</div>
+
+<div
+    id="telefonoCliente"
+    class="direccion-cliente"
+>
+</div>
 
     </div>
 
@@ -1017,7 +1027,25 @@ const pedidos =
                     Number(idUsuario) &&
                     Number(pedido.grupo_compra) ===
                     Number(grupoCompra)
-            );
+            )// ======================================================
+// 🔹 MOSTRAR NÚMERO DE FACTURA
+// ======================================================
+
+if (
+    pedidosCliente.length > 0 &&
+    pedidosCliente[0].numero_factura != null
+) {
+
+    const numeroFactura =
+        String(
+            pedidosCliente[0].numero_factura
+        ).padStart(2, "0");
+
+    document.getElementById(
+        "numeroFactura"
+    ).innerText =
+        `Factura N.º ${numeroFactura}`;
+}
 
 
 
@@ -1071,7 +1099,12 @@ const pedidos =
                 mostrarDireccion(
                     usuario
                 );
-
+document.getElementById(
+    "telefonoCliente"
+).innerText =
+    usuario.telefono
+        ? `Tel: ${usuario.telefono}`
+        : "Tel: No registrado";
 
             }
 
@@ -1872,24 +1905,36 @@ async function descargarPDF(){
         /* ================================================
            NOMBRE DEL ARCHIVO
         ================================================ */
-
-        const nombreCliente =
-            document.getElementById(
-                "nombreCliente"
-            ).innerText.trim();
-
-
-        const nombreLimpio =
-            limpiarNombreArchivo(
-                nombreCliente
-            );
+const nombreCliente =
+    document.getElementById(
+        "nombreCliente"
+    ).innerText.trim();
 
 
-        const nombrePDF =
-            nombreLimpio
-                ? `Factura_${nombreLimpio}.pdf`
-                : "Factura_Tienda_Ana.pdf";
+const nombreLimpio =
+    limpiarNombreArchivo(
+        nombreCliente
+    );
 
+
+const numeroFacturaTexto =
+    document.getElementById(
+        "numeroFactura"
+    ).innerText;
+
+
+const numeroFactura =
+    numeroFacturaTexto
+        .replace("Factura N.º", "")
+        .trim();
+
+
+const nombrePDF =
+    nombreLimpio && numeroFactura
+        ? `${nombreLimpio}-${numeroFactura}.pdf`
+        : nombreLimpio
+            ? `${nombreLimpio}.pdf`
+            : "Factura_Tienda_Ana.pdf";
 
         /* ================================================
            DESCARGAR

@@ -3551,7 +3551,8 @@ app.post(
 
         conexion.query(`
             SELECT
-                p.grupo_compra
+                p.grupo_compra,
+                g.numero_factura
 
             FROM pedidos p
 
@@ -3617,6 +3618,10 @@ app.post(
 
                     grupo_compra:
                         grupoExistente,
+                    
+                    numero_factura:
+                      resultados[0].numero_factura,
+
 
                     pais_origen:
                         paisOrigen,
@@ -3635,55 +3640,168 @@ app.post(
                 Ahora sí creamos un grupo nuevo.
                 =========================================
             */
+conexion.beginTransaction((errorTransaccion) => {
+
+    if (errorTransaccion) {
+
+        console.log(
+            '❌ ERROR INICIANDO TRANSACCIÓN:',
+            errorTransaccion
+        );
+
+        return res.status(500).json({
+            ok: false,
+            mensaje: 'No se pudo crear la factura'
+        });
+    }
+
+
+    conexion.query(`
+        SELECT ultimo_numero
+        FROM contador_facturas
+        WHERE id = 1
+        FOR UPDATE
+    `, (errorContador, contador) => {
+
+        if (
+            errorContador ||
+            !contador ||
+            contador.length === 0
+        ) {
+
+            return conexion.rollback(() => {
+
+                console.log(
+                    '❌ ERROR LEYENDO CONTADOR DE FACTURAS:',
+                    errorContador
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    mensaje:
+                        'No se pudo obtener el número de factura'
+                });
+            });
+        }
+
+
+        const nuevoNumero =
+            Number(contador[0].ultimo_numero) + 1;
+
+
+        conexion.query(`
+            UPDATE contador_facturas
+            SET ultimo_numero = ?
+            WHERE id = 1
+        `, [
+            nuevoNumero
+        ], (errorActualizar) => {
+
+            if (errorActualizar) {
+
+                return conexion.rollback(() => {
+
+                    console.log(
+                        '❌ ERROR ACTUALIZANDO CONTADOR:',
+                        errorActualizar
+                    );
+
+                    return res.status(500).json({
+                        ok: false,
+                        mensaje:
+                            'No se pudo generar el número de factura'
+                    });
+                });
+            }
+
 
             conexion.query(`
                 INSERT INTO grupos_compra
                 (
                     pais_origen,
-                    activo
+                    activo,
+                    numero_factura
                 )
-                VALUES (?, 1)
+                VALUES (?, 1, ?)
             `, [
-                paisOrigen
+                paisOrigen,
+                nuevoNumero
             ], (errorCrear, resultado) => {
 
+                if (errorCrear) {
 
-                if(errorCrear){
+                    return conexion.rollback(() => {
 
-                    console.log(
-                        '❌ ERROR CREANDO GRUPO DE COMPRA:',
-                        errorCrear
-                    );
+                        console.log(
+                            '❌ ERROR CREANDO GRUPO DE COMPRA:',
+                            errorCrear
+                        );
 
-
-                    return res.status(500).json({
-                        ok: false,
-                        mensaje:
-                            'No se pudo crear la factura'
+                        return res.status(500).json({
+                            ok: false,
+                            mensaje:
+                                'No se pudo crear la factura'
+                        });
                     });
-
                 }
 
 
-                return res.json({
-                    ok: true,
+                conexion.commit((errorCommit) => {
 
-                    grupo_compra:
-                        resultado.insertId,
+                    if (errorCommit) {
 
-                    pais_origen:
-                        paisOrigen,
+                        return conexion.rollback(() => {
 
-                    existente:
-                        false
+                            console.log(
+                                '❌ ERROR CONFIRMANDO FACTURA:',
+                                errorCommit
+                            );
+
+                            return res.status(500).json({
+                                ok: false,
+                                mensaje:
+                                    'No se pudo crear la factura'
+                            });
+                        });
+                    }
+
+
+                    return res.json({
+                        ok: true,
+
+                        grupo_compra:
+                            resultado.insertId,
+
+                        numero_factura:
+                            nuevoNumero,
+
+                        pais_origen:
+                            paisOrigen,
+
+                        existente:
+                            false
+                    });
+
                 });
 
             });
 
         });
 
-    }
-);
+    });
+
+});
+
+/*
+    Cierra conexion.query() de
+    BUSCAR FACTURA ACTIVA
+*/
+});
+
+/*
+    Cierra app.post('/create-purchase-group')
+*/
+});
 
 // ======================================================
 // 🔹 CREAR PEDIDO
@@ -4450,6 +4568,7 @@ app.get('/orders', protegerAdmin, (req, res) => {
             p.*,
             u.nombre,
             u.apellido,
+            g.numero_factura,
             IFNULL(SUM(a.monto_abono), 0) AS total_abonado,
             MAX(a.metodo_pago) AS metodo_pago,
             MAX(a.fecha_abono) AS fecha_abono,
@@ -4459,6 +4578,8 @@ app.get('/orders', protegerAdmin, (req, res) => {
 
         JOIN usuarios u
             ON p.id_usuario = u.id_usuario
+        JOIN grupos_compra g
+         ON p.grupo_compra = g.id_grupo
 
         LEFT JOIN abonos a
             ON p.id_pedido = a.id_pedido
@@ -4502,6 +4623,7 @@ app.get('/archived-orders', protegerAdmin, (req, res) => {
             p.*,
             u.nombre,
             u.apellido,
+            g.numero_factura,
             IFNULL(SUM(a.monto_abono), 0) AS total_abonado,
             MAX(a.metodo_pago) AS metodo_pago,
             MAX(a.fecha_abono) AS fecha_abono,
@@ -4511,6 +4633,9 @@ app.get('/archived-orders', protegerAdmin, (req, res) => {
 
         JOIN usuarios u
             ON p.id_usuario = u.id_usuario
+
+        JOIN grupos_compra g
+         ON p.grupo_compra = g.id_grupo
 
         LEFT JOIN abonos a
             ON p.id_pedido = a.id_pedido
