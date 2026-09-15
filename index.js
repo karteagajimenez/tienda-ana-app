@@ -8,7 +8,7 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const { Resend } = require('resend');
 const session = require('express-session');
-const rateLimit = require('express-rate-limit');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 const resend = new Resend(process.env.RESEND_API_KEY);
 const MySQLStore = require('express-mysql-session')(session);
 const sessionStore = new MySQLStore({
@@ -602,16 +602,16 @@ const loginLimiter = rateLimit({
     skipSuccessfulRequests: true,
 
     // 🔐 Cada correo tiene su propio contador de intentos
-    keyGenerator: (req) => {
+keyGenerator: (req) => {
 
-        const correo =
-            String(req.body?.correo || '')
-                .trim()
-                .toLowerCase();
+    const correo =
+        String(req.body?.correo || '')
+            .trim()
+            .toLowerCase();
 
-        return correo || req.ip;
+    return correo || ipKeyGenerator(req.ip);
 
-    },
+},
 
     message:
         "Demasiados intentos de inicio de sesión para esta cuenta. Intente nuevamente en 15 minutos."
