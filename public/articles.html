@@ -17,14 +17,102 @@ body{
     padding:0;
 }
 
+/* ======================================================
+   MENÚ LATERAL
+====================================================== */
 
+.menu-lateral{
+    position:fixed;
+    top:0;
+    left:0;
+    width:0;
+    height:100vh;
+    background:#efd0da;
+    overflow:hidden;
+    transition:width 0.3s ease;
+    z-index:5000;
+    box-shadow:2px 0 8px rgba(0,0,0,0.08);
+}
+
+.menu-lateral.abierto{
+    width:255px;
+}
+
+.menu-lateral-superior{
+    height:110px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+}
+
+.btn-menu-lateral{
+    position:fixed;
+    top:28px;
+    left:18px;
+    z-index:6000;
+
+    width:42px;
+    height:42px;
+
+    padding:0;
+    border:none;
+    background:transparent;
+
+    color:#b76e8a;
+    font-size:30px;
+    font-weight:normal;
+
+    cursor:pointer;
+}
+
+.menu-lateral.abierto .btn-menu-lateral{
+    position:absolute;
+}
+
+.logo-menu-lateral{
+    width:82px;
+    height:auto;
+    border-radius:10px;
+}
+
+.menu-lateral-contenido{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding:15px 12px;
+}
+
+.menu-lateral-contenido button{
+    width:100%;
+
+    border:none;
+    border-radius:7px;
+
+    background:#c48b9f;
+    color:white;
+
+    font-family:Arial, sans-serif;
+    font-size:14px;
+    font-weight:normal;
+
+    text-align:center;
+
+    padding:10px 12px;
+
+    cursor:pointer;
+}
+
+.menu-lateral-contenido button:hover{
+    opacity:0.85;
+}
 /* HEADER */
 
 .header{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:15px 25px;
+    padding:15px 25px 15px 75px;
     position:relative;
 }
 
@@ -42,23 +130,6 @@ body{
 
 .logo-header{
     height:90px;
-}
-
-
-/* BOTÓN VOLVER */
-
-.volver{
-    background:#b76e8a;
-    color:white;
-    border:none;
-    padding:10px 16px;
-    border-radius:6px;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.volver:hover{
-    opacity:0.85;
 }
 
 
@@ -425,7 +496,79 @@ tbody tr:hover{
 
 <body>
 
+    <!-- ======================================================
+     MENÚ LATERAL
+====================================================== -->
 
+<div id="menuLateral" class="menu-lateral">
+
+    <div class="menu-lateral-superior">
+
+        <button
+            type="button"
+            id="btnMenuLateral"
+            class="btn-menu-lateral"
+            onclick="toggleMenuLateral()"
+            title="Abrir o cerrar menú"
+        >
+            ☰
+        </button>
+
+        <img
+            src="logo.jpg"
+            alt="Logo Tienda Ana"
+            class="logo-menu-lateral"
+        >
+
+    </div>
+
+    <div class="menu-lateral-contenido">
+
+        <button
+            type="button"
+            onclick="window.location.href='/dashboard.html'"
+        >
+            📝 Crear pedido
+        </button>
+
+        <button
+            type="button"
+            onclick="irAgregarCliente()"
+        >
+            👤＋ Agregar cliente
+        </button>
+
+        <button
+            type="button"
+            onclick="irEditarCliente()"
+        >
+            👤✎ Editar cliente
+        </button>
+
+        <button
+            type="button"
+            onclick="window.location.href='/add_article.html'"
+        >
+            🛍️+ Agregar artículos
+        </button>
+
+        <button
+            type="button"
+            onclick="window.location.href='/articles.html'"
+        >
+         🛍️✎ Editar artículos
+        </button>
+
+        <button
+            type="button"
+            onclick="window.location.href='/add_weight.html'"
+        >
+            📄 Facturas
+        </button>
+
+    </div>
+
+</div>
 <div class="header">
 
     <h1>
@@ -442,16 +585,7 @@ tbody tr:hover{
 
     </div>
 
-
-    <button
-        class="volver"
-        onclick="volver()"
-    >
-        Volver
-    </button>
-
 </div>
-
 
 
 <div class="contenedor">
@@ -620,18 +754,38 @@ const articulosPorPagina = 20;
 
 let articulosFiltrados = [];
 
-
 /* ================================
-   VOLVER
+   MENÚ LATERAL
 ================================ */
 
-function volver(){
+function toggleMenuLateral(){
 
-    window.location.href =
-        "/add_article.html";
+    const menu =
+        document.getElementById(
+            "menuLateral"
+        );
+
+    menu.classList.toggle(
+        "abierto"
+    );
 
 }
 
+
+function irAgregarCliente(){
+
+    window.location.href =
+        "/dashboard.html?abrir=agregar-cliente";
+
+}
+
+
+function irEditarCliente(){
+
+    window.location.href =
+        "/dashboard.html?abrir=editar-cliente";
+
+}
 
 
 /* ================================

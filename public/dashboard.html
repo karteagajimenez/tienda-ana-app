@@ -730,31 +730,44 @@ body.menu-abierto {
     >
 
 </div>
+<div class="menu-lateral-contenido">
 
-    <div class="menu-lateral-contenido">
+    <button
+        type="button"
+        onclick="abrirAgregarCliente()"
+    >
+        👤＋ Agregar cliente
+    </button>
 
-        <button
-          type="button"
-           onclick="abrirAgregarCliente()"
-       >
-           Agregar cliente
-        </button>
+    <button
+        type="button"
+        onclick="abrirEditarCliente()"
+    >
+        👤✎ Editar cliente
+    </button>
 
-        <button
-            type="button"
-            onclick="window.location.href='/add_article.html'"
-        >
-            Agregar artículo
-        </button>
+    <button
+        type="button"
+        onclick="window.location.href='/add_article.html'"
+    >
+        🛍️+ Agregar artículos
+    </button>
 
-        <button
-            type="button"
-            onclick="window.location.href='/add_weight.html'"
-        >
-            Facturas
-        </button>
+    <button
+        type="button"
+        onclick="window.location.href='/articles.html'"
+    >
+       🛍️✎ Editar artículos
+    </button>
 
-    </div>
+    <button
+        type="button"
+        onclick="window.location.href='/add_weight.html'"
+    >
+        📄 Facturas
+    </button>
+
+</div>
 
 </div>
 <!-- ======================================================
@@ -906,13 +919,6 @@ body.menu-abierto {
         onclick="guardarClienteManual()"
     >
         Guardar cliente
-    </button>
-
-    <button
-        type="button"
-        onclick="abrirEditarCliente()"
-    >
-        Editar
     </button>
 
     <button
@@ -1255,7 +1261,7 @@ body.menu-abierto {
     id="btnAbrirArticulo"
     style="width:100%; margin-top:15px;"
 >
-    + Añadir artículo
+    🛍️+ Añadir artículos
 </button>
 
 
@@ -1265,7 +1271,7 @@ body.menu-abierto {
     id="btnAbrirAbonoPedido"
     style="width:100%; margin-top:10px;"
 >
-    + Añadir abono
+    💵＋ Añadir Abono
 </button>
 
     <!-- 🔥 DETALLE DEL PEDIDO -->
