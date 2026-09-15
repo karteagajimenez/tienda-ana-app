@@ -1249,15 +1249,24 @@ body.menu-abierto {
     </div>
 
 
-    <!-- 🔥 AGREGAR ARTÍCULO -->
-    <button
-        type="button"
-        id="btnAbrirArticulo"
-        style="width:100%; margin-top:15px;"
-    >
-        + Agregar artículo
-    </button>
+<!-- 🔥 AÑADIR ARTÍCULO -->
+<button
+    type="button"
+    id="btnAbrirArticulo"
+    style="width:100%; margin-top:15px;"
+>
+    + Añadir artículo
+</button>
 
+
+<!-- 🔥 AÑADIR ABONO -->
+<button
+    type="button"
+    id="btnAbrirAbonoPedido"
+    style="width:100%; margin-top:10px;"
+>
+    + Añadir abono
+</button>
 
     <!-- 🔥 DETALLE DEL PEDIDO -->
     <div
@@ -1325,27 +1334,118 @@ body.menu-abierto {
         </div>
 
 
-        <div
-            style="
-                text-align:right;
-                margin-top:20px;
-                font-size:18px;
-                font-weight:bold;
-            "
-        >
-            TOTAL:
-            ₡<span id="totalPedido">0</span>
-        </div>
+ <!-- 🔥 RESUMEN DEL PEDIDO -->
+<div
+    style="
+        margin-top:25px;
+        display:flex;
+        justify-content:flex-end;
+    "
+>
+<div
+  <div
+    style="
+        width:260px;
+        margin-left:auto;
+        box-sizing:border-box;
+    "
+>
+<!-- ABONADO -->
+<div
+    style="
+        width:210px;
+        margin-left:auto;
+        display:grid;
+        grid-template-columns:120px 90px;
+        align-items:center;
+        padding:10px 0;
+        border-bottom:1px solid #d8d8d8;
+        font-size:16px;
+        box-sizing:border-box;
+    "
+>
+    <span style="text-align:left;">
+        ABONADO:
+    </span>
 
-    </div>
+    <span style="text-align:right;">
+        ₡<span id="abonadoPedido">0</span>
+    </span>
+</div>
 
 
-    <!-- 🔥 BOTONES FINALES -->
-    <div
-        class="botones"
-        style="margin-top:25px;"
+<!-- TOTAL -->
+<div
+    style="
+        width:210px;
+        margin-left:auto;
+        display:grid;
+        grid-template-columns:120px 90px;
+        align-items:center;
+        padding:10px 0;
+        border-bottom:1px solid #d8d8d8;
+        font-size:18px;
+        font-weight:bold;
+        box-sizing:border-box;
+    "
+>
+    <span style="text-align:left;">
+        TOTAL:
+    </span>
+
+    <span style="text-align:right;">
+        ₡<span id="totalPedido">0</span>
+    </span>
+</div>
+
+
+<!-- SALDO ADEUDADO -->
+<div
+    style="
+        display:flex;
+        justify-content:flex-end;
+        align-items:center;
+        gap:10px;
+        width:max-content;
+        max-width:100%;
+        margin-top:12px;
+        margin-left:auto;
+        padding:12px 14px;
+        background:#f7efe2;
+        border-radius:6px;
+        box-sizing:border-box;
+        font-size:16px;
+        font-weight:bold;
+        white-space:nowrap;
+    "
+>
+    <span>
+        SALDO ADEUDADO:
+    </span>
+
+    <span
+        style="
+            color:#e53935;
+            font-size:18px;
+            font-weight:bold;
+            text-align:right;
+        "
     >
+        ₡<span id="saldoAdeudadoPedido">0</span>
+    </span>
+</div>
 
+</div>
+
+</div>
+
+</div>
+
+<!-- 🔥 BOTONES FINALES -->
+<div
+    class="botones"
+    style="margin-top:25px;"
+>
         <button
             type="submit"
             id="btnGuardarPedido"
@@ -1467,6 +1567,79 @@ body.menu-abierto {
     </div>
 
 </div>
+<!-- =====================================================
+     🔥 MODAL AÑADIR ABONO
+===================================================== -->
+<div
+    id="modalAgregarAbonoPedido"
+    style="
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.45);
+        z-index:9999;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        box-sizing:border-box;
+    "
+>
+
+    <div
+        style="
+            background:white;
+            width:100%;
+            max-width:450px;
+            border-radius:12px;
+            padding:25px;
+            box-shadow:0 10px 35px rgba(0,0,0,0.25);
+            box-sizing:border-box;
+        "
+    >
+
+        <h3
+            style="
+                text-align:center;
+                margin-top:0;
+            "
+        >
+            Añadir abono
+        </h3>
+
+
+        <input
+            type="number"
+            id="montoAbonoPedido"
+            placeholder="Monto del abono"
+            min="0"
+            step="0.01"
+        >
+
+
+        <div
+            class="botones"
+            style="margin-top:20px;"
+        >
+
+            <button
+                type="button"
+                id="btnAceptarAbonoPedido"
+            >
+                Aceptar
+            </button>
+
+            <button
+                type="button"
+                id="btnCancelarAbonoPedido"
+            >
+                Cancelar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 <script src="ubicaciones-cr.js"></script>
 <script>
 
@@ -1474,7 +1647,148 @@ let clientes = [];
 let articulos = [];
 let articulosPedido = [];
 let articulosEliminados = [];
+// ======================================================
+// 🔥 ABONO INICIAL DEL PEDIDO
+// ======================================================
 
+let abonoPedido = 0;
+
+// Abono que ya está guardado en la base de datos
+let abonoPedidoGuardado = 0;
+
+// Abono nuevo escrito en Crear Pedido,
+// todavía NO guardado en la base de datos
+let abonoPedidoNuevo = 0;
+
+let metodoAbonoPedido = "SINPE";
+// ======================================================
+// 🔥 ABRIR / CERRAR MODAL AÑADIR ABONO
+// ======================================================
+
+const btnAbrirAbonoPedido =
+    document.getElementById("btnAbrirAbonoPedido");
+
+const modalAgregarAbonoPedido =
+    document.getElementById("modalAgregarAbonoPedido");
+
+const montoAbonoPedido =
+    document.getElementById("montoAbonoPedido");
+
+const btnAceptarAbonoPedido =
+    document.getElementById("btnAceptarAbonoPedido");
+
+const btnCancelarAbonoPedido =
+    document.getElementById("btnCancelarAbonoPedido");
+
+
+btnAbrirAbonoPedido.addEventListener(
+    "click",
+    () => {
+
+        montoAbonoPedido.value =
+            abonoPedido > 0
+                ? abonoPedido
+                : "";
+
+
+        modalAgregarAbonoPedido.style.display =
+            "flex";
+
+        setTimeout(() => {
+            montoAbonoPedido.focus();
+        }, 100);
+    }
+);
+
+
+function cerrarModalAbonoPedido(){
+
+    modalAgregarAbonoPedido.style.display =
+        "none";
+}
+
+
+btnCancelarAbonoPedido.addEventListener(
+    "click",
+    () => {
+
+        cerrarModalAbonoPedido();
+    }
+);
+// ======================================================
+// 🔥 ACEPTAR ABONO INICIAL
+// ======================================================
+
+btnAceptarAbonoPedido.addEventListener(
+    "click",
+    () => {
+
+        const monto =
+            Number(montoAbonoPedido.value) || 0;
+
+
+        if(monto <= 0){
+
+            mostrarMensaje(
+                "Ingrese un monto de abono válido",
+                "error"
+            );
+
+            montoAbonoPedido.focus();
+
+            return;
+        }
+
+
+        const totalPedidoActual =
+            articulosPedido.reduce(
+                (total, item) => {
+
+                    return total +
+                        (Number(item.total) || 0);
+
+                },
+                0
+            );
+
+
+        if(totalPedidoActual <= 0){
+
+            mostrarMensaje(
+                "Agregue al menos un artículo antes de registrar el abono",
+                "error"
+            );
+
+            cerrarModalAbonoPedido();
+
+            return;
+        }
+
+
+        if(monto > totalPedidoActual){
+
+            mostrarMensaje(
+                "El abono no puede ser mayor al total del pedido",
+                "error"
+            );
+
+            montoAbonoPedido.focus();
+
+            return;
+        }
+
+
+abonoPedidoNuevo = monto;
+
+abonoPedido =
+    abonoPedidoGuardado +
+    abonoPedidoNuevo;
+
+renderizarDetallePedido();
+
+cerrarModalAbonoPedido();
+    }
+);
 function toggleMenuLateral(){
 
     const menu =
@@ -3239,23 +3553,26 @@ async function seleccionarCliente(cliente){
             CLIENTE SIN PEDIDO ACTIVO
         */
 
-        if(
-            !data.existe
-        ){
+     if(
+    !data.existe
+){
 
-            articulosPedido = [];
-            
-            articulosEliminados = [];
+    articulosPedido = [];
+    
+    articulosEliminados = [];
 
-            grupoCompraActual = null;
+    grupoCompraActual = null;
 
-            paisGrupoActual = null;
+    paisGrupoActual = null;
 
-            renderizarDetallePedido();
+    abonoPedidoGuardado = 0;
+    abonoPedidoNuevo = 0;
+    abonoPedido = 0;
 
-            return;
+    renderizarDetallePedido();
 
-        }
+    return;
+}
 
 
         /*
@@ -3298,7 +3615,19 @@ async function seleccionarCliente(cliente){
 
         }
 
+// ======================================================
+// 🔥 CARGAR ABONO YA GUARDADO DE LA FACTURA
+// ======================================================
 
+abonoPedidoGuardado =
+    Number(
+        data.total_abonado
+    ) || 0;
+
+abonoPedidoNuevo = 0;
+
+abonoPedido =
+    abonoPedidoGuardado;
         /*
             🔥 CARGAR ARTÍCULOS GUARDADOS
         */
@@ -3937,10 +4266,42 @@ function renderizarDetallePedido(){
     );
 
 
-    totalPedido.textContent =
-        formatearMontoPedido(
-            totalGeneral
-        );
+totalPedido.textContent =
+    formatearMontoPedido(
+        totalGeneral
+    );
+
+
+const abonadoPedidoElemento =
+    document.getElementById(
+        "abonadoPedido"
+    );
+
+const saldoAdeudadoPedido =
+    document.getElementById(
+        "saldoAdeudadoPedido"
+    );
+
+
+let saldo =
+    totalGeneral - abonoPedido;
+
+
+if(saldo < 0){
+    saldo = 0;
+}
+
+
+abonadoPedidoElemento.textContent =
+    formatearMontoPedido(
+        abonoPedido
+    );
+
+
+saldoAdeudadoPedido.textContent =
+    formatearMontoPedido(
+        saldo
+    );
 
 }
 function eliminarArticuloPedido(index){
@@ -4125,7 +4486,7 @@ for(
             // ==================================================
             // 🔥 GUARDAR TODOS LOS ARTÍCULOS NUEVOS
             // ==================================================
-
+            let idPedidoParaAbono = null;
             for(
                 const item of articulosPedido
             ){
@@ -4227,13 +4588,121 @@ for(
                     );
 
                 }
+if(
+    respuesta &&
+    respuesta.id_pedido
+){
 
+    item.id_pedido =
+        respuesta.id_pedido;
+
+    idPedidoParaAbono =
+        respuesta.id_pedido;
+}
 
                 item.guardado = true;
 
             }
 
+// ==================================================
+// 🔥 GUARDAR ABONO NUEVO DE LA FACTURA
+// ==================================================
 
+if(abonoPedidoNuevo > 0){
+
+    // Si no se creó un artículo nuevo,
+    // usamos uno que ya pertenecía a la factura.
+    if(!idPedidoParaAbono){
+
+        const pedidoExistente =
+            articulosPedido.find(
+                item =>
+                    item.id_pedido
+            );
+
+        if(pedidoExistente){
+
+            idPedidoParaAbono =
+                pedidoExistente.id_pedido;
+
+        }
+
+    }
+
+
+    if(!idPedidoParaAbono){
+
+        throw new Error(
+            'No se encontró un pedido para registrar el abono'
+        );
+
+    }
+
+
+    const respuestaAbono =
+        await fetch(
+            '/add-payment',
+            {
+                method:'POST',
+
+                headers:{
+                    'Content-Type':
+                        'application/json'
+                },
+
+                body:
+                    JSON.stringify({
+
+                        id_pedido:
+                            idPedidoParaAbono,
+
+                        monto_abono:
+                            abonoPedidoNuevo,
+
+                        metodo_pago:
+                            metodoAbonoPedido
+
+                    })
+            }
+        );
+
+
+    let dataAbono = null;
+
+
+    try{
+
+        dataAbono =
+            await respuestaAbono.json();
+
+    }catch(error){
+
+        dataAbono = null;
+
+    }
+
+
+    if(!respuestaAbono.ok){
+
+        throw new Error(
+            dataAbono &&
+            dataAbono.mensaje
+                ? dataAbono.mensaje
+                : 'No se pudo guardar el abono'
+        );
+
+    }
+
+
+    // El abono nuevo ya quedó guardado.
+    abonoPedidoGuardado +=
+        abonoPedidoNuevo;
+
+    abonoPedidoNuevo = 0;
+
+    abonoPedido =
+        abonoPedidoGuardado;
+}
             // ==================================================
             // 🔥 PEDIDO GUARDADO
             // ==================================================
@@ -4242,13 +4711,14 @@ for(
                 'Pedido guardado correctamente'
             );
 
+articulosPedido = [];
+articulosEliminados = [];
 
-            articulosPedido = [];
-            articulosEliminados = [];
+abonoPedido = 0;
+abonoPedidoGuardado = 0;
+abonoPedidoNuevo = 0;
 
-
-            renderizarDetallePedido();
-
+renderizarDetallePedido();
 
             // ==================================================
             // 🔥 LIMPIAR CLIENTE

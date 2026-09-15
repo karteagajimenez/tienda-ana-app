@@ -4335,23 +4335,103 @@ app.get(
 
                 }
 
+const idsPedidos =
+    pedidos.map(
+        pedido =>
+            pedido.id_pedido
+    );
 
-                return res.json({
 
-                    ok:true,
+if(idsPedidos.length === 0){
 
-                    existe:true,
+    return res.json({
 
-                    grupo_compra:
-                        grupoCompra,
+        ok:true,
 
-                    pais_origen:
-                        paisOrigen,
+        existe:true,
 
-                    pedidos:
-                        pedidos
+        grupo_compra:
+            grupoCompra,
 
-                });
+        pais_origen:
+            paisOrigen,
+
+        total_abonado:
+            0,
+
+        pedidos:
+            pedidos
+
+    });
+
+}
+
+
+conexion.query(
+    `
+        SELECT
+            IFNULL(
+                SUM(monto_abono),
+                0
+            ) AS total_abonado
+
+        FROM abonos
+
+        WHERE id_pedido IN (?)
+    `,
+    [
+        idsPedidos
+    ],
+    (
+        errorAbonos,
+        resultadosAbonos
+    ) => {
+
+        if(errorAbonos){
+
+            console.log(
+                '❌ Error cargando abonos de la factura:',
+                errorAbonos
+            );
+
+            return res.status(500).json({
+                ok:false,
+                mensaje:
+                    'No se pudieron cargar los abonos de la factura'
+            });
+
+        }
+
+
+        const totalAbonado =
+            Number(
+                resultadosAbonos[0]
+                    .total_abonado
+            ) || 0;
+
+
+        return res.json({
+
+            ok:true,
+
+            existe:true,
+
+            grupo_compra:
+                grupoCompra,
+
+            pais_origen:
+                paisOrigen,
+
+            total_abonado:
+                totalAbonado,
+
+            pedidos:
+                pedidos
+
+        });
+
+    }
+);
 
             });
 
@@ -5119,7 +5199,8 @@ app.post(
                             `
                                 SELECT
                                     id_pedido,
-                                    peso_gramos
+                                    peso_gramos,
+                                    total_precio
 
                                 FROM pedidos
 
@@ -5230,6 +5311,28 @@ app.post(
                                         pesoGeneral /
                                         1000
                                     ) * 6000;
+                                const subtotalProductos =
+    pedidosFactura.reduce(
+        (
+            acumulado,
+            pedido
+        ) => {
+
+            return acumulado +
+                (
+                    Number(
+                        pedido.total_precio
+                    ) || 0
+                );
+
+        },
+        0
+    );
+
+
+const totalFactura =
+    subtotalProductos +
+    envioGeneral;
 
 
                                 /* =================================================
@@ -5289,7 +5392,7 @@ app.post(
 
 
                                         const saldoPendiente =
-                                            envioGeneral -
+                                            totalFactura -
                                             totalAbonado;
 
 

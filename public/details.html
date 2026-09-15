@@ -1314,22 +1314,20 @@ let totalPeso =
 
            El precio del producto NO entra aquí.
         ================================================= */
-
 const totalFactura =
     subtotal +
     totalPeso;
 
 
 let saldo =
-    totalPeso -
+    totalFactura -
     totalAbonado;
 
-        if(saldo < 0){
+if(saldo < 0){
 
-            saldo = 0;
+    saldo = 0;
 
-        }
-
+}
 
 
         /* =================================================

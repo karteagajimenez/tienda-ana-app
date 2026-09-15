@@ -2623,18 +2623,24 @@ let html = "";
             }
 
 
+const subtotalProductos =
+    grupo.pedidos.reduce(
+        (total, pedido) => {
 
-            let saldo =
-                grupo.envio_total -
-                grupo.total_abonado;
+            return total +
+                (Number(pedido.total_precio) || 0);
 
+        },
+        0
+    );
 
-            if(saldo < 0){
+const totalFactura =
+    subtotalProductos +
+    grupo.envio_total;
 
-                saldo = 0;
-
-            }
-
+let saldo =
+    totalFactura -
+    grupo.total_abonado;
 
 
             const claseSaldo =
@@ -4186,11 +4192,22 @@ if(!metodo){
     Ahora usamos directamente los totales
     generales de esta factura:
 */
-
 const envioGeneral =
     Number(
         grupo.envio_total
     ) || 0;
+
+
+const subtotalProductos =
+    grupo.pedidos.reduce(
+        (total, pedido) => {
+
+            return total +
+                (Number(pedido.total_precio) || 0);
+
+        },
+        0
+    );
 
 
 const abonadoGeneral =
@@ -4199,10 +4216,14 @@ const abonadoGeneral =
     ) || 0;
 
 
-const saldoPendiente =
-    envioGeneral -
-    abonadoGeneral;
+const totalFactura =
+    subtotalProductos +
+    envioGeneral;
 
+
+const saldoPendiente =
+    totalFactura -
+    abonadoGeneral;
 
 /* =====================================================
    VALIDAR SI YA ESTÁ PAGADA
