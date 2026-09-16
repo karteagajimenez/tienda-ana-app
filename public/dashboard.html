@@ -1811,6 +1811,43 @@ function toggleMenuLateral(){
     );
 
 }
+// ======================================================
+// 🔹 CERRAR MENÚ AL TOCAR FUERA
+// ======================================================
+
+document.addEventListener("click", (event) => {
+
+    const menu =
+        document.getElementById("menuLateral");
+
+    const botonMenu =
+        document.getElementById("btnMenuLateral");
+
+
+    // Si el menú no está abierto, no hacer nada
+    if (!menu.classList.contains("abierto")) {
+        return;
+    }
+
+
+    // Si tocó dentro del menú o en las 3 rayas,
+    // no cerrarlo desde aquí
+    if (
+        menu.contains(event.target) ||
+        botonMenu.contains(event.target)
+    ) {
+        return;
+    }
+
+
+    // Cerrarlo al tocar fuera
+    menu.classList.remove("abierto");
+
+    document.body.classList.remove(
+        "menu-abierto"
+    );
+
+});
 function abrirAgregarCliente(){
 
     document
