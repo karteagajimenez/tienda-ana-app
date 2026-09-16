@@ -1309,6 +1309,49 @@ botonMenuMovil.addEventListener(
 
     }
 );
+// ======================================================
+// 🔹 CERRAR MENÚ MÓVIL AL TOCAR FUERA
+// ======================================================
+
+document.addEventListener("click", (event) => {
+
+    const menuAbierto =
+        menuMovilOpciones.style.display === "block";
+
+
+    // Si el menú está cerrado, no hacer nada
+    if (!menuAbierto) {
+        return;
+    }
+
+
+    // Si tocó dentro del menú o en el botón ☰ / ✕,
+    // no cerrarlo desde aquí
+    if (
+        menuMovilOpciones.contains(event.target) ||
+        botonMenuMovil.contains(event.target)
+    ) {
+        return;
+    }
+
+
+    // Cerrar menú
+    menuMovilOpciones.style.display =
+        "none";
+
+
+    // Volver a mostrar las tres rayas
+    botonMenuMovil.innerText =
+        "☰";
+
+
+    botonMenuMovil.setAttribute(
+        "aria-label",
+        "Abrir menú"
+    );
+
+});
+
     function mostrarMensaje(texto){
 
     const mensaje =
