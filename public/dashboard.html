@@ -695,6 +695,70 @@ body.menu-abierto {
         padding:10px 6px;
     }
 }
+/* =========================================================
+   ACCIONES NUEVO / EDITAR ARTÍCULO
+========================================================= */
+
+.acciones-articulo-pedido{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:22px;
+    margin-bottom:12px;
+}
+
+.accion-articulo-pedido{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+
+    background:transparent;
+    border:none;
+    padding:3px 0;
+    min-width:0;
+
+    color:#c48b9f;
+    font-size:15px;
+    font-weight:600;
+
+    cursor:pointer;
+}
+
+.accion-articulo-pedido:hover{
+    background:transparent;
+    color:#b3748a;
+}
+
+/* CÍRCULO REAL CON EL + CENTRADO ADENTRO */
+.circulo-mas-articulo{
+    width:17px;
+    height:17px;
+    min-width:17px;
+
+    border-radius:50%;
+    background:#e57373;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    color:white;
+    font-size:12px;
+    font-weight:bold;
+    line-height:17px;
+
+    box-sizing:border-box;
+    padding:0;
+}
+
+.icono-editar-articulo{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:15px;
+    line-height:1;
+}
 </style>
 </head>
 
@@ -1507,37 +1571,24 @@ body.menu-abierto {
 <!-- =====================================================
      🔹 NUEVO / EDITAR ARTÍCULO DESDE EL PEDIDO
 ===================================================== -->
-
-<div
-    style="
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        gap:10px;
-        margin-bottom:10px;
-    "
->
+<div class="acciones-articulo-pedido">
 
     <button
         type="button"
         id="btnNuevoArticuloDesdePedido"
-        style="
-            flex:1;
-            min-width:0;
-        "
+        class="accion-articulo-pedido"
     >
-        ＋ Nuevo artículo
+        <span class="circulo-mas-articulo">+</span>
+        <span>Nuevo artículo</span>
     </button>
 
     <button
         type="button"
         id="btnEditarArticuloPedido"
-        style="
-            flex:1;
-            min-width:0;
-        "
+        class="accion-articulo-pedido"
     >
-        ✏️ Editar artículo
+        <span class="icono-editar-articulo">✎</span>
+        <span>Editar artículo</span>
     </button>
 
 </div>
