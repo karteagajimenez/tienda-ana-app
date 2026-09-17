@@ -895,12 +895,11 @@ td button {
     </option>
 
 </select>
-
 <button
-    class="ok"
-    onclick="confirmar()"
+    class="cancel"
+    onclick="cerrarModal()"
 >
-    Aceptar
+    Cancelar
 </button>
 
 <button
@@ -913,10 +912,10 @@ td button {
 </button>
 
 <button
-    class="cancel"
-    onclick="cerrarModal()"
+    class="ok"
+    onclick="confirmar()"
 >
-    Cancelar
+    Aceptar
 </button>
 
 </div>
@@ -988,19 +987,19 @@ td button {
 
         <br>
 
-        <button
-            class="ok"
-            onclick="guardarEdicionAbono()"
-        >
-            Guardar
-        </button>
+   <button
+    class="cancel"
+    onclick="cerrarEditarAbono()"
+>
+    Cancelar
+</button>
 
-        <button
-            class="cancel"
-            onclick="cerrarEditarAbono()"
-        >
-            Cancelar
-        </button>
+<button
+    class="ok"
+    onclick="guardarEdicionAbono()"
+>
+    Guardar
+</button>
 
     </div>
 
@@ -1077,24 +1076,24 @@ td button {
 >
 
         <br>
+<button
+    class="cancel"
+    onclick="cerrarEditarPeso()"
+>
+    Cancelar
+</button>
 
-        <button
-            class="ok"
-            onclick="guardarEdicionPeso()"
-        >
-            Guardar
-        </button>
-
-        <button
-            class="cancel"
-            onclick="cerrarEditarPeso()"
-        >
-            Cancelar
-        </button>
+<button
+    class="ok"
+    onclick="guardarEdicionPeso()"
+>
+    Guardar
+</button>
 
     </div>
 
 </div>
+
 <!-- MODAL CONFIRMAR ELIMINACIÓN -->
 
 <div class="modal" id="modalConfirmarEliminar">
@@ -1112,20 +1111,19 @@ td button {
         </p>
 
         <br>
+<button
+    class="cancel"
+    onclick="cancelarEliminarPedido()"
+>
+    Cancelar
+</button>
 
-        <button
-            class="eliminar"
-            onclick="eliminarPedidoConfirmado()"
-        >
-            Eliminar
-        </button>
-
-        <button
-            class="cancel"
-            onclick="cancelarEliminarPedido()"
-        >
-            Cancelar
-        </button>
+<button
+    class="eliminar"
+    onclick="eliminarPedidoConfirmado()"
+>
+    Eliminar
+</button>
 
     </div>
 
@@ -1234,20 +1232,19 @@ td button {
 >
   
         <br>  
-  
-        <button  
-            class="ok"  
-            onclick="guardarEdicionPedido()"  
-        >  
-            Guardar  
-        </button>  
-  
-        <button  
-            class="cancel"  
-            onclick="cerrarEditar()"  
-        >  
-            Cancelar  
-        </button>  
+  <button
+    class="cancel"
+    onclick="cerrarEditar()"
+>
+    Cancelar
+</button>
+
+<button
+    class="ok"
+    onclick="guardarEdicionPedido()"
+>
+    Guardar
+</button>
   
     </div>  
   

@@ -912,21 +912,20 @@ body.menu-abierto {
 
             </div>
 <div class="modal-cliente-botones-superiores">
+<button 
+    type="button" 
+    onclick="cerrarAgregarCliente()" 
+> 
+    Cancelar 
+</button>
 
-    <button
-        type="button"
-        class="btn-guardar-cliente"
-        onclick="guardarClienteManual()"
-    >
-        Guardar cliente
-    </button>
-
-    <button
-        type="button"
-        onclick="cerrarAgregarCliente()"
-    >
-        Cancelar
-    </button>
+<button 
+    type="button" 
+    class="btn-guardar-cliente" 
+    onclick="guardarClienteManual()" 
+> 
+    Guardar cliente 
+</button>
 
 </div>
     </div>
@@ -1119,29 +1118,28 @@ body.menu-abierto {
         <!-- BOTONES -->
 
         <div class="modal-cliente-botones-superiores">
+<button
+    type="button"
+    onclick="cerrarEditarCliente()"
+>
+    Cancelar
+</button>
 
-            <button
-                type="button"
-                class="btn-actualizar-cliente"
-                onclick="actualizarClienteManual()"
-            >
-                Actualizar cliente
-            </button>
-            
-            <button
-             type="button"
-              class="btn-eliminar-cliente"
-              onclick="abrirConfirmacionEliminarCliente()"
-            >
-              Eliminar cliente
-            </button>
+<button
+    type="button"
+    class="btn-eliminar-cliente"
+    onclick="abrirConfirmacionEliminarCliente()"
+>
+    Eliminar cliente
+</button>
 
-            <button
-                type="button"
-                onclick="cerrarEditarCliente()"
-            >
-                Cancelar
-            </button>
+<button
+    type="button"
+    class="btn-actualizar-cliente"
+    onclick="actualizarClienteManual()"
+>
+    Actualizar cliente
+</button>
 
                 </div>
 
@@ -1180,28 +1178,26 @@ body.menu-abierto {
             sus pedidos, facturas y abonos.
             Esta acción no se puede deshacer.
         </p>
+<div class="botones-confirmar-eliminar">
 
-        <div class="botones-confirmar-eliminar">
+    <button
+        type="button"
+        class="btn-cancelar-eliminar"
+        onclick="cerrarConfirmacionEliminarCliente()"
+    >
+        Cancelar
+    </button>
 
-            <button
-                type="button"
-                id="btnConfirmarEliminarCliente"
-                class="btn-confirmar-eliminar"
-                onclick="eliminarClienteManual()"
-            >
-                Sí, eliminar
-            </button>
+    <button
+        type="button"
+        id="btnConfirmarEliminarCliente"
+        class="btn-confirmar-eliminar"
+        onclick="eliminarClienteManual()"
+    >
+        Sí, eliminar
+    </button>
 
-            <button
-                type="button"
-                class="btn-cancelar-eliminar"
-                onclick="cerrarConfirmacionEliminarCliente()"
-            >
-                Cancelar
-            </button>
-
-        </div>
-
+</div>
     </div>
 
 </div>
@@ -1452,19 +1448,19 @@ body.menu-abierto {
     class="botones"
     style="margin-top:25px;"
 >
-        <button
-            type="submit"
-            id="btnGuardarPedido"
-        >
-            Guardar pedido
-        </button>
+ <button
+    type="button"
+    id="btnCancelarPedido"
+>
+    Cancelar
+</button>
 
-        <button
-            type="button"
-            id="btnCancelarPedido"
-        >
-            Cancelar
-        </button>
+<button
+    type="submit"
+    id="btnGuardarPedido"
+>
+    Guardar pedido
+</button>
 
     </div>
 
@@ -1591,20 +1587,19 @@ body.menu-abierto {
             class="botones"
             style="margin-top:20px;"
         >
+<button
+    type="button"
+    id="btnCerrarArticulo"
+>
+    Cancelar
+</button>
 
-            <button
-                type="button"
-                id="btnAgregarArticuloPedido"
-            >
-                Agregar
-            </button>
-
-            <button
-                type="button"
-                id="btnCerrarArticulo"
-            >
-                Cancelar
-            </button>
+<button
+    type="button"
+    id="btnAgregarArticuloPedido"
+>
+    Agregar
+</button>
 
         </div>
 
@@ -2125,19 +2120,19 @@ body.menu-abierto {
             style="margin-top:20px;"
         >
 
-            <button
-                type="button"
-                id="btnAceptarAbonoPedido"
-            >
-                Aceptar
-            </button>
+          <button
+    type="button"
+    id="btnCancelarAbonoPedido"
+>
+    Cancelar
+</button>
 
-            <button
-                type="button"
-                id="btnCancelarAbonoPedido"
-            >
-                Cancelar
-            </button>
+<button
+    type="button"
+    id="btnAceptarAbonoPedido"
+>
+    Aceptar
+</button>
 
         </div>
 
