@@ -4214,7 +4214,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
                         grupo_compra,
                         archivado
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, 0)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, 0)
                 `, [
                     idUsuario,
                     idArticulo,
