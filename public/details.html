@@ -1310,6 +1310,15 @@ let totalPeso =
                                   `
                                 : ""
                         }
+                     ${
+    pedido.nota
+        ? `
+                <div class="detalle-articulo">
+                    ${pedido.nota}
+                </div>
+          `
+        : ""
+}
 
                     </td>
 

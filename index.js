@@ -3179,6 +3179,7 @@ app.post(
 
     }
 );
+
 // 🔹 EDITAR PEDIDO
 app.post(
     '/update-order',
@@ -3814,6 +3815,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
         id_articulo,
         articulo,
         descripcion,
+        nota,
         cantidad,
         precio_unidad,
         estado,
@@ -3848,6 +3850,8 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
     const descripcionLimpia =
         String(descripcion || '').trim();
+    const notaLimpia =
+     String(nota || '').trim();
 
 
     // ======================================================
@@ -4200,6 +4204,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
                         id_articulo,
                         articulo,
                         descripcion,
+                        nota,
                         cantidad,
                         precio_unidad,
                         peso_gramos,
@@ -4215,6 +4220,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
                     idArticulo,
                     articuloLimpio,
                     descripcionLimpia || null,
+                    notaLimpia || null,
                     cantidadNumero,
                     precioUnidad,
                     totalPrecio,
@@ -4262,6 +4268,147 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
 });
 
+// ======================================================
+// 🔹 ACTUALIZAR ARTÍCULO DE UN PEDIDO / FACTURA
+// ======================================================
+
+app.post('/update-order-detail', protegerAdmin, (req, res) => {
+
+    console.log(
+    '🟣 UPDATE ORDER RECIBIDO:',
+    req.body
+   );
+
+
+    const {
+        id_pedido,
+        articulo,
+        descripcion,
+        nota,
+        cantidad,
+        precio_unidad
+    } = req.body;
+
+
+    const idPedido =
+        Number(id_pedido);
+
+    const cantidadNumero =
+        Number(cantidad);
+
+    const precioUnidad =
+        Number(precio_unidad);
+
+
+    if(
+        !Number.isInteger(idPedido) ||
+        idPedido <= 0
+    ){
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'Pedido inválido'
+        });
+    }
+
+
+    if(
+        !Number.isFinite(cantidadNumero) ||
+        cantidadNumero <= 0
+    ){
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'Cantidad inválida'
+        });
+    }
+
+
+    if(
+        !Number.isFinite(precioUnidad) ||
+        precioUnidad < 0
+    ){
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'Precio inválido'
+        });
+    }
+
+
+    const articuloLimpio =
+        String(articulo || '').trim();
+
+    const descripcionLimpia =
+        String(descripcion || '').trim();
+
+    const notaLimpia =
+        String(nota || '').trim();
+
+
+    if(!articuloLimpio){
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'El artículo es obligatorio'
+        });
+    }
+
+
+    const totalPrecio =
+        cantidadNumero * precioUnidad;
+
+
+    conexion.query(`
+        UPDATE pedidos
+        SET
+            articulo = ?,
+            descripcion = ?,
+            nota = ?,
+            cantidad = ?,
+            precio_unidad = ?,
+            total_precio = ?
+        WHERE id_pedido = ?
+    `, [
+        articuloLimpio,
+        descripcionLimpia || null,
+        notaLimpia || null,
+        cantidadNumero,
+        precioUnidad,
+        totalPrecio,
+        idPedido
+    ], (error, resultado) => {
+
+        if(error){
+
+            console.log(
+                '❌ Error actualizando pedido:',
+                error
+            );
+
+            return res.status(500).json({
+                ok: false,
+                mensaje:
+                    'No se pudo actualizar el artículo'
+            });
+        }
+
+
+        if(resultado.affectedRows === 0){
+
+            return res.status(404).json({
+                ok: false,
+                mensaje:
+                    'No se encontró el artículo del pedido'
+            });
+        }
+
+
+        return res.json({
+            ok: true,
+            mensaje:
+                'Artículo actualizado correctamente'
+        });
+
+    });
+
+});
 
 
 // 🔹 CALCULAR ENVÍO
@@ -4415,6 +4562,7 @@ app.get(
                     id_articulo,
                     articulo,
                     descripcion,
+                    nota,
                     cantidad,
                     precio_unidad,
                     total_precio,

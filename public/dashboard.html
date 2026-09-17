@@ -1498,15 +1498,53 @@ body.menu-abierto {
             box-shadow:0 10px 35px rgba(0,0,0,0.25);
         "
     >
+<h3
+    style="
+        text-align:center;
+        margin-top:0;
+    "
+>
+    Agregar artículo
+</h3>
 
-        <h3
-            style="
-                text-align:center;
-                margin-top:0;
-            "
-        >
-            Agregar artículo
-        </h3>
+
+<!-- =====================================================
+     🔹 NUEVO / EDITAR ARTÍCULO DESDE EL PEDIDO
+===================================================== -->
+
+<div
+    style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
+        margin-bottom:10px;
+    "
+>
+
+    <button
+        type="button"
+        id="btnNuevoArticuloDesdePedido"
+        style="
+            flex:1;
+            min-width:0;
+        "
+    >
+        ＋ Nuevo artículo
+    </button>
+
+    <button
+        type="button"
+        id="btnEditarArticuloPedido"
+        style="
+            flex:1;
+            min-width:0;
+        "
+    >
+        ✏️ Editar artículo
+    </button>
+
+</div>
 
 
         <!-- 🔥 BUSCADOR ARTÍCULO -->
@@ -1566,6 +1604,466 @@ body.menu-abierto {
                 id="btnCerrarArticulo"
             >
                 Cancelar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- =====================================================
+     🔹 MODAL NUEVO ARTÍCULO DESDE CREAR PEDIDO
+===================================================== -->
+
+<div
+    id="modalNuevoArticuloPedido"
+    style="
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.45);
+        z-index:10000;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        box-sizing:border-box;
+    "
+>
+
+    <div
+        style="
+            background:white;
+            width:100%;
+            max-width:520px;
+            border-radius:12px;
+            padding:25px;
+            box-shadow:0 10px 35px rgba(0,0,0,0.25);
+            box-sizing:border-box;
+        "
+    >
+
+        <h3
+            style="
+                text-align:center;
+                color:#c48b9f;
+                margin-top:0;
+                margin-bottom:25px;
+                font-size:24px;
+            "
+        >
+            Nuevo artículo
+        </h3>
+
+
+        <!-- NOMBRE DEL ARTÍCULO -->
+
+        <label
+            for="nuevoArticuloNombre"
+            style="
+                display:block;
+                font-weight:bold;
+                color:#555;
+                margin-bottom:7px;
+            "
+        >
+            Nombre del artículo
+        </label>
+
+        <input
+            type="text"
+            id="nuevoArticuloNombre"
+            placeholder="Ejemplo: Plancha Baby Liss PRO"
+            autocomplete="off"
+        >
+
+
+        <!-- TASA -->
+
+        <label
+            for="nuevoArticuloTasa"
+            style="
+                display:block;
+                font-weight:bold;
+                color:#555;
+                margin-top:12px;
+                margin-bottom:7px;
+            "
+        >
+            Tasa
+        </label>
+
+        <input
+            type="number"
+            id="nuevoArticuloTasa"
+            placeholder="Precio del artículo"
+            min="0"
+            step="0.01"
+        >
+
+
+        <!-- DESCRIPCIÓN -->
+
+        <label
+            for="nuevoArticuloDescripcion"
+            style="
+                display:block;
+                font-weight:bold;
+                color:#555;
+                margin-top:12px;
+                margin-bottom:7px;
+            "
+        >
+            Descripción
+        </label>
+
+        <textarea
+            id="nuevoArticuloDescripcion"
+            placeholder="Ejemplo: 1 pulgada / 25 mm"
+            style="
+                width:100%;
+                min-height:120px;
+                padding:12px;
+                border:1px solid #ccc;
+                border-radius:6px;
+                box-sizing:border-box;
+                font-family:inherit;
+                font-size:14px;
+                resize:vertical;
+            "
+        ></textarea>
+
+
+        <!-- BOTONES -->
+
+        <div
+            style="
+                display:flex;
+                gap:10px;
+                margin-top:25px;
+            "
+        >
+
+            <!-- CANCELAR IZQUIERDA -->
+
+            <button
+                type="button"
+                id="btnCancelarNuevoArticuloPedido"
+                style="
+                    flex:1;
+                    min-width:0;
+                "
+            >
+                Cancelar
+            </button>
+
+
+            <!-- GUARDAR DERECHA -->
+
+            <button
+                type="button"
+                id="btnGuardarNuevoArticuloPedido"
+                style="
+                    flex:1;
+                    min-width:0;
+                "
+            >
+                Guardar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- =====================================================
+     🔹 MODAL SELECCIONAR ARTÍCULO PARA EDITAR
+===================================================== -->
+
+<div
+    id="modalSeleccionarArticuloEditar"
+    style="
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.45);
+        z-index:10000;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        box-sizing:border-box;
+    "
+>
+
+    <div
+        style="
+            background:white;
+            width:100%;
+            max-width:450px;
+            border-radius:12px;
+            padding:25px;
+            box-shadow:0 10px 35px rgba(0,0,0,0.25);
+            box-sizing:border-box;
+        "
+    >
+
+        <h3
+            style="
+                text-align:center;
+                color:#c48b9f;
+                margin-top:0;
+                margin-bottom:20px;
+                font-size:24px;
+            "
+        >
+            Editar artículo
+        </h3>
+
+
+        <!-- LISTA DE ARTÍCULOS DEL PEDIDO -->
+
+        <div
+            id="listaArticulosPedidoEditar"
+            style="
+                max-height:320px;
+                overflow-y:auto;
+                border:1px solid #e2c3ce;
+                border-radius:8px;
+                background:white;
+            "
+        ></div>
+
+
+        <!-- CANCELAR -->
+
+        <div
+            style="
+                display:flex;
+                justify-content:flex-start;
+                margin-top:20px;
+            "
+        >
+
+            <button
+                type="button"
+                id="btnCancelarSeleccionArticuloEditar"
+                style="
+                    width:100%;
+                "
+            >
+                Cancelar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- =====================================================
+     🔹 MODAL EDITAR ARTÍCULO DEL PEDIDO
+===================================================== -->
+
+<div
+    id="modalEditarArticuloPedido"
+    style="
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.45);
+        z-index:10001;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        box-sizing:border-box;
+    "
+>
+
+    <div
+        style="
+            background:white;
+            width:100%;
+            max-width:520px;
+            max-height:90vh;
+            overflow-y:auto;
+            border-radius:12px;
+            padding:25px;
+            box-shadow:0 10px 35px rgba(0,0,0,0.25);
+            box-sizing:border-box;
+        "
+    >
+
+        <h3
+            style="
+                text-align:center;
+                color:#c48b9f;
+                margin-top:0;
+                margin-bottom:25px;
+                font-size:24px;
+            "
+        >
+            Editar artículo
+        </h3>
+
+
+        <!-- NOMBRE -->
+
+        <label
+            for="editarPedidoNombre"
+            style="
+                display:block;
+                font-weight:bold;
+                color:#555;
+                margin-bottom:7px;
+            "
+        >
+            Nombre del artículo
+        </label>
+
+        <input
+            type="text"
+            id="editarPedidoNombre"
+            autocomplete="off"
+        >
+
+
+        <!-- CANTIDAD -->
+
+        <label
+            for="editarPedidoCantidad"
+            style="
+                display:block;
+                font-weight:bold;
+                color:#555;
+                margin-top:12px;
+                margin-bottom:7px;
+            "
+        >
+            Cantidad
+        </label>
+
+        <input
+            type="number"
+            id="editarPedidoCantidad"
+            min="1"
+            step="1"
+        >
+
+
+        <!-- PRECIO -->
+
+        <label
+            for="editarPedidoPrecio"
+            style="
+                display:block;
+                font-weight:bold;
+                color:#555;
+                margin-top:12px;
+                margin-bottom:7px;
+            "
+        >
+            Precio
+        </label>
+
+        <input
+            type="number"
+            id="editarPedidoPrecio"
+            min="0"
+            step="0.01"
+        >
+
+
+        <!-- DESCRIPCIÓN -->
+
+        <label
+            for="editarPedidoDescripcion"
+            style="
+                display:block;
+                font-weight:bold;
+                color:#555;
+                margin-top:12px;
+                margin-bottom:7px;
+            "
+        >
+            Descripción
+        </label>
+
+        <textarea
+            id="editarPedidoDescripcion"
+            style="
+                width:100%;
+                min-height:90px;
+                padding:12px;
+                border:1px solid #ccc;
+                border-radius:6px;
+                box-sizing:border-box;
+                font-family:inherit;
+                font-size:14px;
+                resize:vertical;
+            "
+        ></textarea>
+
+
+        <!-- NOTA PARTICULAR DE ESTA FACTURA -->
+
+        <label
+            for="editarPedidoNota"
+            style="
+                display:block;
+                font-weight:bold;
+                color:#555;
+                margin-top:18px;
+                margin-bottom:7px;
+            "
+        >
+            Nota
+        </label>
+
+        <textarea
+            id="editarPedidoNota"
+            placeholder="Ejemplo: Color azul"
+            style="
+                width:100%;
+                min-height:80px;
+                padding:12px;
+                border:1px solid #ccc;
+                border-radius:6px;
+                box-sizing:border-box;
+                font-family:inherit;
+                font-size:14px;
+                resize:vertical;
+            "
+        ></textarea>
+
+
+        <!-- BOTONES -->
+
+        <div
+            style="
+                display:flex;
+                gap:10px;
+                margin-top:25px;
+            "
+        >
+
+            <button
+                type="button"
+                id="btnCancelarEditarArticuloPedido"
+                style="
+                    flex:1;
+                    min-width:0;
+                "
+            >
+                Cancelar
+            </button>
+
+            <button
+                type="button"
+                id="btnGuardarEditarArticuloPedido"
+                style="
+                    flex:1;
+                    min-width:0;
+                "
+            >
+                Guardar
             </button>
 
         </div>
@@ -1653,6 +2151,697 @@ let clientes = [];
 let articulos = [];
 let articulosPedido = [];
 let articulosEliminados = [];
+
+// ======================================================
+// 🔹 NUEVO ARTÍCULO DESDE CREAR PEDIDO
+// ======================================================
+
+const btnNuevoArticuloDesdePedido =
+    document.getElementById(
+        "btnNuevoArticuloDesdePedido"
+    );
+
+const modalNuevoArticuloPedido =
+    document.getElementById(
+        "modalNuevoArticuloPedido"
+    );
+
+const btnCancelarNuevoArticuloPedido =
+    document.getElementById(
+        "btnCancelarNuevoArticuloPedido"
+    );
+
+const btnGuardarNuevoArticuloPedido =
+    document.getElementById(
+        "btnGuardarNuevoArticuloPedido"
+    );
+
+
+// ABRIR NUEVO ARTÍCULO
+
+btnNuevoArticuloDesdePedido.addEventListener(
+    "click",
+    () => {
+
+        // Ocultar modal Agregar artículo
+        modalAgregarArticulo.style.display =
+            "none";
+
+        // Mostrar modal Nuevo artículo
+        modalNuevoArticuloPedido.style.display =
+            "flex";
+
+        setTimeout(() => {
+
+            document.getElementById(
+                "nuevoArticuloNombre"
+            ).focus();
+
+        }, 100);
+
+    }
+);
+
+
+// CANCELAR NUEVO ARTÍCULO
+
+btnCancelarNuevoArticuloPedido.addEventListener(
+    "click",
+    () => {
+
+        // Cerrar Nuevo artículo
+        modalNuevoArticuloPedido.style.display =
+            "none";
+
+        // Volver al modal Agregar artículo
+        modalAgregarArticulo.style.display =
+            "flex";
+
+    }
+);
+// ======================================================
+// 🔹 GUARDAR NUEVO ARTÍCULO DESDE CREAR PEDIDO
+// ======================================================
+
+btnGuardarNuevoArticuloPedido.addEventListener(
+    "click",
+    async () => {
+
+        const nombre =
+            document.getElementById(
+                "nuevoArticuloNombre"
+            ).value.trim();
+
+        const tasa =
+            document.getElementById(
+                "nuevoArticuloTasa"
+            ).value;
+
+        const descripcion =
+            document.getElementById(
+                "nuevoArticuloDescripcion"
+            ).value.trim();
+
+
+        // VALIDAR NOMBRE
+
+        if (!nombre) {
+
+            mostrarMensaje(
+                "Ingrese el nombre del artículo",
+                "error"
+            );
+
+            document.getElementById(
+                "nuevoArticuloNombre"
+            ).focus();
+
+            return;
+        }
+
+
+        // VALIDAR TASA
+
+        if (
+            tasa === "" ||
+            Number(tasa) < 0
+        ) {
+
+            mostrarMensaje(
+                "Ingrese una tasa válida",
+                "error"
+            );
+
+            document.getElementById(
+                "nuevoArticuloTasa"
+            ).focus();
+
+            return;
+        }
+
+
+        try {
+
+            btnGuardarNuevoArticuloPedido.disabled =
+                true;
+
+            btnGuardarNuevoArticuloPedido.innerText =
+                "Guardando...";
+
+
+            const respuesta =
+                await fetch(
+                    "/create-article",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            nombre,
+                            tasa,
+                            descripcion
+                        })
+                    }
+                );
+
+
+            const datos =
+                await respuesta.json();
+
+
+            if (!respuesta.ok) {
+
+                throw new Error(
+                    datos.mensaje ||
+                    "No se pudo guardar el artículo"
+                );
+            }
+
+
+            // LIMPIAR CAMPOS
+
+            document.getElementById(
+                "nuevoArticuloNombre"
+            ).value = "";
+
+            document.getElementById(
+                "nuevoArticuloTasa"
+            ).value = "";
+
+            document.getElementById(
+                "nuevoArticuloDescripcion"
+            ).value = "";
+
+
+            // VOLVER A CARGAR LOS ARTÍCULOS
+            // PARA QUE APAREZCA EL NUEVO
+
+            const respuestaArticulos =
+                await fetch("/articulos");
+
+            articulos =
+                await respuestaArticulos.json();
+
+
+            // CERRAR NUEVO ARTÍCULO
+
+            modalNuevoArticuloPedido.style.display =
+                "none";
+
+
+            // REGRESAR A AGREGAR ARTÍCULO
+
+            modalAgregarArticulo.style.display =
+                "flex";
+
+
+            // LIMPIAR BUSCADOR
+
+            document.getElementById(
+                "articulo"
+            ).value = "";
+
+            document.getElementById(
+                "listaArticulos"
+            ).classList.remove(
+                "mostrar"
+            );
+
+
+            mostrarMensaje(
+                "Artículo agregado correctamente"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Error guardando artículo:",
+                error
+            );
+
+            mostrarMensaje(
+                error.message ||
+                "No se pudo guardar el artículo",
+                "error"
+            );
+
+
+        } finally {
+
+            btnGuardarNuevoArticuloPedido.disabled =
+                false;
+
+            btnGuardarNuevoArticuloPedido.innerText =
+                "Guardar";
+
+        }
+
+    }
+);
+// ======================================================
+// 🔹 SELECCIONAR ARTÍCULO DEL PEDIDO PARA EDITAR
+// ======================================================
+
+const btnEditarArticuloPedido =
+    document.getElementById(
+        "btnEditarArticuloPedido"
+    );
+
+const modalSeleccionarArticuloEditar =
+    document.getElementById(
+        "modalSeleccionarArticuloEditar"
+    );
+
+const listaArticulosPedidoEditar =
+    document.getElementById(
+        "listaArticulosPedidoEditar"
+    );
+
+const btnCancelarSeleccionArticuloEditar =
+    document.getElementById(
+        "btnCancelarSeleccionArticuloEditar"
+    );
+
+
+// ======================================================
+// 🔹 MOSTRAR ARTÍCULOS QUE YA ESTÁN EN ESTE PEDIDO
+// ======================================================
+
+function mostrarArticulosPedidoParaEditar(){
+
+    listaArticulosPedidoEditar.innerHTML =
+        "";
+
+
+    // NO HAY ARTÍCULOS AÑADIDOS
+
+    if(articulosPedido.length === 0){
+
+        listaArticulosPedidoEditar.innerHTML = `
+            <div
+                style="
+                    padding:18px;
+                    text-align:center;
+                    color:#888;
+                "
+            >
+                No hay artículos añadidos al pedido.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    // MOSTRAR ÚNICAMENTE LOS ARTÍCULOS
+    // DE ESTE PEDIDO
+
+    articulosPedido.forEach(
+        (item, indice) => {
+
+            const opcion =
+                document.createElement("div");
+
+            opcion.style.padding =
+                "12px 14px";
+
+            opcion.style.cursor =
+                "pointer";
+
+            opcion.style.borderBottom =
+                "1px solid #f3e8ec";
+
+
+            const nombre =
+                item.nombre ||
+                item.articulo ||
+                "Artículo";
+
+
+            const descripcion =
+                item.descripcion || "";
+
+
+            opcion.innerHTML = `
+
+                <div
+                    style="
+                        font-weight:bold;
+                        color:#444;
+                    "
+                >
+                    ${nombre}
+                </div>
+
+                ${
+                    descripcion
+                        ? `
+                            <div
+                                style="
+                                    margin-top:4px;
+                                    font-size:12px;
+                                    color:#888;
+                                "
+                            >
+                                ${descripcion}
+                            </div>
+                        `
+                        : ""
+                }
+
+            `;
+
+
+            // MÁS ADELANTE AQUÍ ABRIREMOS
+            // EL FORMULARIO DE EDICIÓN
+opcion.addEventListener(
+    "click",
+    () => {
+
+        abrirFormularioEditarArticuloPedido(
+            indice
+        );
+
+    }
+);
+
+
+            listaArticulosPedidoEditar.appendChild(
+                opcion
+            );
+
+        }
+    );
+
+}
+// ======================================================
+// 🔹 FORMULARIO EDITAR ARTÍCULO DEL PEDIDO
+// ======================================================
+
+let indiceArticuloPedidoEditando = null;
+
+
+const modalEditarArticuloPedido =
+    document.getElementById(
+        "modalEditarArticuloPedido"
+    );
+
+const btnCancelarEditarArticuloPedido =
+    document.getElementById(
+        "btnCancelarEditarArticuloPedido"
+    );
+
+const btnGuardarEditarArticuloPedido =
+    document.getElementById(
+        "btnGuardarEditarArticuloPedido"
+    );
+
+
+// ======================================================
+// 🔹 ABRIR ARTÍCULO Y CARGAR SUS DATOS
+// ======================================================
+
+function abrirFormularioEditarArticuloPedido(
+    indice
+){
+
+    const item =
+        articulosPedido[indice];
+
+
+    if(!item){
+        return;
+    }
+
+
+    indiceArticuloPedidoEditando =
+        indice;
+
+
+    document.getElementById(
+        "editarPedidoNombre"
+    ).value =
+        item.nombre ||
+        item.articulo ||
+        "";
+
+
+    document.getElementById(
+        "editarPedidoCantidad"
+    ).value =
+        item.cantidad || 1;
+
+
+    document.getElementById(
+        "editarPedidoPrecio"
+    ).value =
+        item.precio_unidad ??
+        item.precio ??
+        0;
+
+
+    document.getElementById(
+        "editarPedidoDescripcion"
+    ).value =
+        item.descripcion || "";
+
+
+    document.getElementById(
+        "editarPedidoNota"
+    ).value =
+        item.nota || "";
+
+
+    // Ocultar lista de artículos
+
+    modalSeleccionarArticuloEditar.style.display =
+        "none";
+
+
+    // Mostrar formulario
+
+    modalEditarArticuloPedido.style.display =
+        "flex";
+
+}
+// ======================================================
+// 🔹 CANCELAR EDICIÓN Y VOLVER A LA LISTA
+// ======================================================
+
+btnCancelarEditarArticuloPedido.addEventListener(
+    "click",
+    () => {
+
+        modalEditarArticuloPedido.style.display =
+            "none";
+
+        modalSeleccionarArticuloEditar.style.display =
+            "flex";
+
+        indiceArticuloPedidoEditando =
+            null;
+
+    }
+);
+// ======================================================
+// 🔹 GUARDAR EDICIÓN DEL ARTÍCULO EN ESTE PEDIDO
+// ======================================================
+
+btnGuardarEditarArticuloPedido.addEventListener(
+    "click",
+    () => {
+
+        // Verificar que haya un artículo seleccionado
+        if (
+            indiceArticuloPedidoEditando === null ||
+            !articulosPedido[indiceArticuloPedidoEditando]
+        ) {
+            return;
+        }
+
+
+        // Obtener los nuevos valores
+
+        const nombre =
+            document.getElementById(
+                "editarPedidoNombre"
+            ).value.trim();
+
+        const cantidad =
+            Math.max(
+                Number(
+                    document.getElementById(
+                        "editarPedidoCantidad"
+                    ).value
+                ) || 1,
+                1
+            );
+
+        const precio =
+            Number(
+                document.getElementById(
+                    "editarPedidoPrecio"
+                ).value
+            );
+
+        const descripcion =
+            document.getElementById(
+                "editarPedidoDescripcion"
+            ).value.trim();
+
+        const nota =
+            document.getElementById(
+                "editarPedidoNota"
+            ).value.trim();
+
+
+        // VALIDAR NOMBRE
+
+        if (!nombre) {
+
+            mostrarMensaje(
+                "Ingrese el nombre del artículo",
+                "error"
+            );
+
+            document.getElementById(
+                "editarPedidoNombre"
+            ).focus();
+
+            return;
+        }
+
+
+        // VALIDAR PRECIO
+
+        if (
+            !Number.isFinite(precio) ||
+            precio < 0
+        ) {
+
+            mostrarMensaje(
+                "Ingrese un precio válido",
+                "error"
+            );
+
+            document.getElementById(
+                "editarPedidoPrecio"
+            ).focus();
+
+            return;
+        }
+
+
+        // Obtener artículo que estamos editando
+
+        const item =
+            articulosPedido[
+                indiceArticuloPedidoEditando
+            ];
+
+
+        // IMPORTANTE:
+        // Solo modificamos la copia dentro de esta factura.
+        // NO modificamos el catálogo general.
+
+        item.articulo =
+            nombre;
+
+        item.nombre =
+            nombre;
+
+        item.cantidad =
+            cantidad;
+
+        item.precio_unidad =
+            precio;
+
+        item.descripcion =
+            descripcion;
+
+        item.nota =
+            nota;
+
+        item.total =
+            precio * cantidad;
+
+            if(item.guardado === true){
+    item.editado = true;
+}
+
+
+        // Volver a dibujar el detalle del pedido
+
+        renderizarDetallePedido();
+
+
+        // Cerrar formulario de edición
+
+        modalEditarArticuloPedido.style.display =
+            "none";
+
+
+        // Volver a Agregar artículo
+
+        modalAgregarArticulo.style.display =
+            "flex";
+
+
+        // Ya no estamos editando ninguna línea
+
+        indiceArticuloPedidoEditando =
+            null;
+
+
+        mostrarMensaje(
+            "Artículo actualizado correctamente"
+        );
+
+    }
+);
+// ======================================================
+// 🔹 ABRIR EDITAR ARTÍCULO
+// ======================================================
+
+btnEditarArticuloPedido.addEventListener(
+    "click",
+    () => {
+
+        mostrarArticulosPedidoParaEditar();
+
+        // Ocultar Agregar artículo
+        modalAgregarArticulo.style.display =
+            "none";
+
+        // Mostrar lista para editar
+        modalSeleccionarArticuloEditar.style.display =
+            "flex";
+
+    }
+);
+
+
+// ======================================================
+// 🔹 CANCELAR Y VOLVER A AGREGAR ARTÍCULO
+// ======================================================
+
+btnCancelarSeleccionArticuloEditar.addEventListener(
+    "click",
+    () => {
+
+        modalSeleccionarArticuloEditar.style.display =
+            "none";
+
+        modalAgregarArticulo.style.display =
+            "flex";
+
+    }
+);
 // ======================================================
 // 🔥 ABONO INICIAL DEL PEDIDO
 // ======================================================
@@ -3693,6 +4882,8 @@ abonoPedido =
 
                         descripcion:
                             item.descripcion,
+                        nota:
+                         item.nota || null,
 
                         cantidad:
                             Number(
@@ -4251,7 +5442,21 @@ function renderizarDetallePedido(){
                             `
                             : ''
                     }
-
+${
+    item.nota
+        ? `
+            <div
+                style="
+                    margin-top:3px;
+                    font-size:14px;
+                    color:#777;
+                "
+            >
+                ${item.nota}
+            </div>
+        `
+        : ''
+}
                 </td>
 
 
@@ -4542,11 +5747,77 @@ for(
                     NO se volverán a insertar.
                 */
 
-                if(item.guardado === true){
+if(item.guardado === true){
 
-                    continue;
+    if(item.editado === true){
 
+        const respuestaActualizar =
+            await fetch(
+                '/update-order-detail',
+                {
+                    method:'POST',
+
+                    headers:{
+                        'Content-Type':
+                            'application/json'
+                    },
+
+                    body:
+                        JSON.stringify({
+                            id_pedido:
+                                item.id_pedido,
+
+                            articulo:
+                                item.articulo,
+
+                            descripcion:
+                                item.descripcion,
+
+                            nota:
+                                item.nota || null,
+
+                            cantidad:
+                                item.cantidad,
+
+                            precio_unidad:
+                                item.precio_unidad
+                        })
                 }
+            );
+
+
+        let dataActualizar = null;
+
+        try{
+
+            dataActualizar =
+                await respuestaActualizar.json();
+
+        }catch(error){
+
+            dataActualizar = null;
+
+        }
+
+
+        if(!respuestaActualizar.ok){
+
+            throw new Error(
+                dataActualizar &&
+                dataActualizar.mensaje
+                    ? dataActualizar.mensaje
+                    : 'No se pudo actualizar el artículo'
+            );
+
+        }
+
+
+        item.editado = false;
+
+    }
+
+    continue;
+}
 
 
                 const data = {
@@ -4562,6 +5833,8 @@ for(
 
                     descripcion:
                         item.descripcion,
+                    nota:
+                    item.nota || null,
 
                     cantidad:
                         item.cantidad,
