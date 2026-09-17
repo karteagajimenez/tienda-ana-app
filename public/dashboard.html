@@ -2190,6 +2190,7 @@ body.menu-abierto {
     </div>
 
 </div>
+
 <script src="ubicaciones-cr.js"></script>
 <script>
 
@@ -6158,7 +6159,20 @@ async function iniciar(){
 }
 
 iniciar();
+// ======================================================
+// 🔥 CANCELAR PEDIDO
+// ======================================================
 
+document
+.getElementById("btnCancelarPedido")
+.addEventListener(
+    "click",
+    () => {
+
+        window.location.href = "/dashboard.html";
+
+    }
+);
 </script>
 
 </body>
