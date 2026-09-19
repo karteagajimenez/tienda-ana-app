@@ -487,6 +487,13 @@ td button {
     text-align: center;
 
 }
+/* =========================================================
+   BOTONES EXCLUSIVOS DEL MENÚ EN CELULAR
+========================================================= */
+
+.solo-celular-menu {
+    display: none !important;
+}
  @media (max-width: 768px) {
 
     /* =========================================================
@@ -893,6 +900,15 @@ td button {
     width: 90px;
     height: auto;
 }
+/* MOSTRAR BOTONES EXTRA SOLO EN CELULAR */
+
+#menuMovilOpciones .solo-celular-menu {
+    display: block !important;
+}
+
+#menuMovilOpciones .cerrar-sesion-menu {
+    background: #e74c3c !important;
+}
 }
 </style>
 </head>
@@ -983,7 +999,31 @@ td button {
         >
           🛍️ ✎ Editar artículo
         </button> 
-  
+  <button
+    id="btnExpandirMenuMovil"
+    class="solo-celular-menu"
+    type="button"
+    onclick="toggleTodosClientes()"
+>
+    ↔ Expandir
+</button>
+
+<button
+    class="solo-celular-menu"
+    type="button"
+    onclick="location.href='/archived_orders.html'"
+>
+    📦 Archivados
+</button>
+
+<button
+    id="cerrarSesionMenuMovil"
+    class="solo-celular-menu cerrar-sesion-menu"
+    type="button"
+    onclick="cerrarSesion()"
+>
+    🚪 Cerrar sesión
+</button>
     </div>
 
 </div>
