@@ -1378,7 +1378,7 @@ body.menu-abierto {
                         </th>
 
                         <th>
-                            ELiminar
+                            Eliminar
                         </th>
 
                         
@@ -3560,31 +3560,47 @@ async function guardarClienteManual(){
             "clientePassword"
         ).value = "";
 
+// =================================================
+// CERRAR VENTANA DESPUÉS DE GUARDAR
+// =================================================
 
-        // Recargar clientes para que aparezca inmediatamente
-        await cargarClientes();
-
-
-        // Cerrar ventana
-        cerrarAgregarCliente();
+cerrarAgregarCliente();
 
 
-    }catch(error){
+// =================================================
+// ACTUALIZAR LISTA DE CLIENTES
+// Si esto falla, el cliente YA fue guardado.
+// =================================================
 
-        console.error(
-            "Error guardando cliente:",
-            error
-        );
+try{
 
-        mostrarMensaje(
-            "No se pudo guardar el cliente",
-            "error"
-        );
+    await cargarClientes();
 
-    }
+}catch(error){
+
+    console.error(
+        "Cliente guardado, pero no se pudo actualizar la lista:",
+        error
+    );
 
 }
 
+
+}catch(error){
+
+    console.error(
+        "Error guardando cliente:",
+        error
+    );
+
+    mostrarMensaje(
+        "No se pudo guardar el cliente",
+        "error"
+    );
+
+}
+
+}
 // =========================================================
 // EDITAR CLIENTE - BUSCADOR
 // =========================================================
@@ -4173,29 +4189,50 @@ async function actualizarClienteManual(){
             return;
         }
 
+// =========================================
+// ÉXITO
+// =========================================
 
-        // =========================================
-        // ÉXITO
-        // =========================================
-
-        mostrarMensaje(
-            "Cliente actualizado correctamente"
-        );
-
-
-        await cargarClientes();
+mostrarMensaje(
+    "Cliente actualizado correctamente"
+);
 
 
-        buscarClienteEditar.value =
-            `${nombre} ${apellido}`;
+// Limpiar la nueva contraseña
+document.getElementById(
+    "editarClientePassword"
+).value =
+    "";
 
 
-        document.getElementById(
-            "editarClientePassword"
-        ).value =
-            "";
+// Mantener el cliente seleccionado
+buscarClienteEditar.value =
+    `${nombre} ${apellido}`;
+
+clienteEditarSeleccionado.nombre =
+    nombre;
+
+clienteEditarSeleccionado.apellido =
+    apellido;
 
 
+// =========================================
+// ACTUALIZAR LISTA DE CLIENTES
+// Si esto falla, los cambios YA fueron guardados.
+// =========================================
+
+try{
+
+    await cargarClientes();
+
+}catch(error){
+
+    console.error(
+        "Cliente actualizado, pero no se pudo actualizar la lista:",
+        error
+    );
+
+}
     }catch(error){
 
         console.error(

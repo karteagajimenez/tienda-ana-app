@@ -3396,6 +3396,101 @@ function cerrarEditarAbono(){
 
         return;
     }
+    // =====================================================
+// VALIDAR LÍMITE AL EDITAR EL ABONO
+// =====================================================
+
+const cliente =
+    pedidosPorCliente[
+        clienteSeleccionado
+    ];
+
+if(!cliente){
+
+    mostrarMensaje(
+        "No se encontró el cliente"
+    );
+
+    return;
+}
+
+
+const grupo =
+    cliente.grupos[
+        String(grupoSeleccionado)
+    ];
+
+if(!grupo){
+
+    mostrarMensaje(
+        "No se encontró la factura"
+    );
+
+    return;
+}
+
+
+// Total de los productos
+const subtotalProductos =
+    grupo.pedidos.reduce(
+        (total, pedido) => {
+
+            return total +
+                (Number(pedido.total_precio) || 0);
+
+        },
+        0
+    );
+
+
+// Envío de la factura
+const envioGeneral =
+    Number(
+        grupo.envio_total
+    ) || 0;
+
+
+// Total completo de la factura
+const totalFactura =
+    subtotalProductos +
+    envioGeneral;
+
+
+// Abono que estamos reemplazando
+const abonoAnterior =
+    Number(
+        document.getElementById(
+            "editarAbonoViejo"
+        ).value
+    ) || 0;
+
+
+// Todos los demás abonos,
+// sin contar el que estamos editando
+const otrosAbonos =
+    (
+        Number(grupo.total_abonado) || 0
+    ) -
+    abonoAnterior;
+
+
+// Máximo que puede tener este abono
+const maximoPermitido =
+    totalFactura -
+    otrosAbonos;
+
+
+if(
+    nuevoMonto >
+    maximoPermitido
+){
+
+    mostrarMensaje(
+        `El abono no puede superar ${moneda(maximoPermitido)}.`
+    );
+
+    return;
+}
 
 
     try{
