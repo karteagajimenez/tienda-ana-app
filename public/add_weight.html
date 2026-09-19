@@ -99,8 +99,161 @@ body {
 .header-buttons button:hover {
     opacity: 0.85;
 }
+/* =========================================================
+   MENÚ LATERAL IZQUIERDO
+========================================================= */
+
 .menu-movil {
-    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 0;
+    height: 100vh;
+
+    background: #efd0da;
+
+    overflow: hidden;
+
+    transition: width 0.3s ease;
+
+    z-index: 5000;
+
+    box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+}
+
+
+/* MENÚ ABIERTO */
+
+.menu-movil.abierto {
+    width: 255px;
+}
+
+
+/* BOTÓN ☰ */
+
+#botonMenuMovil {
+    position: fixed;
+
+    top: 28px;
+    left: 18px;
+
+    z-index: 6000;
+
+    width: 42px;
+    height: 42px;
+
+    padding: 0;
+    margin: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: #b76e8a;
+
+    font-size: 30px;
+    font-weight: normal;
+    line-height: 1;
+
+    cursor: pointer;
+}
+/* ESPACIO PARA EL BOTÓN ☰ ANTES DEL TÍTULO */
+
+.header h1 {
+    margin-left: 45px;
+}
+
+
+/* CUANDO EL MENÚ ESTÁ ABIERTO */
+
+.menu-movil.abierto #botonMenuMovil {
+    position: absolute;
+}
+
+
+/* CONTENIDO DEL MENÚ */
+
+#menuMovilOpciones {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    width: 100%;
+
+    margin: 0;
+
+    padding: 15px 12px;
+
+    box-sizing: border-box;
+
+    background: transparent;
+
+    border: none;
+    box-shadow: none;
+
+    overflow: visible;
+
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+
+/* LOGO */
+
+.cabecera-menu-movil {
+    width: 100%;
+    height: 110px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+
+    padding: 0;
+
+    box-sizing: border-box;
+}
+
+.logo-menu-movil {
+    width: 82px;
+    height: auto;
+
+    border-radius: 10px;
+}
+
+
+/* BOTONES */
+
+#menuMovilOpciones button {
+    width: 100%;
+
+    margin: 0;
+
+    padding: 10px 12px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #c48b9f;
+    color: white;
+
+    font-size: 14px;
+    font-weight: normal;
+
+    text-align: center;
+
+    cursor: pointer;
+}
+
+#menuMovilOpciones button:hover {
+    opacity: 0.88;
+
+    transform: translateX(2px);
 }
 /* BUSCADOR */
 #buscar {
@@ -462,64 +615,125 @@ td button {
         white-space: nowrap;
     }
 /* =========================================================
-   MENÚ MÓVIL
+   MENÚ LATERAL - CELULAR
 ========================================================= */
 
 .menu-movil {
     display: block;
-    position: absolute;
-    top: 18px;
-    right: 18px;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: auto;
+
+    width: 0;
+    height: 100vh;
+
+    padding-top: 0;
+
+    background: transparent;
+
+    overflow: visible;
+
     z-index: 4000;
+
+    transition: width 0.3s ease;
 }
+
+
+/* MENÚ ABIERTO */
+
+.menu-movil.abierto {
+    width: 230px;
+    height: 100vh;
+
+    padding-top: 75px;
+
+    background: rgba(196, 139, 159, 0.97);
+
+    box-shadow: 4px 0 12px rgba(0,0,0,0.18);
+
+    overflow-y: auto;
+}
+
+
+/* BOTÓN ☰ / ✕ */
+
 #botonMenuMovil {
-    position: relative;
-    z-index: 4001;
+    position: fixed;
+
+    top: 18px;
+    left: 8px;
+    right: auto;
+
+    width: 45px;
+    height: 45px;
+    min-width: 0;
+
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     background: transparent;
     color: #714f5b;
 
     border: none;
-    padding: 6px 8px;
 
     font-size: 28px;
     line-height: 1;
 
     cursor: pointer;
+
+    z-index: 4100;
 }
+
+
+/* CONTENIDO DEL MENÚ */
 
 #menuMovilOpciones {
-    display: none;
+    display: block;
 
-    position: fixed;
+    position: static;
 
-    top: 0;
-    right: 0;
+    width: auto;
+    max-width: none;
+    height: auto;
 
-    width: 68%;
-    max-width: 270px;
-    height: 100vh;
+    margin: 0;
+    padding: 0 10px;
 
-    background: #fffaf8;
+    background: transparent;
 
-    border-left: 1px solid #f2d5dd;
+    border: none;
+    box-shadow: none;
 
-    box-shadow:
-        -8px 0 22px
-        rgba(120, 70, 90, 0.22);
+    overflow: visible;
 
-    padding: 20px 14px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 
-    box-sizing: border-box;
-
-    z-index: 3000;
-
-    overflow-y: auto;
+    transition: opacity 0.2s ease;
 }
+
+
+/* MOSTRAR CONTENIDO */
+
+.menu-movil.abierto #menuMovilOpciones {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+
+/* LOGO */
 
 .cabecera-menu-movil {
     width: 100%;
-    height: 80px;
+    height: 85px;
 
     display: flex;
     align-items: center;
@@ -531,37 +745,36 @@ td button {
 }
 
 .logo-menu-movil {
-    width: 65px;
+    width: 90px;
     height: auto;
 
     border-radius: 8px;
 }
 
+
+/* BOTONES */
+
 #menuMovilOpciones button {
-    width: 76%;
+    width: 100%;
 
     display: block;
 
-    margin: 0 auto 9px auto;
+    margin: 0 0 10px 0;
 
-    padding: 9px 10px;
+    padding: 10px;
 
     border: none;
-    border-radius: 7px;
+    border-radius: 6px;
 
-    font-size: 13px;
+    background: #b76e8a;
+    color: white;
+
+    font-size: 14px;
     font-weight: 600;
 
     text-align: center;
 
     cursor: pointer;
-
-    background: #b76e8a;
-    color: white;
-}
-
-#cerrarSesionMovil {
-    background: #e74c3c !important;
 }
     /* =========================================================
        BUSCADOR
@@ -669,10 +882,7 @@ td button {
 
     <div class="header-buttons">
 
-        <button onclick="volverGestion()">
-           Volver
-        </button>
-        
+       
         <button
          id="btnExpandir"
           onclick="toggleTodosClientes()"
@@ -712,37 +922,41 @@ td button {
                 class="logo-menu-movil"
             >
         </div>
-
         <button
             type="button"
-            onclick="volverGestion()"
-        >
-            Volver
+           onclick="location.href='/dashboard.html'"
+       >
+           📝 Crear pedido
         </button>
 
         <button
-            id="btnExpandirMovil"
-            type="button"
-            onclick="toggleTodosClientes()"
+           type="button"
+           onclick="location.href='/dashboard.html?accion=agregar-cliente'"
         >
-            Expandir
+           👤 + Agregar cliente
+        </button>
+
+        <button
+         type="button"
+           onclick="location.href='/dashboard.html?accion=editar-cliente'"
+        >
+          👤 ✎ Editar cliente
         </button>
 
         <button
             type="button"
-            onclick="location.href='/archived_orders.html'"
+           onclick="location.href='/add_article.html'"
         >
-            Archivados
+          🛍️ + Agregar artículo
         </button>
 
         <button
-            id="cerrarSesionMovil"
-            type="button"
-            onclick="cerrarSesion()"
+          type="button"
+            onclick="location.href='/articles.html'"
         >
-            Cerrar sesión
-        </button>
-
+          🛍️ ✎ Editar artículo
+        </button> 
+  
     </div>
 
 </div>
@@ -1254,9 +1468,15 @@ td button {
   
   
 <script>
+
 // ========================================
-// MENÚ MÓVIL
+// MENÚ LATERAL IZQUIERDO
 // ========================================
+
+const menuLateral =
+    document.querySelector(
+        ".menu-movil"
+    );
 
 const botonMenuMovil =
     document.getElementById(
@@ -1270,108 +1490,69 @@ const menuMovilOpciones =
 
 botonMenuMovil.addEventListener(
     "click",
-    () => {
+    (event) => {
+
+        event.stopPropagation();
 
         const abierto =
-            menuMovilOpciones.style.display ===
-            "block";
-
-        if(abierto){
-
-            menuMovilOpciones.style.display =
-                "none";
-
-            botonMenuMovil.innerText =
-                "☰";
-
-            botonMenuMovil.setAttribute(
-                "aria-label",
-                "Abrir menú"
+            menuLateral.classList.toggle(
+                "abierto"
             );
 
-        }else{
+        botonMenuMovil.innerText = "☰";
 
-            menuMovilOpciones.style.display =
-                "block";
 
-            botonMenuMovil.innerText =
-                "✕";
-
-            botonMenuMovil.setAttribute(
-                "aria-label",
-                "Cerrar menú"
-            );
-
-        }
+        botonMenuMovil.setAttribute(
+            "aria-label",
+            abierto
+                ? "Cerrar menú"
+                : "Abrir menú"
+        );
 
     }
 );
 // ======================================================
-// 🔹 CERRAR MENÚ MÓVIL AL TOCAR FUERA
+// 🔹 CERRAR MENÚ LATERAL AL TOCAR FUERA
 // ======================================================
 
-document.addEventListener("click", (event) => {
+document.addEventListener(
+    "click",
+    (event) => {
 
-    const menuAbierto =
-        menuMovilOpciones.style.display === "block";
+        const abierto =
+            menuLateral.classList.contains(
+                "abierto"
+            );
 
+        if (!abierto) {
+            return;
+        }
 
-    // Si el menú está cerrado, no hacer nada
-    if (!menuAbierto) {
-        return;
-    }
+        // Si tocó dentro del menú,
+        // no lo cerramos
+        if (
+            menuLateral.contains(
+                event.target
+            )
+        ) {
+            return;
+        }
 
-
-    // Si tocó dentro del menú o en el botón ☰ / ✕,
-    // no cerrarlo desde aquí
-    if (
-        menuMovilOpciones.contains(event.target) ||
-        botonMenuMovil.contains(event.target)
-    ) {
-        return;
-    }
-
-
-    // Cerrar menú
-    menuMovilOpciones.style.display =
-        "none";
-
-
-    // Volver a mostrar las tres rayas
-    botonMenuMovil.innerText =
-        "☰";
-
-
-    botonMenuMovil.setAttribute(
-        "aria-label",
-        "Abrir menú"
-    );
-
-});
-
-    function mostrarMensaje(texto){
-
-    const mensaje =
-        document.getElementById(
-            "mensajeAviso"
+        // Cerrar menú
+        menuLateral.classList.remove(
+            "abierto"
         );
 
-    mensaje.textContent = texto;
+        botonMenuMovil.innerText =
+            "☰";
 
-    mensaje.style.display = "block";
+        botonMenuMovil.setAttribute(
+            "aria-label",
+            "Abrir menú"
+        );
 
-    clearTimeout(
-        window.temporizadorMensaje
-    );
-
-    window.temporizadorMensaje =
-        setTimeout(() => {
-
-            mensaje.style.display = "none";
-
-        }, 3500);
-}
-
+    }
+);
 /* =========================================================
    CERRAR SESIÓN
 ========================================================= */
@@ -2487,12 +2668,6 @@ function abrirCliente(idUsuario){
 
 }
 
-function volverGestion(){
-
-    window.location.href =
-        "/dashboard.html";
-
-}
 
 
 /* =========================================================

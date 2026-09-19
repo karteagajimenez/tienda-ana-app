@@ -2192,6 +2192,8 @@ body.menu-abierto {
 </div>
 
 <script src="ubicaciones-cr.js"></script>
+
+
 <script>
 
 let clientes = [];
@@ -6207,6 +6209,54 @@ document
     () => {
 
         window.location.href = "/dashboard.html";
+
+    }
+);
+// ======================================================
+// ABRIR ACCIÓN RECIBIDA DESDE FACTURAS
+// ======================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const parametros =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const accion =
+            parametros.get("accion");
+
+        if (
+            accion ===
+            "agregar-cliente"
+        ) {
+
+            abrirAgregarCliente();
+
+        }
+
+        if (
+            accion ===
+            "editar-cliente"
+        ) {
+
+            abrirEditarCliente();
+
+        }
+
+        // Limpiar la URL después
+        // de abrir la acción
+        if (accion) {
+
+            window.history.replaceState(
+                {},
+                "",
+                "/dashboard.html"
+            );
+
+        }
 
     }
 );
