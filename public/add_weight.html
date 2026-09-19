@@ -930,11 +930,11 @@ td button {
          id="btnExpandir"
           onclick="toggleTodosClientes()"
         >
-           Expandir
+         ↗️Expandir
         </button>
 
         <button onclick="location.href='/archived_orders.html'">
-            Archivados
+          📦 Archivados
         </button>
 
         <button onclick="cerrarSesion()">
@@ -1005,7 +1005,7 @@ td button {
     type="button"
     onclick="toggleTodosClientes()"
 >
-    ↔ Expandir
+    ↗️ Expandir
 </button>
 
 <button
@@ -1022,7 +1022,7 @@ td button {
     type="button"
     onclick="cerrarSesion()"
 >
-    🚪 Cerrar sesión
+  Cerrar sesión
 </button>
     </div>
 
@@ -2314,14 +2314,24 @@ function obtenerClientesFiltrados(){
 
 function mostrarListaClientes(){
 
-    const botonExpandir =
+const botonExpandir =
     document.getElementById(
         "btnExpandir"
     );
 
+const botonExpandirMovil =
+    document.getElementById(
+        "btnExpandirMenuMovil"
+    );
+
 if(botonExpandir){
     botonExpandir.textContent =
-        "Expandir";
+        "↗️ Expandir";
+}
+
+if(botonExpandirMovil){
+    botonExpandirMovil.textContent =
+        "↗️ Expandir";
 }
     const tabla =
         document.querySelector(
@@ -2583,7 +2593,7 @@ function toggleTodosClientes(){
             );
 
     const abrirTodos =
-        textoBoton === "Expandir";
+        textoBoton.includes("Expandir");
 
 
     filasDetalle.forEach(
@@ -2636,8 +2646,8 @@ function toggleTodosClientes(){
 
         boton.textContent =
             abrirTodos
-                ? "Colapsar"
-                : "Expandir";
+                ? "↙️ Colapsar"
+                : "↗️ Expandir";
 
     }
 
@@ -2646,8 +2656,8 @@ function toggleTodosClientes(){
 
         botonMovil.textContent =
             abrirTodos
-                ? "↗️ Colapsar"
-                : "↙️ Expandir";
+                ? "↙️ Colapsar"
+                : "↗️ Expandir";
 
     }
 
