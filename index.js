@@ -5033,26 +5033,49 @@ app.post('/unarchive-client-orders', protegerAdmin, (req, res) => {
 
 app.get('/client-orders/:id', protegerCliente, (req, res) => {
 
-    // Por seguridad se usa el ID de la sesión,
-    // no el ID enviado en la URL.
-    const id =
-        req.session.usuario.id_usuario;
-
+    // Por seguridad usamos el usuario de la sesión
+    const id = req.session.usuario.id_usuario;
 
     conexion.query(`
         SELECT
             p.*,
-            IFNULL(
-                SUM(a.monto_abono),
-                0
+
+            (
+                SELECT IFNULL(
+                    SUM(a.monto_abono),
+                    0
+                )
+                FROM abonos a
+                INNER JOIN pedidos p2
+                    ON p2.id_pedido = a.id_pedido
+                WHERE
+                    p2.id_usuario = p.id_usuario
+
+                    AND (
+                        (
+                            p.grupo_compra IS NOT NULL
+                            AND p2.grupo_compra = p.grupo_compra
+                        )
+
+                        OR
+
+                        (
+                            p.grupo_compra IS NULL
+                            AND p2.id_pedido = p.id_pedido
+                        )
+                    )
             ) AS total_abonado
+
         FROM pedidos p
-        LEFT JOIN abonos a
-            ON p.id_pedido = a.id_pedido
+
         WHERE
             p.id_usuario = ?
             AND p.archivado = 0
-        GROUP BY p.id_pedido
+
+        ORDER BY
+            p.grupo_compra,
+            p.id_pedido
+
     `, [id], (err, results) => {
 
         if (err) {
@@ -5066,14 +5089,11 @@ app.get('/client-orders/:id', protegerCliente, (req, res) => {
 
         }
 
-
         res.json(results);
 
     });
 
 });
-
-
 // ======================================================
 // 🔹 CLIENTE VE SUS PEDIDOS ARCHIVADOS
 // ======================================================

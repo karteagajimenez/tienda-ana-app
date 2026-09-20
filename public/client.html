@@ -933,7 +933,7 @@
                 </th>
 
                 <th>
-                    Abono
+                    Abono General
                 </th>
 
                 <th>
@@ -1248,8 +1248,6 @@ async function cargarNombreCliente(){
 
 }
 
-
-
 // ========================================
 // 🔹 CARGAR PEDIDOS
 // ========================================
@@ -1266,6 +1264,36 @@ async function cargar(){
 
         const data =
             await res.json();
+
+
+        // ========================================
+        // 🔹 TOTALES GENERALES
+        //    ENVÍO Y ABONO
+        // ========================================
+
+        const envioTotal =
+            data.reduce(
+                (total, pedido) => {
+
+                    return total +
+                        (
+                            (
+                                Number(
+                                    pedido.peso_gramos
+                                ) || 0
+                            )
+                            / 1000
+                        )
+                        * 6000;
+
+                },
+                0
+            );
+
+const abonoTotal =
+    data.length > 0
+        ? Number(data[0].total_abonado) || 0
+        : 0;
 
 
         let html = "";
@@ -1293,7 +1321,7 @@ async function cargar(){
         }
 
 
-        data.forEach(p => {
+        data.forEach((p, index) => {
 
 
             /* ========================================
@@ -1384,27 +1412,30 @@ async function cargar(){
 
                     </td>
 
+<td>
 
-                    <td>
+    ${
+        index === 0
+            ? "₡" + envioTotal.toLocaleString(
+                "es-CR"
+            )
+            : ""
+    }
 
-                        ₡${envio.toLocaleString(
-                            "es-CR"
-                        )}
-
-                    </td>
-
-
-                    <td>
-
-                        ₡${Number(
-                            p.total_abonado
-                        ).toLocaleString(
-                            "es-CR"
-                        )}
-
-                    </td>
+</td>
 
 
+<td>
+
+    ${
+        index === 0
+            ? "₡" + abonoTotal.toLocaleString(
+                "es-CR"
+            )
+            : ""
+    }
+
+</td>
                     <td>
 
                         ${paisOrigen}
