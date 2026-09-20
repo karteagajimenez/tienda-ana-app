@@ -4919,6 +4919,7 @@ app.post('/archive-client-orders', protegerAdmin, (req, res) => {
     });
 
 });
+
 // ======================================================
 // 🔹 DESARCHIVAR UNA FACTURA DEL CLIENTE
 // ======================================================
@@ -5226,6 +5227,11 @@ app.post(
         const nuevoMonto =
             Number(req.body.monto_abono);
 
+
+        // ======================================================
+        // VALIDAR DATOS
+        // ======================================================
+
         if (
             !Number.isInteger(idAbono) ||
             idAbono <= 0 ||
@@ -5240,46 +5246,493 @@ app.post(
 
         }
 
-        conexion.query(`
-            UPDATE abonos
-            SET monto_abono = ?
-            WHERE id_abono = ?
-        `, [
-            nuevoMonto,
-            idAbono
-        ], (err, resultado) => {
 
-            if (err) {
+        // ======================================================
+        // INICIAR TRANSACCIÓN
+        // ======================================================
 
-                console.log(
-                    "❌ Error actualizando abono:",
-                    err
+        conexion.beginTransaction(
+            (errorTransaccion) => {
+
+                if (errorTransaccion) {
+
+                    console.log(
+                        "❌ Error iniciando edición de abono:",
+                        errorTransaccion
+                    );
+
+                    return res.status(500).json({
+                        ok: false,
+                        mensaje:
+                            "No se pudo iniciar la edición del abono"
+                    });
+
+                }
+
+
+                // ======================================================
+                // BUSCAR EL ABONO Y SU PEDIDO
+                // ======================================================
+
+                conexion.query(
+                    `
+                        SELECT
+                            a.id_abono,
+                            a.id_pedido,
+                            a.monto_abono,
+                            p.id_usuario,
+                            p.grupo_compra,
+                            p.archivado
+
+                        FROM abonos a
+
+                        INNER JOIN pedidos p
+                            ON p.id_pedido = a.id_pedido
+
+                        WHERE a.id_abono = ?
+
+                        LIMIT 1
+
+                        FOR UPDATE
+                    `,
+                    [
+                        idAbono
+                    ],
+                    (
+                        errorAbono,
+                        abonos
+                    ) => {
+
+                        if (errorAbono) {
+
+                            return conexion.rollback(
+                                () => {
+
+                                    console.log(
+                                        "❌ Error buscando abono:",
+                                        errorAbono
+                                    );
+
+                                    return res.status(500).json({
+                                        ok: false,
+                                        mensaje:
+                                            "No se pudo verificar el abono"
+                                    });
+
+                                }
+                            );
+
+                        }
+
+
+                        if (
+                            !abonos ||
+                            abonos.length === 0
+                        ) {
+
+                            return conexion.rollback(
+                                () => {
+
+                                    return res.status(404).json({
+                                        ok: false,
+                                        mensaje:
+                                            "Abono no encontrado"
+                                    });
+
+                                }
+                            );
+
+                        }
+
+
+                        const abonoActual =
+                            abonos[0];
+
+                        const idUsuario =
+                            Number(
+                                abonoActual.id_usuario
+                            );
+
+                        const grupoCompra =
+                            Number(
+                                abonoActual.grupo_compra
+                            );
+
+
+                        if (
+                            Number(
+                                abonoActual.archivado
+                            ) === 1
+                        ) {
+
+                            return conexion.rollback(
+                                () => {
+
+                                    return res.status(400).json({
+                                        ok: false,
+                                        mensaje:
+                                            "No se puede editar un abono de una factura archivada"
+                                    });
+
+                                }
+                            );
+
+                        }
+
+
+                        if (
+                            !Number.isInteger(grupoCompra) ||
+                            grupoCompra <= 0
+                        ) {
+
+                            return conexion.rollback(
+                                () => {
+
+                                    return res.status(400).json({
+                                        ok: false,
+                                        mensaje:
+                                            "La factura no tiene un grupo válido"
+                                    });
+
+                                }
+                            );
+
+                        }
+
+
+                        // ======================================================
+                        // BUSCAR TODOS LOS PEDIDOS DE LA FACTURA
+                        // ======================================================
+
+                        conexion.query(
+                            `
+                                SELECT
+                                    id_pedido,
+                                    peso_gramos,
+                                    total_precio
+
+                                FROM pedidos
+
+                                WHERE id_usuario = ?
+                                AND grupo_compra = ?
+                                AND archivado = 0
+
+                                FOR UPDATE
+                            `,
+                            [
+                                idUsuario,
+                                grupoCompra
+                            ],
+                            (
+                                errorFactura,
+                                pedidosFactura
+                            ) => {
+
+                                if (errorFactura) {
+
+                                    return conexion.rollback(
+                                        () => {
+
+                                            console.log(
+                                                "❌ Error buscando factura:",
+                                                errorFactura
+                                            );
+
+                                            return res.status(500).json({
+                                                ok: false,
+                                                mensaje:
+                                                    "No se pudo verificar la factura"
+                                            });
+
+                                        }
+                                    );
+
+                                }
+
+
+                                if (
+                                    !pedidosFactura ||
+                                    pedidosFactura.length === 0
+                                ) {
+
+                                    return conexion.rollback(
+                                        () => {
+
+                                            return res.status(404).json({
+                                                ok: false,
+                                                mensaje:
+                                                    "Factura no encontrada"
+                                            });
+
+                                        }
+                                    );
+
+                                }
+
+
+                                const idsPedidos =
+                                    pedidosFactura.map(
+                                        pedido =>
+                                            pedido.id_pedido
+                                    );
+
+
+                                // ======================================================
+                                // CALCULAR TOTAL DE LA FACTURA
+                                // ======================================================
+
+                                const pesoGeneral =
+                                    pedidosFactura.reduce(
+                                        (
+                                            acumulado,
+                                            pedido
+                                        ) => {
+
+                                            return acumulado +
+                                                (
+                                                    Number(
+                                                        pedido.peso_gramos
+                                                    ) || 0
+                                                );
+
+                                        },
+                                        0
+                                    );
+
+
+                                const envioGeneral =
+                                    (
+                                        pesoGeneral /
+                                        1000
+                                    ) * 6000;
+
+
+                                const subtotalProductos =
+                                    pedidosFactura.reduce(
+                                        (
+                                            acumulado,
+                                            pedido
+                                        ) => {
+
+                                            return acumulado +
+                                                (
+                                                    Number(
+                                                        pedido.total_precio
+                                                    ) || 0
+                                                );
+
+                                        },
+                                        0
+                                    );
+
+
+                                const totalFactura =
+                                    subtotalProductos +
+                                    envioGeneral;
+
+
+                                // ======================================================
+                                // SUMAR LOS OTROS ABONOS
+                                //
+                                // IMPORTANTE:
+                                // No contamos el abono que estamos editando.
+                                // ======================================================
+
+                                conexion.query(
+                                    `
+                                        SELECT
+                                            IFNULL(
+                                                SUM(monto_abono),
+                                                0
+                                            ) AS otros_abonos
+
+                                        FROM abonos
+
+                                        WHERE id_pedido IN (?)
+                                        AND id_abono <> ?
+                                    `,
+                                    [
+                                        idsPedidos,
+                                        idAbono
+                                    ],
+                                    (
+                                        errorOtrosAbonos,
+                                        resultados
+                                    ) => {
+
+                                        if (errorOtrosAbonos) {
+
+                                            return conexion.rollback(
+                                                () => {
+
+                                                    console.log(
+                                                        "❌ Error verificando otros abonos:",
+                                                        errorOtrosAbonos
+                                                    );
+
+                                                    return res.status(500).json({
+                                                        ok: false,
+                                                        mensaje:
+                                                            "No se pudo verificar el saldo de la factura"
+                                                    });
+
+                                                }
+                                            );
+
+                                        }
+
+
+                                        const otrosAbonos =
+                                            Number(
+                                                resultados[0]
+                                                    .otros_abonos
+                                            ) || 0;
+
+
+                                        const maximoPermitido =
+                                            totalFactura -
+                                            otrosAbonos;
+
+
+                                        // ======================================================
+                                        // NO PERMITIR QUE LA EDICIÓN
+                                        // SUPERE EL TOTAL DE LA FACTURA
+                                        // ======================================================
+
+                                        if (
+                                            nuevoMonto >
+                                            maximoPermitido
+                                        ) {
+
+                                            return conexion.rollback(
+                                                () => {
+
+                                                    return res.status(400).json({
+                                                        ok: false,
+                                                        mensaje:
+                                                            `El monto máximo permitido para este abono es ₡${maximoPermitido.toLocaleString('es-CR')}.`
+                                                    });
+
+                                                }
+                                            );
+
+                                        }
+
+
+                                        // ======================================================
+                                        // ACTUALIZAR ABONO
+                                        // ======================================================
+
+                                        conexion.query(
+                                            `
+                                                UPDATE abonos
+
+                                                SET monto_abono = ?
+
+                                                WHERE id_abono = ?
+                                            `,
+                                            [
+                                                nuevoMonto,
+                                                idAbono
+                                            ],
+                                            (
+                                                errorActualizar,
+                                                resultado
+                                            ) => {
+
+                                                if (errorActualizar) {
+
+                                                    return conexion.rollback(
+                                                        () => {
+
+                                                            console.log(
+                                                                "❌ Error actualizando abono:",
+                                                                errorActualizar
+                                                            );
+
+                                                            return res.status(500).json({
+                                                                ok: false,
+                                                                mensaje:
+                                                                    "No se pudo actualizar el abono"
+                                                            });
+
+                                                        }
+                                                    );
+
+                                                }
+
+
+                                                if (
+                                                    resultado.affectedRows === 0
+                                                ) {
+
+                                                    return conexion.rollback(
+                                                        () => {
+
+                                                            return res.status(404).json({
+                                                                ok: false,
+                                                                mensaje:
+                                                                    "Abono no encontrado"
+                                                            });
+
+                                                        }
+                                                    );
+
+                                                }
+
+
+                                                // ======================================================
+                                                // CONFIRMAR CAMBIO
+                                                // ======================================================
+
+                                                conexion.commit(
+                                                    (errorCommit) => {
+
+                                                        if (errorCommit) {
+
+                                                            return conexion.rollback(
+                                                                () => {
+
+                                                                    console.log(
+                                                                        "❌ Error confirmando edición del abono:",
+                                                                        errorCommit
+                                                                    );
+
+                                                                    return res.status(500).json({
+                                                                        ok: false,
+                                                                        mensaje:
+                                                                            "No se pudo completar la edición del abono"
+                                                                    });
+
+                                                                }
+                                                            );
+
+                                                        }
+
+
+                                                        return res.json({
+                                                            ok: true,
+                                                            mensaje:
+                                                                "Su cambio ha sido guardado"
+                                                        });
+
+                                                    }
+                                                );
+
+                                            }
+                                        );
+
+                                    }
+                                );
+
+                            }
+                        );
+
+                    }
                 );
 
-                return res.status(500).json({
-                    ok: false,
-                    mensaje:
-                        "No se pudo actualizar el abono"
-                });
-
             }
-
-            if (resultado.affectedRows === 0) {
-
-                return res.status(404).json({
-                    ok: false,
-                    mensaje: "Abono no encontrado"
-                });
-
-            }
-
-            return res.json({
-                ok: true,
-                mensaje:
-                    "Su cambio ha sido guardado"
-            });
-
-        });
+        );
 
     }
 );

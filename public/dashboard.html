@@ -2924,26 +2924,54 @@ const btnAceptarAbonoPedido =
 const btnCancelarAbonoPedido =
     document.getElementById("btnCancelarAbonoPedido");
 
-
 btnAbrirAbonoPedido.addEventListener(
     "click",
     () => {
 
-        montoAbonoPedido.value =
-            abonoPedido > 0
-                ? abonoPedido
-                : "";
+        // Debe existir un cliente seleccionado
+        if(!clienteSeleccionado){
+
+            mostrarMensaje(
+                "Primero seleccione un cliente",
+                "error"
+            );
+
+            return;
+        }
+
+
+        // Debe existir al menos un artículo
+        if(articulosPedido.length === 0){
+
+            mostrarMensaje(
+                "Primero agregue al menos un artículo al pedido",
+                "error"
+            );
+
+            return;
+        }
+
+
+        // Cada vez que se abre es un ABONO NUEVO.
+        // Por eso el campo siempre debe aparecer vacío.
+        montoAbonoPedido.value = "";
 
 
         modalAgregarAbonoPedido.style.display =
             "flex";
 
-        setTimeout(() => {
-            montoAbonoPedido.focus();
-        }, 100);
+
+        setTimeout(
+            () => {
+
+                montoAbonoPedido.focus();
+
+            },
+            100
+        );
+
     }
 );
-
 
 function cerrarModalAbonoPedido(){
 
@@ -2960,7 +2988,7 @@ btnCancelarAbonoPedido.addEventListener(
     }
 );
 // ======================================================
-// 🔥 ACEPTAR ABONO INICIAL
+// 🔥 ACEPTAR ABONO
 // ======================================================
 
 btnAceptarAbonoPedido.addEventListener(
@@ -2970,6 +2998,10 @@ btnAceptarAbonoPedido.addEventListener(
         const monto =
             Number(montoAbonoPedido.value) || 0;
 
+
+        // ======================================================
+        // VALIDAR MONTO
+        // ======================================================
 
         if(monto <= 0){
 
@@ -2983,6 +3015,10 @@ btnAceptarAbonoPedido.addEventListener(
             return;
         }
 
+
+        // ======================================================
+        // CALCULAR TOTAL ACTUAL DE LOS PRODUCTOS
+        // ======================================================
 
         const totalPedidoActual =
             articulosPedido.reduce(
@@ -3009,10 +3045,49 @@ btnAceptarAbonoPedido.addEventListener(
         }
 
 
-        if(monto > totalPedidoActual){
+        // ======================================================
+        // CALCULAR CUÁNTO YA ESTÁ ABONADO
+        // ======================================================
+
+        const totalYaAbonado =
+            Number(abonoPedidoGuardado) +
+            Number(abonoPedidoNuevo);
+
+
+        // ======================================================
+        // CALCULAR SALDO DISPONIBLE
+        // ======================================================
+
+        const saldoDisponible =
+            totalPedidoActual -
+            totalYaAbonado;
+
+
+        // ======================================================
+        // FACTURA COMPLETAMENTE PAGADA
+        // ======================================================
+
+        if(saldoDisponible <= 0){
 
             mostrarMensaje(
-                "El abono no puede ser mayor al total del pedido",
+                "Esta factura ya está completamente pagada",
+                "error"
+            );
+
+            cerrarModalAbonoPedido();
+
+            return;
+        }
+
+
+        // ======================================================
+        // NO PERMITIR SUPERAR EL SALDO PENDIENTE
+        // ======================================================
+
+        if(monto > saldoDisponible){
+
+            mostrarMensaje(
+                `El saldo pendiente de esta factura es ₡${formatearMontoPedido(saldoDisponible)}. No puede ingresar un abono mayor.`,
                 "error"
             );
 
@@ -3022,15 +3097,32 @@ btnAceptarAbonoPedido.addEventListener(
         }
 
 
-abonoPedidoNuevo = monto;
+        // ======================================================
+        // ACUMULAR EL NUEVO ABONO
+        // ======================================================
 
-abonoPedido =
-    abonoPedidoGuardado +
-    abonoPedidoNuevo;
+        abonoPedidoNuevo += monto;
 
-renderizarDetallePedido();
 
-cerrarModalAbonoPedido();
+        abonoPedido =
+            Number(abonoPedidoGuardado) +
+            Number(abonoPedidoNuevo);
+
+
+        // ======================================================
+        // ACTUALIZAR DETALLE DEL PEDIDO
+        // ======================================================
+
+        renderizarDetallePedido();
+
+
+        // Limpiar el campo para el próximo abono
+        montoAbonoPedido.value = "";
+
+
+        // Cerrar modal
+        cerrarModalAbonoPedido();
+
     }
 );
 function toggleMenuLateral(){
