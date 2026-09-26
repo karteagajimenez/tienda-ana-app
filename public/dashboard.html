@@ -5227,6 +5227,20 @@ async function seleccionarCliente(cliente){
         clienteNuevo
     ){
 
+        // ==================================================
+        // NUEVO CLIENTE SIEMPRE INICIA EN FACTURA 1
+        // ==================================================
+
+        facturaSeleccionada = 1;
+
+        btnNumeroFactura.textContent =
+            '🧾 Factura 1 ▾';
+
+        menuNumeroFactura.classList.remove(
+            'mostrar'
+        );
+
+
         grupoCompraActual = null;
 
         paisGrupoActual = null;
