@@ -4692,6 +4692,33 @@ menuNumeroFactura
                 // REGLA FACTURA 1 -> FACTURA 2 -> FACTURA 3
                 // ======================================================
 
+                // ======================================================
+                // SIN CLIENTE SELECCIONADO SOLO SE PERMITE FACTURA 1
+                // ======================================================
+
+                if(
+                    nuevaFactura > 1 &&
+                    (
+                        !clienteSeleccionado ||
+                        !clienteSeleccionado.id_usuario
+                    )
+                ){
+
+                    facturaSeleccionada = 1;
+
+                    btnNumeroFactura.textContent =
+                        '🧾 Factura 1 ▾';
+
+                    mostrarMensaje(
+                        'Primero seleccione un cliente',
+                        'error'
+                    );
+
+                    return;
+
+                }
+
+
                 if(
                     nuevaFactura > 1 &&
                     clienteSeleccionado &&
