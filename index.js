@@ -1,4 +1,4 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 
 const express = require('express');
 const mysql = require('mysql2');
@@ -3502,6 +3502,30 @@ app.post(
             'COLOMBIA'
         ];
 
+        // =============================================
+        // FACTURA 1 / 2 / 3 DEL CLIENTE
+        // =============================================
+
+        const slotFactura =
+            Number(
+                req.body.slot_factura || 1
+            );
+
+
+        if(
+            !Number.isInteger(slotFactura) ||
+            slotFactura < 1 ||
+            slotFactura > 3
+        ){
+
+            return res.status(400).json({
+                ok: false,
+                mensaje:
+                    'Número de factura inválido'
+            });
+
+        }
+
 
         /* =============================================
            VALIDAR CLIENTE
@@ -3562,6 +3586,7 @@ app.post(
 
             WHERE p.id_usuario = ?
             AND p.pais_origen = ?
+            AND g.slot_factura = ?
             AND p.archivado = 0
             AND p.grupo_compra IS NOT NULL
             AND g.activo = 1
@@ -3572,7 +3597,8 @@ app.post(
             LIMIT 1
         `, [
             idUsuario,
-            paisOrigen
+            paisOrigen,
+            slotFactura
         ], (errorBuscar, resultados) => {
 
 
@@ -3721,11 +3747,13 @@ conexion.beginTransaction((errorTransaccion) => {
                 (
                     pais_origen,
                     activo,
+                    slot_factura,
                     numero_factura
                 )
-                VALUES (?, 1, ?)
+                VALUES (?, 1, ?, ?)
             `, [
                 paisOrigen,
+                slotFactura,
                 nuevoNumero
             ], (errorCrear, resultado) => {
 
@@ -4444,6 +4472,30 @@ app.get(
 
 
         // ======================================================
+        // FACTURA 1 / 2 / 3
+        // ======================================================
+
+        const slotFactura =
+            Number(
+                req.query.slot_factura || 1
+            );
+
+
+        if(
+            !Number.isInteger(slotFactura) ||
+            slotFactura < 1 ||
+            slotFactura > 3
+        ){
+
+            return res.status(400).json({
+                ok:false,
+                mensaje:'Numero de factura invalido'
+            });
+
+        }
+
+
+        // ======================================================
         // 🔐 VALIDAR CLIENTE
         // ======================================================
 
@@ -4500,6 +4552,7 @@ app.get(
 
             WHERE p.id_usuario = ?
             AND p.pais_origen = ?
+            AND g.slot_factura = ?
             AND p.archivado = 0
             AND p.grupo_compra IS NOT NULL
             AND g.activo = 1
@@ -4509,7 +4562,8 @@ app.get(
             LIMIT 1
         `, [
             idUsuario,
-            paisOrigen
+            paisOrigen,
+            slotFactura
 
         ], (errorGrupo, grupos) => {
 
@@ -5040,6 +5094,8 @@ app.get('/client-orders/:id', protegerCliente, (req, res) => {
     conexion.query(`
         SELECT
             p.*,
+            g.slot_factura,
+            g.numero_factura,
 
             (
                 SELECT IFNULL(
@@ -5068,6 +5124,9 @@ app.get('/client-orders/:id', protegerCliente, (req, res) => {
             ) AS total_abonado
 
         FROM pedidos p
+
+        LEFT JOIN grupos_compra g
+            ON g.id_grupo = p.grupo_compra
 
         WHERE
             p.id_usuario = ?

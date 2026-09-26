@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -817,6 +817,62 @@
     }
 
 }
+
+/* =========================================================
+   SEPARACION VISUAL ENTRE FACTURAS DEL CLIENTE
+   Factura 2 / Factura 3
+========================================================= */
+
+.separador-factura-cliente td{
+    text-align:center !important;
+    font-size:18px !important;
+    font-weight:700 !important;
+    color:#8f5368 !important;
+
+    padding-top:22px !important;
+    padding-bottom:16px !important;
+
+    border-top:4px solid #c4879d !important;
+    border-bottom:2px solid #e5bccb !important;
+
+    background:#fff8fa !important;
+}
+
+.encabezado-factura-cliente th{
+    background:#d38aa2 !important;
+    color:white !important;
+    font-weight:700 !important;
+}
+
+
+/* =========================================================
+   HEADER FIJO - COMPUTADORA Y MÓVIL
+   ========================================================= */
+
+#header{
+    position: sticky;
+    top: 0;
+    z-index: 5000;
+}
+
+
+/* =========================================================
+   FLECHA INDICADORA - FACTURA 2 / FACTURA 3
+   ========================================================= */
+
+.titulo-factura-cliente{
+    text-align:center;
+    width:100%;
+}
+
+.flecha-factura-cliente{
+    text-align:center;
+    font-size:11px;
+    line-height:1;
+    margin-top:4px;
+    color:#714f5b;
+}
+
 </style>
 
 </head>
@@ -1266,36 +1322,6 @@ async function cargar(){
             await res.json();
 
 
-        // ========================================
-        // 🔹 TOTALES GENERALES
-        //    ENVÍO Y ABONO
-        // ========================================
-
-        const envioTotal =
-            data.reduce(
-                (total, pedido) => {
-
-                    return total +
-                        (
-                            (
-                                Number(
-                                    pedido.peso_gramos
-                                ) || 0
-                            )
-                            / 1000
-                        )
-                        * 6000;
-
-                },
-                0
-            );
-
-const abonoTotal =
-    data.length > 0
-        ? Number(data[0].total_abonado) || 0
-        : 0;
-
-
         let html = "";
 
 
@@ -1318,148 +1344,274 @@ const abonoTotal =
 
             `;
 
+        }else{
+
+
+            // ========================================
+            // AGRUPAR PEDIDOS POR FACTURA
+            // ========================================
+
+            const facturas = {};
+
+
+            data.forEach(pedido => {
+
+                const slot =
+                    Number(
+                        pedido.slot_factura
+                    ) || 1;
+
+
+                if(!facturas[slot]){
+
+                    facturas[slot] = [];
+
+                }
+
+
+                facturas[slot].push(
+                    pedido
+                );
+
+            });
+
+
+            // ========================================
+            // MOSTRAR FACTURA 1 / 2 / 3
+            // ========================================
+
+            [1, 2, 3].forEach(
+                numeroFactura => {
+
+
+                    const pedidosFactura =
+                        facturas[numeroFactura];
+
+
+                    // Si esta factura todavía no existe,
+                    // no se muestra nada.
+                    if(
+                        !pedidosFactura ||
+                        pedidosFactura.length === 0
+                    ){
+
+                        return;
+
+                    }
+
+
+                    // ========================================
+                    // SUBTÍTULO DE FACTURA
+                    //
+                    // Factura 1 conserva la tabla tal como
+                    // estaba originalmente.
+                    //
+                    // Factura 2 y 3 muestran una separación.
+                    // ========================================
+
+                    if(numeroFactura > 1){
+
+                        html += `
+
+                            <tr class="separador-factura-cliente">
+
+                                <td colspan="7">
+
+                                    <div class="titulo-factura-cliente">
+                                        🧾 Factura ${numeroFactura}
+
+                                        <div class="flecha-factura-cliente">
+                                            ▼
+                                        </div>
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                            <tr class="encabezado-factura-cliente">
+
+                                <th>Artículo</th>
+
+                                <th>Cantidad</th>
+
+                                <th>Precio</th>
+
+                                <th>Envío</th>
+
+                                <th>Abono General</th>
+
+                                <th>País de origen</th>
+
+                                <th>Estado del paquete</th>
+
+                            </tr>
+
+                        `;
+
+                    }
+
+
+                    // ========================================
+                    // ENVÍO TOTAL DE ESTA FACTURA
+                    // ========================================
+
+                    const envioFactura =
+                        pedidosFactura.reduce(
+                            (total, pedido) => {
+
+                                return total +
+                                    (
+                                        (
+                                            Number(
+                                                pedido.peso_gramos
+                                            ) || 0
+                                        )
+                                        / 1000
+                                    )
+                                    * 6000;
+
+                            },
+                            0
+                        );
+
+
+                    // ========================================
+                    // ABONO TOTAL DE ESTA FACTURA
+                    // ========================================
+
+                    const abonoFactura =
+                        pedidosFactura.length > 0
+                            ? Number(
+                                pedidosFactura[0]
+                                    .total_abonado
+                            ) || 0
+                            : 0;
+
+
+                    // ========================================
+                    // ARTÍCULOS DE ESTA FACTURA
+                    // ========================================
+
+                    pedidosFactura.forEach(
+                        (p, indexFactura) => {
+
+
+                            const cantidad =
+                                Number(
+                                    p.cantidad
+                                ) || 0;
+
+
+                            const precioUnitario =
+                                Number(
+                                    p.precio_unidad
+                                ) || 0;
+
+
+                            const precioProducto =
+                                precioUnitario *
+                                cantidad;
+
+
+                            const paisOrigen =
+                                traducirPaisOrigen(
+                                    p.pais_origen
+                                );
+
+
+                            const estado =
+                                traducirEstado(
+                                    p.estado
+                                );
+
+
+                            html += `
+
+                                <tr>
+
+                                    <td>
+
+                                        ${p.articulo}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        ${p.cantidad}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        ₡${precioProducto.toLocaleString(
+                                            "es-CR"
+                                        )}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        ${
+                                            indexFactura === 0
+                                                ? "₡" +
+                                                  envioFactura.toLocaleString(
+                                                      "es-CR"
+                                                  )
+                                                : ""
+                                        }
+
+                                    </td>
+
+
+                                    <td>
+
+                                        ${
+                                            indexFactura === 0
+                                                ? "₡" +
+                                                  abonoFactura.toLocaleString(
+                                                      "es-CR"
+                                                  )
+                                                : ""
+                                        }
+
+                                    </td>
+
+
+                                    <td>
+
+                                        ${paisOrigen}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span
+                                            class="estado ${estado.clase}"
+                                        >
+
+                                            ${estado.texto}
+
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                            `;
+
+                        }
+                    );
+
+                }
+            );
+
         }
-
-
-        data.forEach((p, index) => {
-
-
-            /* ========================================
-               🔹 CALCULAR PRECIO DEL PRODUCTO
-
-               Precio = precio unitario × cantidad
-
-               NO incluye el envío.
-            ======================================== */
-
-            const cantidad =
-                Number(
-                    p.cantidad
-                ) || 0;
-
-
-            const precioUnitario =
-                Number(
-                    p.precio_unidad
-                ) || 0;
-
-
-            const precioProducto =
-                precioUnitario *
-                cantidad;
-
-
-
-            /* ========================================
-               🔹 CALCULAR ENVÍO
-
-               1000 gramos = ₡6000
-            ======================================== */
-
-            const envio =
-                (
-                    (p.peso_gramos || 0)
-                    / 1000
-                )
-                * 6000;
-
-
-
-            /* ========================================
-               🔹 PAÍS DE ORIGEN
-            ======================================== */
-
-            const paisOrigen =
-                traducirPaisOrigen(
-                    p.pais_origen
-                );
-
-
-
-            /* ========================================
-               🔹 ESTADO DEL PAQUETE
-            ======================================== */
-
-            const estado =
-                traducirEstado(
-                    p.estado
-                );
-
-
-            html += `
-
-                <tr>
-
-                    <td>
-
-                        ${p.articulo}
-
-                    </td>
-
-
-                    <td>
-
-                        ${p.cantidad}
-
-                    </td>
-
-
-                    <td>
-
-                        ₡${precioProducto.toLocaleString(
-                            "es-CR"
-                        )}
-
-                    </td>
-
-<td>
-
-    ${
-        index === 0
-            ? "₡" + envioTotal.toLocaleString(
-                "es-CR"
-            )
-            : ""
-    }
-
-</td>
-
-
-<td>
-
-    ${
-        index === 0
-            ? "₡" + abonoTotal.toLocaleString(
-                "es-CR"
-            )
-            : ""
-    }
-
-</td>
-                    <td>
-
-                        ${paisOrigen}
-
-                    </td>
-
-
-                    <td>
-
-                        <span
-                            class="estado ${estado.clase}"
-                        >
-
-                            ${estado.texto}
-
-                        </span>
-
-                    </td>
-
-                </tr>
-
-            `;
-
-        });
 
 
         document.getElementById(
@@ -1729,3 +1881,8 @@ cargar();
 </body>
 
 </html>
+
+
+
+
+

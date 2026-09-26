@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <link rel="icon" type="image/png" href="/favicon.png">
@@ -759,6 +759,89 @@ body.menu-abierto {
     font-size:15px;
     line-height:1;
 }
+
+/* =========================================================
+   SELECTOR FACTURA - CREAR PEDIDO
+========================================================= */
+.selector-factura-pedido{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    width:100%;
+    margin-bottom:4px;
+}
+
+.btn-factura-pedido{
+    width:auto !important;
+    min-width:0 !important;
+    flex:none !important;
+    background:transparent !important;
+    color:#c48b9f !important;
+    border:none !important;
+    box-shadow:none !important;
+    padding:4px 0 !important;
+    margin:0 !important;
+    font-size:15px !important;
+    font-weight:600 !important;
+    cursor:pointer;
+}
+
+.btn-factura-pedido:hover{
+    background:transparent !important;
+    color:#ad7187 !important;
+}
+
+
+/* =========================================================
+   MENU DESPLEGABLE FACTURA 1 / 2 / 3
+========================================================= */
+
+.selector-factura-pedido{
+    position:relative;
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    width:100%;
+    margin-bottom:4px;
+}
+
+.menu-factura-pedido{
+    display:none;
+    position:absolute;
+    top:100%;
+    right:0;
+    min-width:120px;
+    background:white;
+    border:1px solid #e5d6dc;
+    border-radius:8px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.12);
+    padding:5px;
+    z-index:1000;
+}
+
+.menu-factura-pedido.mostrar{
+    display:block;
+}
+
+.menu-factura-pedido button{
+    display:block;
+    width:100%;
+    background:transparent !important;
+    color:#555 !important;
+    border:none !important;
+    box-shadow:none !important;
+    text-align:left;
+    padding:8px 10px !important;
+    margin:0 !important;
+    border-radius:5px;
+    font-size:14px !important;
+    cursor:pointer;
+}
+
+.menu-factura-pedido button:hover{
+    background:#f5ecef !important;
+    color:#ad7187 !important;
+}
 </style>
 </head>
 
@@ -1286,7 +1369,36 @@ body.menu-abierto {
     <!-- 🔥 BUSCADOR CLIENTE -->
     <div class="buscador-contenedor">
 
-        <input
+        <!-- 🔥 SELECTOR DE FACTURA -->
+<div class="selector-factura-pedido">
+
+    <button
+        type="button"
+        id="btnNumeroFactura"
+        class="btn-factura-pedido"
+    >
+        🧾 Factura 1 ▾
+    </button>
+
+    <div
+        id="menuNumeroFactura"
+        class="menu-factura-pedido"
+    >
+        <button type="button" data-factura="1">
+            Factura 1
+        </button>
+
+        <button type="button" data-factura="2">
+            Factura 2
+        </button>
+
+        <button type="button" data-factura="3">
+            Factura 3
+        </button>
+    </div>
+
+</div>
+<input
             type="text"
             id="clienteInput"
             placeholder="Buscar o seleccionar cliente..."
@@ -1311,6 +1423,7 @@ body.menu-abierto {
         >
             País: EEUU
         </button>
+
 
     </div>
 
@@ -4525,6 +4638,171 @@ const cantidadInput =
 const btnPaisOrigen =
     document.getElementById('btnPaisOrigen');
 
+const btnNumeroFactura =
+    document.getElementById('btnNumeroFactura');
+
+// Factura seleccionada para cliente + pais
+// Siempre inicia en Factura 1
+let facturaSeleccionada = 1;
+
+const menuNumeroFactura =
+    document.getElementById('menuNumeroFactura');
+
+
+/*
+    ======================================================
+    SELECTOR FACTURA 1 / 2 / 3
+    ======================================================
+*/
+
+btnNumeroFactura.addEventListener(
+    'click',
+    (event) => {
+
+        event.stopPropagation();
+
+        menuNumeroFactura.classList.toggle(
+            'mostrar'
+        );
+
+    }
+);
+
+
+menuNumeroFactura
+    .querySelectorAll('[data-factura]')
+    .forEach(opcion => {
+
+        opcion.addEventListener(
+            'click',
+            async () => {
+
+                const nuevaFactura =
+                    Number(
+                        opcion.dataset.factura
+                    );
+
+
+                menuNumeroFactura.classList.remove(
+                    'mostrar'
+                );
+
+
+                // ======================================================
+                // REGLA FACTURA 1 -> FACTURA 2 -> FACTURA 3
+                // ======================================================
+
+                if(
+                    nuevaFactura > 1 &&
+                    clienteSeleccionado &&
+                    clienteSeleccionado.id_usuario
+                ){
+
+                    for(
+                        let facturaAnterior = 1;
+                        facturaAnterior < nuevaFactura;
+                        facturaAnterior++
+                    ){
+
+                        try{
+
+                            const respuestaAnterior =
+                                await fetch(
+                                    `/active-order/${clienteSeleccionado.id_usuario}?pais_origen=${obtenerPaisBase()}&slot_factura=${facturaAnterior}`
+                                );
+
+
+                            const dataAnterior =
+                                await respuestaAnterior.json();
+
+
+                            if(
+                                !respuestaAnterior.ok ||
+                                !dataAnterior.existe
+                            ){
+
+                                mostrarMensaje(
+                                    `Primero debe existir la Factura ${facturaAnterior}`,
+                                    'error'
+                                );
+
+                                return;
+
+                            }
+
+                        }catch(error){
+
+                            console.error(
+                                'Error verificando factura anterior:',
+                                error
+                            );
+
+                            mostrarMensaje(
+                                'No se pudo verificar la factura anterior',
+                                'error'
+                            );
+
+                            return;
+
+                        }
+
+                    }
+
+                }
+
+
+                facturaSeleccionada =
+                    nuevaFactura;
+
+
+                btnNumeroFactura.textContent =
+                    `🧾 Factura ${facturaSeleccionada} ▾`;
+
+
+                // Limpiar la factura que estaba cargada
+                grupoCompraActual = null;
+                paisGrupoActual = null;
+
+                articulosPedido = [];
+                articulosEliminados = [];
+
+                abonoPedidoGuardado = 0;
+                abonoPedidoNuevo = 0;
+                abonoPedido = 0;
+
+                renderizarDetallePedido();
+
+
+                // Si ya hay cliente seleccionado,
+                // cargar solamente la factura elegida
+                if(
+                    clienteSeleccionado &&
+                    clienteSeleccionado.id_usuario
+                ){
+
+                    await seleccionarCliente(
+                        clienteSeleccionado
+                    );
+
+                }
+
+            }
+        );
+
+    });
+
+
+document.addEventListener(
+    'click',
+    () => {
+
+        menuNumeroFactura.classList.remove(
+            'mostrar'
+        );
+
+    }
+);
+
 const btnAbrirArticulo =
     document.getElementById('btnAbrirArticulo');
 
@@ -4609,7 +4887,10 @@ async function crearGrupoCompra(){
                                 .id_usuario,
 
                         pais_origen:
-                            paisBase
+                            paisBase,
+
+                        slot_factura:
+                            facturaSeleccionada
 
                     })
                 }
@@ -4936,7 +5217,7 @@ async function seleccionarCliente(cliente){
 
         const respuesta =
             await fetch(
-                `/active-order/${clienteNuevo}?pais_origen=${obtenerPaisBase()}`
+                `/active-order/${clienteNuevo}?pais_origen=${obtenerPaisBase()}&slot_factura=${facturaSeleccionada}`
             );
 
 
@@ -6223,6 +6504,20 @@ renderizarDetallePedido();
             clienteSeleccionado = null;
 
 
+            // ==================================================
+            // 🔥 VOLVER A FACTURA 1 PARA EL SIGUIENTE PEDIDO
+            // ==================================================
+
+            facturaSeleccionada = 1;
+
+            btnNumeroFactura.textContent =
+                '🧾 Factura 1 ▾';
+
+            menuNumeroFactura.classList.remove(
+                'mostrar'
+            );
+
+
             listaClientes
                 .classList
                 .remove('mostrar');
@@ -6356,3 +6651,9 @@ document.addEventListener(
 
 </body>
 </html>
+
+
+
+
+
+
