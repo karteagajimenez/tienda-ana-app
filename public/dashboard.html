@@ -888,9 +888,9 @@ body.menu-abierto {
 
     <button
         type="button"
-        onclick="abrirEditarCliente()"
+        onclick="window.location.href='/list_clients.html'"
     >
-        👤✎ Editar cliente
+        <span style="display:inline-block; position:relative; top:-2px; line-height:1;">👥</span> <span>Lista clientes</span>
     </button>
 
     <button
@@ -1642,6 +1642,70 @@ body.menu-abierto {
     </div>
 
 </form>
+
+
+<!-- =====================================================
+     LISTA DE CLIENTES
+===================================================== -->
+
+<section
+    id="vistaListaClientes"
+    style="display:none;"
+>
+
+    <div class="lista-clientes-cabecera">
+
+        <h2>
+            👥 Lista de clientes
+        </h2>
+
+        <input
+            type="text"
+            id="buscarListaClientes"
+            placeholder="Buscar cliente..."
+            autocomplete="off"
+        >
+
+    </div>
+
+
+    <div
+        id="contenedorListaClientes"
+        class="contenedor-lista-clientes"
+    >
+
+        <!-- LOS CLIENTES SE GENERAN CON JAVASCRIPT -->
+
+    </div>
+
+
+    <div class="paginacion-clientes">
+
+        <button
+            type="button"
+            id="btnAnteriorClientes"
+            style="display:none;"
+        >
+            ← Anterior
+        </button>
+
+        <span id="infoPaginacionClientes">
+            0 de 0
+        </span>
+
+        <button
+            type="button"
+            id="btnSiguienteClientes"
+            style="display:none;"
+        >
+            Siguiente →
+        </button>
+
+    </div>
+
+</section>
+
+
 
 
 <!-- =====================================================
@@ -6688,10 +6752,484 @@ document.addEventListener(
 
     }
 );
+
+// ======================================================
+// LISTA DE CLIENTES
+// ======================================================
+
+let paginaListaClientes = 1;
+
+const clientesPorPagina = 20;
+
+
+// ======================================================
+// ABRIR LISTA DE CLIENTES
+// ======================================================
+
+async function abrirListaClientes(){
+
+    // Cerrar menú lateral si está abierto
+    const menuLateralLista =
+        document.getElementById(
+            "menuLateral"
+        );
+
+    if (menuLateralLista) {
+
+        menuLateralLista.classList.remove(
+            "abierto"
+        );
+
+        document.body.classList.remove(
+            "menu-abierto"
+        );
+
+    }
+
+    // Actualizar clientes desde la base de datos
+    await cargarClientes();
+
+    paginaListaClientes = 1;
+
+    const buscador =
+        document.getElementById(
+            "buscarListaClientes"
+        );
+
+    buscador.value = "";
+
+
+    // Ocultar Crear Pedido
+    const formPedido =
+        document.getElementById(
+            "formPedido"
+        );
+
+    if(formPedido){
+
+        formPedido.style.display =
+            "none";
+
+    }
+
+
+    // Ocultar título Crear Pedido
+    const tituloCentro =
+        document.querySelector(
+            ".titulo-centro"
+        );
+
+    if(tituloCentro){
+
+        tituloCentro.style.display =
+            "none";
+
+    }
+
+
+    // Mostrar Lista de clientes
+    const vista =
+        document.getElementById(
+            "vistaListaClientes"
+        );
+
+    vista.style.display =
+        "block";
+
+
+    renderizarListaClientesCompleta();
+
+}
+
+
+// ======================================================
+// OBTENER CLIENTES FILTRADOS Y ORDENADOS A-Z
+// ======================================================
+
+function obtenerClientesLista(){
+
+    const buscador =
+        document.getElementById(
+            "buscarListaClientes"
+        );
+
+
+    const texto =
+        buscador.value
+            .trim()
+            .toLowerCase();
+
+
+    const resultado =
+        clientes.filter(cliente => {
+
+            const nombreCompleto =
+                `${cliente.nombre || ""} ${cliente.apellido || ""}`
+                    .toLowerCase();
+
+            const correo =
+                String(
+                    cliente.correo || ""
+                ).toLowerCase();
+
+            const telefono =
+                String(
+                    cliente.telefono || ""
+                ).toLowerCase();
+
+
+            return (
+                nombreCompleto.includes(texto) ||
+                correo.includes(texto) ||
+                telefono.includes(texto)
+            );
+
+        });
+
+
+    resultado.sort((a, b) => {
+
+        const nombreA =
+            `${a.nombre || ""} ${a.apellido || ""}`;
+
+        const nombreB =
+            `${b.nombre || ""} ${b.apellido || ""}`;
+
+
+        return nombreA.localeCompare(
+            nombreB,
+            "es",
+            {
+                sensitivity: "base"
+            }
+        );
+
+    });
+
+
+    return resultado;
+
+}
+
+
+// ======================================================
+// RENDERIZAR LISTA
+// ======================================================
+
+function renderizarListaClientesCompleta(){
+
+    const contenedor =
+        document.getElementById(
+            "contenedorListaClientes"
+        );
+
+    const btnAnterior =
+        document.getElementById(
+            "btnAnteriorClientes"
+        );
+
+    const btnSiguiente =
+        document.getElementById(
+            "btnSiguienteClientes"
+        );
+
+    const info =
+        document.getElementById(
+            "infoPaginacionClientes"
+        );
+
+
+    const lista =
+        obtenerClientesLista();
+
+
+    const totalClientes =
+        lista.length;
+
+
+    const totalPaginas =
+        Math.max(
+            1,
+            Math.ceil(
+                totalClientes /
+                clientesPorPagina
+            )
+        );
+
+
+    if(
+        paginaListaClientes >
+        totalPaginas
+    ){
+
+        paginaListaClientes =
+            totalPaginas;
+
+    }
+
+
+    const inicio =
+        (
+            paginaListaClientes - 1
+        ) * clientesPorPagina;
+
+
+    const fin =
+        Math.min(
+            inicio + clientesPorPagina,
+            totalClientes
+        );
+
+
+    const pagina =
+        lista.slice(
+            inicio,
+            fin
+        );
+
+
+    contenedor.innerHTML = "";
+
+
+    if(totalClientes === 0){
+
+        contenedor.innerHTML = `
+            <div
+                style="
+                    text-align:center;
+                    padding:35px 15px;
+                "
+            >
+                No se encontraron clientes.
+            </div>
+        `;
+
+        info.textContent =
+            "0 de 0";
+
+        btnAnterior.style.display =
+            "none";
+
+        btnSiguiente.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    pagina.forEach(
+        (cliente, indice) => {
+
+            const numero =
+                inicio +
+                indice +
+                1;
+
+
+            const fila =
+                document.createElement(
+                    "div"
+                );
+
+
+            fila.className =
+                "fila-lista-cliente";
+
+
+            fila.innerHTML = `
+
+                <div class="datos-lista-cliente">
+
+                    <strong>
+                        ${numero}. ${cliente.nombre || ""} ${cliente.apellido || ""}
+                    </strong>
+
+                </div>
+
+
+                <div class="acciones-lista-cliente">
+
+                    <button
+                        type="button"
+                        class="btn-editar-lista-cliente"
+                        data-id="${cliente.id_usuario}"
+                    >
+                        ✏️ Editar
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn-eliminar-lista-cliente"
+                        data-id="${cliente.id_usuario}"
+                    >
+                        🗑️ Eliminar
+                    </button>
+
+                </div>
+
+            `;
+
+
+            contenedor.appendChild(
+                fila
+            );
+
+
+            // ==================================================
+            // EDITAR CLIENTE DESDE LISTA DE CLIENTES
+            // ==================================================
+
+            const btnEditar =
+                fila.querySelector(
+                    ".btn-editar-lista-cliente"
+                );
+
+
+            btnEditar.addEventListener(
+                "click",
+                async () => {
+
+                    // Abrir modal existente
+                    abrirEditarCliente();
+
+
+                    // Cargar directamente este cliente
+                    await seleccionarClienteEditar(
+                        cliente
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    info.textContent =
+        `${inicio + 1}–${fin} de ${totalClientes}`;
+
+
+    btnAnterior.style.display =
+        paginaListaClientes > 1
+            ? "inline-block"
+            : "none";
+
+
+    btnSiguiente.style.display =
+        paginaListaClientes < totalPaginas
+            ? "inline-block"
+            : "none";
+
+}
+
+
+// ======================================================
+// BUSCADOR
+// ======================================================
+
+document
+.getElementById(
+    "buscarListaClientes"
+)
+.addEventListener(
+    "input",
+    () => {
+
+        paginaListaClientes = 1;
+
+        renderizarListaClientesCompleta();
+
+    }
+);
+
+
+// ======================================================
+// ANTERIOR
+// ======================================================
+
+document
+.getElementById(
+    "btnAnteriorClientes"
+)
+.addEventListener(
+    "click",
+    () => {
+
+        if(
+            paginaListaClientes > 1
+        ){
+
+            paginaListaClientes--;
+
+            renderizarListaClientesCompleta();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+
+    }
+);
+
+
+// ======================================================
+// SIGUIENTE
+// ======================================================
+
+document
+.getElementById(
+    "btnSiguienteClientes"
+)
+.addEventListener(
+    "click",
+    () => {
+
+        const total =
+            obtenerClientesLista()
+                .length;
+
+
+        const totalPaginas =
+            Math.ceil(
+                total /
+                clientesPorPagina
+            );
+
+
+        if(
+            paginaListaClientes <
+            totalPaginas
+        ){
+
+            paginaListaClientes++;
+
+            renderizarListaClientesCompleta();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+
+    }
+);
 </script>
 
 </body>
 </html>
+
+
+
+
+
+
+
+
 
 
 

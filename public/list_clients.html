@@ -1,0 +1,3108 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<link rel="icon" type="image/png" href="/favicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+
+<title>Artículos - Tienda Ana</title>
+
+<style>
+
+body{
+    font-family:Arial, sans-serif;
+    background:linear-gradient(to right,#f8e1e7,#fdf6f0);
+    margin:0;
+    padding:0;
+}
+
+/* ======================================================
+   MENÚ LATERAL
+====================================================== */
+
+.menu-lateral{
+    position:fixed;
+    top:0;
+    left:0;
+    width:0;
+    height:100vh;
+    background:#efd0da;
+    overflow:hidden;
+    transition:width 0.3s ease;
+    z-index:5000;
+    box-shadow:2px 0 8px rgba(0,0,0,0.08);
+}
+
+.menu-lateral.abierto{
+    width:255px;
+}
+
+.menu-lateral-superior{
+    height:110px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+}
+
+.btn-menu-lateral{
+    position:fixed;
+    top:28px;
+    left:18px;
+    z-index:6000;
+
+    width:42px;
+    height:42px;
+
+    padding:0;
+    border:none;
+    background:transparent;
+
+    color:#b76e8a;
+    font-size:30px;
+    font-weight:normal;
+
+    cursor:pointer;
+}
+
+.menu-lateral.abierto .btn-menu-lateral{
+    position:absolute;
+}
+
+.logo-menu-lateral{
+    width:82px;
+    height:auto;
+    border-radius:10px;
+}
+
+.menu-lateral-contenido{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding:15px 12px;
+}
+
+.menu-lateral-contenido button{
+    width:100%;
+
+    border:none;
+    border-radius:7px;
+
+    background:#c48b9f;
+    color:white;
+
+    font-family:Arial, sans-serif;
+    font-size:14px;
+    font-weight:normal;
+
+    text-align:center;
+
+    padding:10px 12px;
+
+    cursor:pointer;
+}
+
+.menu-lateral-contenido button:hover{
+    opacity:0.85;
+}
+/* HEADER */
+
+.header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:15px 25px 15px 75px;
+    position:relative;
+}
+
+.header h1{
+    font-size:22px;
+    color:#c48b9f;
+    margin:0;
+}
+
+.logo-container{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+}
+
+.logo-header{
+    height:90px;
+}
+
+
+/* CONTENEDOR */
+
+.contenedor{
+    width:92%;
+    max-width:1100px;
+    margin:40px auto;
+}
+
+.tarjeta{
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 3px 15px rgba(0,0,0,0.12);
+}
+
+.tarjeta h2{
+    text-align:center;
+    color:#c48b9f;
+    margin-top:0;
+    margin-bottom:25px;
+}
+
+
+/* BUSCADOR */
+
+.buscador{
+    margin-bottom:25px;
+}
+
+.buscador input{
+    width:100%;
+    box-sizing:border-box;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:15px;
+}
+
+.buscador input:focus{
+    outline:none;
+    border-color:#c48b9f;
+    box-shadow:0 0 0 3px rgba(196,139,159,0.15);
+}
+
+
+/* TABLA */
+
+.tabla-contenedor{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+}
+
+th,
+td{
+    padding:12px;
+    border-bottom:1px solid #eee;
+    text-align:left;
+}
+
+th{
+    background:#c48b9f;
+    color:white;
+}
+
+tbody tr:hover{
+    background:#fdf6f8;
+}
+
+
+/* COLUMNAS */
+
+.col-tasa{
+    text-align:center;
+    white-space:nowrap;
+     width:160px;
+}
+
+.col-accion{
+    text-align:center;
+    width:120px;
+}
+
+
+/* BOTÓN EDITAR */
+/* BOTONES EDITAR Y ELIMINAR */
+
+.editar,
+.eliminar{
+    width:72px;
+    padding:6px 0;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+    font-size:13px;
+    display:block;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.editar{
+    background:#c48b9f;
+    color:white;
+}
+
+.editar:hover{
+    background:#b3748a;
+}
+
+.eliminar{
+    background:#e74c3c;
+    color:white;
+    margin-top:4px;
+}
+
+.eliminar:hover{
+    opacity:0.85;
+}
+/* SIN RESULTADOS */
+
+.sin-resultados{
+    text-align:center;
+    color:#888;
+    padding:30px;
+}
+
+.modal-eliminar-articulo{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+
+    justify-content:center;
+    align-items:center;
+
+    padding:20px;
+
+    z-index:5000;
+}
+
+.modal-eliminar-articulo.activo{
+    display:flex;
+}
+
+.modal-eliminar-contenido{
+    width:100%;
+    max-width:390px;
+
+    background:white;
+
+    border-radius:16px;
+
+    padding:28px;
+
+    text-align:center;
+
+    box-shadow:
+        0 10px 30px
+        rgba(0,0,0,0.20);
+}
+
+.modal-eliminar-icono{
+    width:58px;
+    height:58px;
+
+    margin:0 auto 14px;
+
+    border-radius:50%;
+
+    background:#fde8e8;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:26px;
+}
+
+.modal-eliminar-contenido h3{
+    margin:0 0 12px;
+
+    color:#e74c3c;
+
+    font-size:22px;
+}
+
+.modal-eliminar-contenido p{
+    color:#666;
+
+    font-size:14px;
+
+    line-height:1.6;
+}
+
+.modal-eliminar-botones{
+    display:flex;
+    justify-content:center;
+
+    gap:10px;
+
+    margin-top:22px;
+}
+
+.modal-eliminar-botones button{
+    min-width:115px;
+
+    padding:10px 18px;
+
+    border:none;
+
+    border-radius:8px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.btn-cancelar-eliminar{
+    background:#e5e5e5;
+
+    color:#333;
+}
+
+.btn-confirmar-eliminar{
+    background:#e74c3c;
+
+    color:white;
+}
+
+.btn-cancelar-eliminar:hover,
+.btn-confirmar-eliminar:hover{
+    opacity:0.85;
+}
+
+.mensaje-exito{
+    position:fixed;
+    top:25px;
+    left:50%;
+
+    transform:
+        translateX(-50%)
+        translateY(-20px);
+
+    background:white;
+    color:#444;
+
+    padding:16px 24px;
+    border-radius:12px;
+
+    box-shadow:
+        0 6px 22px
+        rgba(0,0,0,0.22);
+
+    font-weight:bold;
+    font-size:15px;
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+
+    z-index:6000;
+}
+
+.mensaje-exito.activo{
+    opacity:1;
+    visibility:visible;
+
+    transform:
+        translateX(-50%)
+        translateY(0);
+}
+
+/* PAGINACIÓN */
+
+.paginacion{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    width:100%;
+    margin-top:18px;
+
+    gap:8px;
+}
+
+.rango-paginacion{
+    width:100%;
+    text-align:center;
+
+    color:#333;
+
+    font-size:14px;
+    font-weight:bold;
+}
+
+.botones-paginacion{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    gap:8px;
+}
+
+.botones-paginacion button{
+    background:#c48b9f;
+    color:white;
+
+    border:none;
+    border-radius:6px;
+
+    padding:7px 13px;
+
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.botones-paginacion button:hover{
+    background:#b3748a;
+}
+
+.botones-paginacion button:disabled{
+    display:none;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:700px){
+
+    .header h1{
+        display:block;
+        font-size:18px;
+    }
+
+    .logo-container{
+        position:static;
+        transform:none;
+    }
+
+    .contenedor{
+        width:95%;
+    }
+
+    .tarjeta{
+        padding:20px;
+    }
+  
+}
+/* ======================================================
+   EDITAR ARTÍCULOS
+   ARRIBA FIJO + LISTA DESPLAZABLE + PAGINACIÓN FIJA
+====================================================== */
+
+body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+
+/* ======================================================
+   PARTE SUPERIOR
+====================================================== */
+
+.zona-superior-fija {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    z-index: 3000;
+
+    background: linear-gradient(
+        to right,
+        #f8e1e7,
+        #fdf6f0
+    );
+}
+
+
+/* ======================================================
+   CONTENEDOR PRINCIPAL
+====================================================== */
+
+.contenedor {
+    width: 92%;
+    max-width: 1100px;
+
+    margin: 110px auto 0 auto;
+
+    height: calc(100vh - 175px);
+
+    box-sizing: border-box;
+}
+
+
+/* ======================================================
+   TARJETA
+====================================================== */
+
+.tarjeta {
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    box-sizing: border-box;
+}
+
+
+/* ======================================================
+   TÍTULO Y BUSCADOR NO SE MUEVEN
+====================================================== */
+
+.tarjeta h2,
+.buscador {
+    flex-shrink: 0;
+}
+
+
+/* ======================================================
+   TABLA
+   SOLO ESTA PARTE SE DESPLAZA
+====================================================== */
+
+.tabla-contenedor {
+    flex: 1;
+
+    overflow-y: auto;
+    overflow-x: auto;
+
+    min-height: 0;
+}
+
+
+/* ======================================================
+   ENCABEZADO DE LA TABLA FIJO
+====================================================== */
+
+.tabla-contenedor thead {
+    position: sticky;
+    top: 0;
+
+    z-index: 20;
+}
+
+
+/* ======================================================
+   PAGINACIÓN FIJA ABAJO
+====================================================== */
+
+.paginacion {
+    position: fixed;
+
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+
+    margin: 0;
+    padding: 10px 0;
+
+    background: #fdf6f0;
+
+    z-index: 3000;
+
+    box-sizing: border-box;
+}
+/* ======================================================
+   AJUSTE CELULAR - PAGINACIÓN FIJA
+====================================================== */
+
+@media(max-width:700px){
+
+    .contenedor {
+        width:95%;
+        height:calc(100vh - 250px);
+    }
+
+    .tabla-contenedor {
+        padding-bottom:120px;
+        box-sizing:border-box;
+    }
+
+}
+
+/* =========================================================
+   ESTILOS MODAL EDITAR CLIENTE - LISTA CLIENTES
+========================================================= */
+
+.modal-cliente{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    width:100vw;
+    height:100vh;
+    background:rgba(0,0,0,0.35);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:3000;
+    padding:20px;
+    box-sizing:border-box;
+}
+
+.modal-cliente.activo{
+    display:flex;
+}
+
+.modal-cliente-contenido{
+    background:white;
+    width:100%;
+    max-width:520px;
+    max-height:85vh;
+    overflow-y:auto;
+    border-radius:12px;
+    padding:24px;
+    box-shadow:0 8px 28px rgba(0,0,0,0.22);
+    box-sizing:border-box;
+}
+
+.modal-cliente-contenido h3{
+    margin-top:0;
+    text-align:center;
+    color:#c48b9f;
+    font-size:24px;
+}
+
+#formularioEditarCliente label{
+    display:block;
+    font-weight:bold;
+    color:#444;
+    margin-top:8px;
+    margin-bottom:0;
+}
+
+#formularioEditarCliente input,
+#formularioEditarCliente select{
+    width:100%;
+    box-sizing:border-box;
+    margin:6px 0 10px 0;
+}
+
+.modal-cliente-botones-superiores{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:18px;
+}
+
+.modal-cliente-botones-superiores button{
+    min-width:120px;
+}
+
+
+/* =========================================================
+   CONTRASEÑA CLIENTE + OJO
+========================================================= */
+
+.password-container-cliente{
+    position:relative;
+    width:100%;
+    margin:10px 0;
+}
+
+.password-container-cliente input{
+    width:100%;
+    margin:0;
+    padding-right:52px;
+    box-sizing:border-box;
+}
+
+.toggle-password-cliente{
+    position:absolute;
+    top:50%;
+    right:8px;
+    transform:translateY(-50%);
+    width:40px;
+    height:40px;
+    min-width:0;
+    padding:0;
+    margin:0;
+    border:none;
+    background:transparent;
+    color:#777;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+.toggle-password-cliente:hover{
+    background:transparent;
+    color:#c48b9f;
+}
+
+.toggle-password-cliente:focus{
+    outline:none;
+}
+
+/* ======================================================
+   LISTA DE CLIENTES - COMPUTADORA Y CELULAR
+====================================================== */
+
+/* COMPUTADORA */
+
+.tabla-contenedor table{
+    width:100%;
+    table-layout:fixed;
+}
+
+.tabla-contenedor th:first-child,
+.tabla-contenedor td:first-child{
+    width:auto;
+}
+
+.tabla-contenedor .col-accion{
+    width:190px;
+}
+
+.tabla-contenedor td.col-accion{
+    text-align:center;
+}
+
+.tabla-contenedor td.col-accion .editar,
+.tabla-contenedor td.col-accion .eliminar{
+    display:inline-block;
+    width:82px;
+    margin:0 3px;
+}
+
+
+/* ======================================================
+   CELULAR
+====================================================== */
+
+@media(max-width:700px){
+
+    body{
+        overflow:hidden;
+    }
+
+    .zona-superior-fija{
+        width:100%;
+    }
+
+    .header{
+        padding:
+            14px
+            14px
+            14px
+            65px;
+    }
+
+    .header h1{
+        font-size:18px;
+    }
+
+    .logo-header{
+        height:58px;
+    }
+
+    .contenedor{
+        width:94%;
+        margin:
+            90px
+            auto
+            0
+            auto;
+
+        height:
+            calc(100vh - 155px);
+    }
+
+    .tarjeta{
+        padding:14px;
+        border-radius:10px;
+    }
+
+    .tarjeta h2{
+        font-size:19px;
+        margin-bottom:14px;
+    }
+
+    .buscador{
+        margin-bottom:12px;
+    }
+
+    .buscador input{
+        font-size:16px;
+        padding:11px;
+    }
+
+    .tabla-contenedor{
+        width:100%;
+        overflow-y:auto;
+        overflow-x:hidden;
+        padding-bottom:95px;
+    }
+
+    .tabla-contenedor table{
+        width:100%;
+        table-layout:fixed;
+    }
+
+    .tabla-contenedor th,
+    .tabla-contenedor td{
+        padding:10px 7px;
+        font-size:14px;
+    }
+
+    .tabla-contenedor th:first-child,
+    .tabla-contenedor td:first-child{
+        width:auto;
+        word-break:normal;
+        overflow-wrap:anywhere;
+    }
+
+    .tabla-contenedor .col-accion{
+        width:92px;
+        text-align:center;
+    }
+
+    .tabla-contenedor td.col-accion .editar,
+    .tabla-contenedor td.col-accion .eliminar{
+        display:block;
+        width:78px;
+        margin:
+            3px
+            auto;
+        padding:7px 2px;
+        font-size:12px;
+    }
+
+
+    .paginacion{
+        padding:
+            8px
+            10px;
+    }
+
+    .rango-paginacion{
+        font-size:13px;
+    }
+
+}
+
+
+/* ======================================================
+   RECUPERAR DISEÑO ORIGINAL - MODAL EDITAR CLIENTE
+====================================================== */
+
+.modal-cliente-contenido input,
+.modal-cliente-contenido select{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:14px;
+    box-sizing:border-box;
+}
+
+.modal-cliente-contenido input:focus,
+.modal-cliente-contenido select:focus{
+    outline:none;
+    border-color:#c48b9f;
+    box-shadow:0 0 0 3px rgba(196,139,159,0.15);
+}
+
+.modal-cliente-contenido button{
+    background:#c48b9f;
+    color:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:14px;
+    transition:0.3s;
+    min-width:110px;
+}
+
+.modal-cliente-contenido button:hover{
+    background:#b3748a;
+}
+
+/* Mantener el botón del ojo como en el modal original */
+
+.modal-cliente-contenido .toggle-password-cliente{
+    position:absolute;
+    top:50%;
+    right:8px;
+    transform:translateY(-50%);
+    width:40px;
+    height:40px;
+    min-width:0;
+    padding:0;
+    margin:0;
+    border:none;
+    background:transparent;
+    color:#777;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+.modal-cliente-contenido .toggle-password-cliente:hover{
+    background:transparent;
+    color:#c48b9f;
+}
+
+
+/* ======================================================
+   ALINEAR TÍTULO CLIENTES CON BOTÓN MENÚ
+====================================================== */
+
+.header h1{
+    position:relative;
+    top:-9px;
+}
+
+@media(max-width:700px){
+
+    .header h1{
+        position:relative;
+        top:-9px;
+    }
+
+}
+
+
+/* ======================================================
+   MENSAJES BONITOS - LISTA DE CLIENTES
+====================================================== */
+
+.mensaje-clientes{
+    position:fixed;
+    top:25px;
+    left:50%;
+    transform:translateX(-50%) translateY(-20px);
+
+    min-width:300px;
+    max-width:500px;
+
+    padding:15px 20px;
+
+    background:white;
+    color:#444;
+
+    border-radius:10px;
+
+    box-shadow:0 6px 25px rgba(0,0,0,0.20);
+
+    font-size:15px;
+    font-weight:600;
+    text-align:center;
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:
+        opacity .25s ease,
+        transform .25s ease;
+
+    z-index:10000;
+}
+
+.mensaje-clientes.mostrar{
+    opacity:1;
+    visibility:visible;
+    transform:translateX(-50%) translateY(0);
+}
+
+.mensaje-clientes.exito{
+    border-left:5px solid #6fbf8f;
+}
+
+.mensaje-clientes.error{
+    border-left:5px solid #e57373;
+}
+
+.mensaje-clientes.advertencia{
+    border-left:5px solid #e6b85c;
+}
+
+@media(max-width:700px){
+
+    .mensaje-clientes{
+        top:15px;
+        min-width:0;
+        width:calc(100% - 40px);
+        max-width:none;
+        box-sizing:border-box;
+    }
+
+}
+
+
+/* ======================================================
+   CONFIRMAR ELIMINAR CLIENTE
+====================================================== */
+
+.modal-confirmar-eliminar-cliente{
+    position:fixed;
+    inset:0;
+
+    width:100vw;
+    height:100vh;
+
+    background:rgba(0,0,0,0.45);
+
+    display:none;
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+    box-sizing:border-box;
+
+    z-index:10000;
+}
+
+.modal-confirmar-eliminar-cliente.activo{
+    display:flex;
+}
+
+.confirmar-eliminar-cliente-contenido{
+    width:100%;
+    max-width:420px;
+
+    background:white;
+
+    padding:28px;
+
+    border-radius:14px;
+
+    text-align:center;
+
+    box-shadow:0 12px 35px rgba(0,0,0,0.25);
+
+    box-sizing:border-box;
+}
+
+.icono-advertencia-cliente{
+    width:55px;
+    height:55px;
+
+    margin:0 auto 15px auto;
+
+    border-radius:50%;
+
+    background:#fff0f0;
+    color:#e57373;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:32px;
+    font-weight:bold;
+}
+
+.confirmar-eliminar-cliente-contenido h3{
+    color:#c48b9f;
+    margin:0 0 15px 0;
+}
+
+.confirmar-eliminar-cliente-contenido p{
+    color:#555;
+    line-height:1.5;
+}
+
+.nombre-cliente-eliminar{
+    font-weight:bold;
+    color:#333 !important;
+    font-size:18px;
+}
+
+.advertencia-eliminar-cliente{
+    background:#fff5f5;
+
+    border-radius:8px;
+
+    padding:12px;
+
+    font-size:13px;
+
+    color:#c62828 !important;
+}
+
+.botones-confirmar-eliminar-cliente{
+    display:flex;
+    justify-content:center;
+
+    gap:10px;
+
+    margin-top:20px;
+}
+
+
+/* CELULAR */
+
+@media(max-width:700px){
+
+    .modal-confirmar-eliminar-cliente{
+        padding:15px;
+    }
+
+    .confirmar-eliminar-cliente-contenido{
+        max-width:100%;
+        padding:24px 18px;
+    }
+
+    .botones-confirmar-eliminar-cliente{
+        flex-direction:column;
+    }
+
+    .botones-confirmar-eliminar-cliente button{
+        width:100%;
+        margin:0;
+    }
+
+}
+
+
+/* ======================================================
+   MEJORA VISUAL BOTONES - CONFIRMAR ELIMINAR CLIENTE
+====================================================== */
+
+#modalConfirmarEliminarCliente .acciones-eliminar-cliente{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:14px;
+    margin-top:24px;
+}
+
+/* BOTONES DEL MODAL */
+#modalConfirmarEliminarCliente .btn-cancelar-eliminar,
+#modalConfirmarEliminarCliente .btn-confirmar-eliminar{
+    min-width:125px;
+    height:42px;
+
+    padding:0 22px;
+
+    border:none;
+    border-radius:8px;
+
+    font-family:inherit;
+    font-size:15px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        opacity .18s ease;
+}
+
+
+/* CANCELAR */
+#modalConfirmarEliminarCliente .btn-cancelar-eliminar{
+    background:#c4879e;
+    color:#ffffff;
+
+    box-shadow:
+        0 3px 8px rgba(196,135,158,.25);
+}
+
+#modalConfirmarEliminarCliente .btn-cancelar-eliminar:hover{
+    opacity:.92;
+    transform:translateY(-1px);
+
+    box-shadow:
+        0 5px 12px rgba(196,135,158,.30);
+}
+
+
+/* SÍ, ELIMINAR */
+#modalConfirmarEliminarCliente .btn-confirmar-eliminar{
+    background:#ef4938;
+    color:#ffffff;
+
+    box-shadow:
+        0 3px 8px rgba(239,73,56,.22);
+}
+
+#modalConfirmarEliminarCliente .btn-confirmar-eliminar:hover{
+    opacity:.92;
+    transform:translateY(-1px);
+
+    box-shadow:
+        0 5px 12px rgba(239,73,56,.28);
+}
+
+
+/* EFECTO AL PRESIONAR */
+#modalConfirmarEliminarCliente .btn-cancelar-eliminar:active,
+#modalConfirmarEliminarCliente .btn-confirmar-eliminar:active{
+    transform:translateY(0);
+    box-shadow:none;
+}
+
+
+/* MÓVIL */
+@media(max-width:500px){
+
+    #modalConfirmarEliminarCliente .acciones-eliminar-cliente{
+        gap:10px;
+    }
+
+    #modalConfirmarEliminarCliente .btn-cancelar-eliminar,
+    #modalConfirmarEliminarCliente .btn-confirmar-eliminar{
+        min-width:110px;
+        height:40px;
+        padding:0 16px;
+        font-size:14px;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+    <!-- ======================================================
+     MENÚ LATERAL
+====================================================== -->
+
+<div id="menuLateral" class="menu-lateral">
+
+    <div class="menu-lateral-superior">
+
+        <button
+            type="button"
+            id="btnMenuLateral"
+            class="btn-menu-lateral"
+            onclick="toggleMenuLateral()"
+            title="Abrir o cerrar menú"
+        >
+            ☰
+        </button>
+
+        <img
+            src="logo.jpg"
+            alt="Logo Tienda Ana"
+            class="logo-menu-lateral"
+        >
+
+    </div>
+
+    <div class="menu-lateral-contenido">
+
+        <button
+            type="button"
+            onclick="window.location.href='/dashboard.html'"
+        >
+            📝 Crear pedido
+        </button>
+
+        <button
+            type="button"
+            onclick="irAgregarCliente()"
+        >
+            👤＋ Nuevo cliente
+        </button>
+
+        <button
+            type="button"
+            onclick="window.location.href='/add_article.html'"
+        >
+            🛍️+ Nuevo artículo
+        </button>
+
+        <button
+            type="button"
+            onclick="window.location.href='/articles.html'"
+        >
+         🛍️✎ Editar artículos
+        </button>
+
+        <button
+            type="button"
+            onclick="window.location.href='/add_weight.html'"
+        >
+            📄 Facturas
+        </button>
+
+    </div>
+
+</div>
+<div class="zona-superior-fija">
+<div class="header">
+
+    <h1>
+        👥 Clientes
+    </h1>
+        <img
+            src="logo.jpg"
+            class="logo-header"
+            alt="Tienda Ana"
+        >
+
+    </div>
+
+</div>
+
+</div>
+
+
+<div class="contenedor">
+
+    <div class="tarjeta">
+
+        <h2>
+            Lista de clientes
+        </h2>
+
+
+        <div class="buscador">
+
+            <input
+                type="text"
+                id="buscar"
+                placeholder="Buscar cliente..."
+                autocomplete="off"
+            >
+
+        </div>
+
+<div class="tabla-contenedor">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Nombre completo
+                </th>
+
+                <th class="col-accion">
+                    Acción
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody id="tablaClientes">
+
+            <tr>
+
+                <td
+                    colspan="4"
+                    class="sin-resultados"
+                >
+                    Cargando clientes...
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<div class="paginacion">
+
+    <div
+        id="rangoPaginacion"
+        class="rango-paginacion"
+    >
+        0 - 0 de 0
+    </div>
+
+    <div class="botones-paginacion">
+
+        <button
+            id="btnAnterior"
+            type="button"
+            onclick="paginaAnterior()"
+        >
+            Anterior
+        </button>
+
+        <button
+            id="btnSiguiente"
+            type="button"
+            onclick="paginaSiguiente()"
+        >
+            Siguiente
+        </button>
+
+    </div>
+
+</div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ======================================================
+     MODAL EDITAR CLIENTE
+====================================================== -->
+
+<div
+    id="modalEditarCliente"
+    class="modal-cliente"
+>
+    <div class="modal-cliente-contenido">
+
+        <h3>Editar cliente</h3>
+
+
+        <div id="formularioEditarCliente">
+
+            <label>Nombre</label>
+
+            <input
+                type="text"
+                id="editarClienteNombre"
+                placeholder="Nombre"
+                autocomplete="off"
+            >
+
+
+            <label>Apellido</label>
+
+            <input
+                type="text"
+                id="editarClienteApellido"
+                placeholder="Apellido"
+                autocomplete="off"
+            >
+
+
+            <label>Teléfono</label>
+
+            <input
+                type="tel"
+                id="editarClienteTelefono"
+                placeholder="Teléfono"
+                inputmode="numeric"
+                autocomplete="off"
+            >
+
+
+            <label>Provincia</label>
+
+            <select id="editarClienteProvincia">
+
+                <option value="">
+                    Seleccione provincia
+                </option>
+
+                <option value="San José">
+                    San José
+                </option>
+
+                <option value="Alajuela">
+                    Alajuela
+                </option>
+
+                <option value="Cartago">
+                    Cartago
+                </option>
+
+                <option value="Heredia">
+                    Heredia
+                </option>
+
+                <option value="Guanacaste">
+                    Guanacaste
+                </option>
+
+                <option value="Puntarenas">
+                    Puntarenas
+                </option>
+
+                <option value="Limón">
+                    Limón
+                </option>
+
+            </select>
+
+
+            <label>Cantón</label>
+
+            <select
+                id="editarClienteCanton"
+                disabled
+            >
+                <option value="">
+                    Seleccione cantón
+                </option>
+            </select>
+
+
+            <label>Distrito</label>
+
+            <select
+                id="editarClienteDistrito"
+                disabled
+            >
+                <option value="">
+                    Seleccione distrito
+                </option>
+            </select>
+
+
+            <label>Dirección exacta</label>
+
+            <input
+                type="text"
+                id="editarClienteDireccion"
+                placeholder="Dirección exacta (opcional)"
+                autocomplete="off"
+            >
+
+
+            <label>Correo electrónico</label>
+
+            <input
+                type="email"
+                id="editarClienteCorreo"
+                placeholder="Correo electrónico (opcional)"
+                autocomplete="off"
+            >
+
+
+            <label>Nueva contraseña</label>
+
+            <div class="password-container-cliente">
+
+                <input
+                    type="password"
+                    id="editarClientePassword"
+                    placeholder="Nueva contraseña (opcional)"
+                    autocomplete="new-password"
+                >
+
+                <button
+                    type="button"
+                    class="toggle-password-cliente"
+                    onclick="mostrarPasswordEditarCliente()"
+                    aria-label="Mostrar u ocultar contraseña"
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        width="22"
+                        height="22"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path
+                            d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12"
+                        ></path>
+
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                        ></circle>
+
+                    </svg>
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="modal-cliente-botones-superiores">
+
+            <button
+                type="button"
+                onclick="cerrarEditarCliente()"
+            >
+                Cancelar
+            </button>
+
+
+            <button
+                type="button"
+                class="btn-actualizar-cliente"
+                onclick="actualizarClienteManual()"
+            >
+                Actualizar cliente
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div
+    id="modalEliminarArticulo"
+    class="modal-eliminar-articulo"
+>
+    <div class="modal-eliminar-contenido">
+
+        <div class="modal-eliminar-icono">
+            🗑️
+        </div>
+
+        <h3>
+            Eliminar artículo
+        </h3>
+
+        <p id="mensajeEliminarArticulo">
+            ¿Está seguro de que desea eliminar este artículo?
+        </p>
+
+        <div class="modal-eliminar-botones">
+
+            <button
+                type="button"
+                class="btn-cancelar-eliminar"
+                onclick="cerrarModalEliminarArticulo()"
+            >
+                Cancelar
+            </button>
+
+            <button
+                type="button"
+                class="btn-confirmar-eliminar"
+                onclick="confirmarEliminarArticulo()"
+            >
+                Eliminar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    id="mensajeExito"
+    class="mensaje-exito"
+>
+</div>
+
+
+
+
+<!-- ======================================================
+     CONFIRMAR ELIMINAR CLIENTE
+====================================================== -->
+
+<div
+    id="modalConfirmarEliminarCliente"
+    class="modal-confirmar-eliminar-cliente"
+>
+    <div class="confirmar-eliminar-cliente-contenido">
+
+        <div class="icono-advertencia-cliente">
+            !
+        </div>
+
+        <h3>Eliminar cliente</h3>
+
+        <p>
+            ¿Estás seguro de que quieres eliminar este cliente?
+        </p>
+
+        <p
+            id="nombreClienteEliminar"
+            class="nombre-cliente-eliminar"
+        ></p>
+
+        <p class="advertencia-eliminar-cliente">
+            Esta acción eliminará permanentemente al cliente,
+            sus pedidos, facturas y abonos.
+            Esta acción no se puede deshacer.
+        </p>
+
+        <div class="botones-confirmar-eliminar-cliente">
+
+            <button
+                type="button"
+                class="btn-cancelar-eliminar"
+                onclick="cerrarConfirmacionEliminarCliente()"
+            >
+                Cancelar
+            </button>
+
+            <button
+                type="button"
+                id="btnConfirmarEliminarCliente"
+                class="btn-confirmar-eliminar"
+                onclick="eliminarClienteManual()"
+            >
+                Sí, eliminar
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- ======================================================
+     MENSAJES BONITOS - LISTA DE CLIENTES
+====================================================== -->
+
+<div
+    id="mensajeClientes"
+    class="mensaje-clientes"
+></div>
+
+<script src="ubicaciones-cr.js"></script>
+<script>
+
+// ======================================================
+// MENSAJES BONITOS - LISTA DE CLIENTES
+// ======================================================
+
+let temporizadorMensajeClientes = null;
+
+function mostrarMensajeClientes(
+    mensaje,
+    tipo = "advertencia"
+){
+
+    const elemento =
+        document.getElementById(
+            "mensajeClientes"
+        );
+
+    if(!elemento){
+        return;
+    }
+
+    if(temporizadorMensajeClientes){
+        clearTimeout(
+            temporizadorMensajeClientes
+        );
+    }
+
+    elemento.textContent = mensaje;
+
+    elemento.className =
+        "mensaje-clientes " +
+        tipo +
+        " mostrar";
+
+    temporizadorMensajeClientes =
+        setTimeout(() => {
+
+            elemento.classList.remove(
+                "mostrar"
+            );
+
+        }, 3200);
+}
+
+
+// Función utilizada después de actualizar un cliente
+
+function mostrarMensajeExito(mensaje){
+
+    mostrarMensajeClientes(
+        "✓ " + mensaje,
+        "exito"
+    );
+
+}
+
+
+
+
+let articulos = [];
+
+let paginaActual = 1;
+
+const articulosPorPagina = 20;
+
+let articulosFiltrados = [];
+
+/* ================================
+   MENÚ LATERAL
+================================ */
+
+function toggleMenuLateral(){
+
+    const menu =
+        document.getElementById(
+            "menuLateral"
+        );
+
+    menu.classList.toggle(
+        "abierto"
+    );
+
+}
+
+// ======================================================
+// 🔹 CERRAR MENÚ AL TOCAR FUERA
+// ======================================================
+
+document.addEventListener("click", (event) => {
+
+    const menu =
+        document.getElementById("menuLateral");
+
+    const botonMenu =
+        document.getElementById("btnMenuLateral");
+
+
+    // Si el menú no está abierto, no hacer nada
+    if (!menu.classList.contains("abierto")) {
+        return;
+    }
+
+
+    // Si tocó dentro del menú o en las 3 rayas,
+    // no cerrarlo
+    if (
+        menu.contains(event.target) ||
+        botonMenu.contains(event.target)
+    ) {
+        return;
+    }
+
+
+    // Cerrar menú
+    menu.classList.remove("abierto");
+
+});
+function irAgregarCliente(){
+
+    window.location.href =
+         "/dashboard.html?accion=agregar-cliente";
+
+}
+
+
+function irEditarCliente(){
+
+    window.location.href =
+        "/dashboard.html?accion=editar-cliente";
+
+}
+
+
+/* ================================
+   FORMATEAR DINERO
+================================ */
+
+function moneda(valor){
+
+    return "₡" +
+        Number(valor || 0)
+        .toLocaleString(
+            "es-CR",
+            {
+                minimumFractionDigits:0,
+                maximumFractionDigits:2
+            }
+        );
+
+}
+
+
+
+/* ================================
+   NORMALIZAR TEXTO
+================================ */
+
+function normalizar(texto){
+
+    return String(texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"")
+        .toLowerCase()
+        .trim();
+
+}
+
+
+
+/* ================================
+   CLIENTES
+================================ */
+
+let clientes = [];
+
+let clientesFiltrados = [];
+
+let paginaActualClientes = 1;
+
+const clientesPorPagina = 20;
+
+
+/* ================================
+   CARGAR CLIENTES
+================================ */
+
+async function cargarClientes(){
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/clientes"
+            );
+
+
+        if(!respuesta.ok){
+
+            throw new Error(
+                "No se pudieron cargar los clientes"
+            );
+
+        }
+
+
+        clientes =
+            await respuesta.json();
+
+
+        // Orden alfabético A - Z por nombre completo
+        clientes.sort(
+            (a, b) => {
+
+                const nombreA =
+                    `${a.nombre || ""} ${a.apellido || ""}`
+                    .trim();
+
+                const nombreB =
+                    `${b.nombre || ""} ${b.apellido || ""}`
+                    .trim();
+
+
+                return nombreA.localeCompare(
+                    nombreB,
+                    "es",
+                    {
+                        sensitivity: "base"
+                    }
+                );
+
+            }
+        );
+
+
+        clientesFiltrados =
+            [...clientes];
+
+
+        paginaActualClientes = 1;
+
+
+        mostrarClientes();
+
+    }catch(error){
+
+        console.error(
+            "Error cargando clientes:",
+            error
+        );
+
+
+        document.getElementById(
+            "tablaClientes"
+        ).innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="2"
+                    class="sin-resultados"
+                >
+                    No se pudieron cargar los clientes.
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+/* ================================
+   MOSTRAR CLIENTES
+================================ */
+
+function mostrarClientes(){
+
+    const tabla =
+        document.getElementById(
+            "tablaClientes"
+        );
+
+
+    tabla.innerHTML = "";
+
+
+    const total =
+        clientesFiltrados.length;
+
+
+    if(total === 0){
+
+        tabla.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="2"
+                    class="sin-resultados"
+                >
+                    No hay clientes registrados.
+                </td>
+
+            </tr>
+
+        `;
+
+
+        actualizarPaginacionClientes();
+
+        return;
+
+    }
+
+
+    const inicio =
+        (paginaActualClientes - 1) *
+        clientesPorPagina;
+
+
+    const fin =
+        inicio +
+        clientesPorPagina;
+
+
+    const clientesPagina =
+        clientesFiltrados.slice(
+            inicio,
+            fin
+        );
+
+
+    clientesPagina.forEach(
+        cliente => {
+
+
+            const fila =
+                document.createElement(
+                    "tr"
+                );
+
+
+            // ==========================================
+            // NOMBRE COMPLETO
+            // ==========================================
+
+            const tdNombre =
+                document.createElement(
+                    "td"
+                );
+
+
+            tdNombre.textContent =
+                `${cliente.nombre || ""} ${cliente.apellido || ""}`
+                .trim();
+
+
+            // ==========================================
+            // ACCIONES
+            // ==========================================
+
+            const tdAccion =
+                document.createElement(
+                    "td"
+                );
+
+
+            tdAccion.className =
+                "col-accion";
+
+
+            const botonEditar =
+                document.createElement(
+                    "button"
+                );
+
+
+            botonEditar.className =
+                "editar";
+
+
+            botonEditar.textContent =
+                "Editar";
+
+
+            botonEditar.addEventListener(
+                "click",
+                () => {
+
+                    editarClienteLista(
+                        cliente.id_usuario
+                    );
+
+                }
+            );
+
+
+            const botonEliminar =
+                document.createElement(
+                    "button"
+                );
+
+
+            botonEliminar.className =
+                "eliminar";
+
+
+            botonEliminar.textContent =
+                "Eliminar";
+
+
+            botonEliminar.addEventListener(
+                "click",
+                () => {
+
+                    eliminarClienteLista(
+                        cliente
+                    );
+
+                }
+            );
+
+
+            tdAccion.appendChild(
+                botonEditar
+            );
+
+
+            tdAccion.appendChild(
+                botonEliminar
+            );
+
+
+            fila.appendChild(
+                tdNombre
+            );
+
+
+            fila.appendChild(
+                tdAccion
+            );
+
+
+            tabla.appendChild(
+                fila
+            );
+
+        }
+    );
+
+
+    actualizarPaginacionClientes();
+
+}
+
+
+/* ================================
+   PAGINACIÓN
+================================ */
+
+function actualizarPaginacionClientes(){
+
+    const total =
+        clientesFiltrados.length;
+
+
+    const rango =
+        document.getElementById(
+            "rangoPaginacion"
+        );
+
+
+    const btnAnterior =
+        document.getElementById(
+            "btnAnterior"
+        );
+
+
+    const btnSiguiente =
+        document.getElementById(
+            "btnSiguiente"
+        );
+
+
+    if(total === 0){
+
+        rango.textContent =
+            "0 - 0 de 0";
+
+
+        btnAnterior.style.display =
+            "none";
+
+
+        btnSiguiente.style.display =
+            "none";
+
+
+        return;
+
+    }
+
+
+    const inicio =
+        (paginaActualClientes - 1) *
+        clientesPorPagina + 1;
+
+
+    const fin =
+        Math.min(
+            paginaActualClientes *
+            clientesPorPagina,
+            total
+        );
+
+
+    rango.textContent =
+        `${inicio} - ${fin} de ${total}`;
+
+
+    btnAnterior.style.display =
+        paginaActualClientes > 1
+            ? "inline-block"
+            : "none";
+
+
+    btnSiguiente.style.display =
+        fin < total
+            ? "inline-block"
+            : "none";
+
+}
+
+
+/* ================================
+   ANTERIOR
+================================ */
+
+function paginaAnterior(){
+
+    if(paginaActualClientes <= 1){
+        return;
+    }
+
+
+    paginaActualClientes--;
+
+
+    mostrarClientes();
+
+}
+
+
+/* ================================
+   SIGUIENTE
+================================ */
+
+function paginaSiguiente(){
+
+    const totalPaginas =
+        Math.ceil(
+            clientesFiltrados.length /
+            clientesPorPagina
+        );
+
+
+    if(
+        paginaActualClientes >=
+        totalPaginas
+    ){
+        return;
+    }
+
+
+    paginaActualClientes++;
+
+
+    mostrarClientes();
+
+}
+
+
+/* ================================
+   BUSCADOR
+================================ */
+
+document.getElementById(
+    "buscar"
+).addEventListener(
+    "input",
+    function(){
+
+        const texto =
+            normalizar(
+                this.value
+            );
+
+
+        clientesFiltrados =
+            clientes.filter(
+                cliente => {
+
+                    const nombreCompleto =
+                        normalizar(
+                            `${cliente.nombre || ""} ${cliente.apellido || ""}`
+                        );
+
+
+                    return nombreCompleto.includes(
+                        texto
+                    );
+
+                }
+            );
+
+
+        paginaActualClientes = 1;
+
+
+        mostrarClientes();
+
+    }
+);
+
+
+/* ================================
+   EDITAR CLIENTE
+================================ */
+
+let clienteEditarSeleccionado = null;
+
+
+async function editarClienteLista(
+    idUsuario
+){
+
+    try{
+
+        const respuesta =
+            await fetch(
+                `/user/${idUsuario}`
+            );
+
+
+        if(!respuesta.ok){
+
+            mostrarMensajeClientes(
+                "✕ No se pudieron cargar los datos del cliente",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const datos =
+            await respuesta.json();
+
+
+        // Guardar cliente seleccionado
+        clienteEditarSeleccionado =
+            datos;
+
+
+        // Asegurar el ID
+        clienteEditarSeleccionado.id_usuario =
+            Number(idUsuario);
+
+
+        // =========================================
+        // DATOS PERSONALES
+        // =========================================
+
+        document.getElementById(
+            "editarClienteNombre"
+        ).value =
+            datos.nombre || "";
+
+
+        document.getElementById(
+            "editarClienteApellido"
+        ).value =
+            datos.apellido || "";
+
+
+        document.getElementById(
+            "editarClienteTelefono"
+        ).value =
+            datos.telefono || "";
+
+
+        document.getElementById(
+            "editarClienteDireccion"
+        ).value =
+            datos.direccion_exacta || "";
+
+
+        document.getElementById(
+            "editarClienteCorreo"
+        ).value =
+            datos.correo || "";
+
+
+        // La contraseña actual nunca se muestra
+        document.getElementById(
+            "editarClientePassword"
+        ).value =
+            "";
+
+
+        // =========================================
+        // UBICACIÓN
+        // =========================================
+
+        const provincia =
+            document.getElementById(
+                "editarClienteProvincia"
+            );
+
+        const canton =
+            document.getElementById(
+                "editarClienteCanton"
+            );
+
+        const distrito =
+            document.getElementById(
+                "editarClienteDistrito"
+            );
+
+
+        provincia.value =
+            datos.provincia || "";
+
+
+        // Esto hace que ubicaciones-cr.js
+        // cargue los cantones
+        provincia.dispatchEvent(
+            new Event(
+                "change"
+            )
+        );
+
+
+        canton.value =
+            datos.canton || "";
+
+
+        // Esto hace que ubicaciones-cr.js
+        // cargue los distritos
+        canton.dispatchEvent(
+            new Event(
+                "change"
+            )
+        );
+
+
+        distrito.value =
+            datos.distrito || "";
+
+
+        // =========================================
+        // ABRIR MODAL
+        // =========================================
+
+        document.getElementById(
+            "modalEditarCliente"
+        ).classList.add(
+            "activo"
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Error cargando cliente:",
+            error
+        );
+
+        mostrarMensajeClientes(
+            "✕ No se pudieron cargar los datos del cliente",
+            "error"
+        );
+
+    }
+
+}
+
+
+function cerrarEditarCliente(){
+
+    document.getElementById(
+        "modalEditarCliente"
+    ).classList.remove(
+        "activo"
+    );
+
+    clienteEditarSeleccionado =
+        null;
+
+
+    document.getElementById(
+        "editarClientePassword"
+    ).value =
+        "";
+
+}
+
+
+function mostrarPasswordEditarCliente(){
+
+    const campo =
+        document.getElementById(
+            "editarClientePassword"
+        );
+
+
+    if(campo.type === "password"){
+
+        campo.type =
+            "text";
+
+    }else{
+
+        campo.type =
+            "password";
+
+    }
+
+}
+
+
+
+// =========================================================
+// ACTUALIZAR CLIENTE
+// =========================================================
+
+async function actualizarClienteManual(){
+
+    if(
+        !clienteEditarSeleccionado ||
+        !clienteEditarSeleccionado.id_usuario
+    ){
+
+        mostrarMensajeClientes(
+            "⚠ Seleccione un cliente para editar",
+            "advertencia"
+        );
+
+        return;
+    }
+
+
+    const nombre =
+        document.getElementById(
+            "editarClienteNombre"
+        ).value.trim();
+
+    const apellido =
+        document.getElementById(
+            "editarClienteApellido"
+        ).value.trim();
+
+    const telefono =
+        document.getElementById(
+            "editarClienteTelefono"
+        ).value.trim();
+
+    const provincia =
+        document.getElementById(
+            "editarClienteProvincia"
+        ).value;
+
+    const canton =
+        document.getElementById(
+            "editarClienteCanton"
+        ).value;
+
+    const distrito =
+        document.getElementById(
+            "editarClienteDistrito"
+        ).value;
+
+    const direccion =
+        document.getElementById(
+            "editarClienteDireccion"
+        ).value.trim();
+
+    const correo =
+        document.getElementById(
+            "editarClienteCorreo"
+        ).value.trim();
+
+    const password =
+        document.getElementById(
+            "editarClientePassword"
+        ).value;
+
+
+    // =========================================
+    // CAMPOS OBLIGATORIOS
+    // =========================================
+
+    if(
+        !nombre ||
+        !apellido ||
+        !telefono ||
+        !provincia ||
+        !canton ||
+        !distrito
+    ){
+
+        mostrarMensajeClientes(
+            "⚠ Complete todos los campos obligatorios",
+            "advertencia"
+        );
+
+        return;
+    }
+
+
+    // =========================================
+    // NOMBRE Y APELLIDO: SOLO LETRAS
+    // =========================================
+
+    const soloLetras =
+        /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+$/;
+
+
+    if(!soloLetras.test(nombre)){
+
+        mostrarMensajeClientes(
+            "⚠ En el nombre solo se permiten letras",
+            "advertencia"
+        );
+
+        return;
+    }
+
+
+    if(!soloLetras.test(apellido)){
+
+        mostrarMensajeClientes(
+            "⚠ En el apellido solo se permiten letras",
+            "advertencia"
+        );
+
+        return;
+    }
+
+
+    // =========================================
+    // TELÉFONO: SOLO NÚMEROS
+    // =========================================
+
+    if(!/^\d+$/.test(telefono)){
+
+        mostrarMensajeClientes(
+            "⚠ En el teléfono solo se permiten números",
+            "advertencia"
+        );
+
+        return;
+    }
+
+
+    // =========================================
+    // CORREO
+    // =========================================
+
+    if(correo){
+
+        const correoValido =
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+        if(!correoValido.test(correo)){
+
+            mostrarMensajeClientes(
+                "⚠ Ingrese un correo electrónico válido",
+                "advertencia"
+            );
+
+            return;
+        }
+
+    }
+
+
+    // =========================================
+    // NUEVA CONTRASEÑA
+    // =========================================
+
+    if(password){
+
+        const passwordValido =
+            /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
+
+        if(!passwordValido.test(password)){
+
+            mostrarMensajeClientes(
+                "⚠ La nueva contraseña debe tener mínimo 8 caracteres, al menos una letra y un número",
+                "advertencia"
+            );
+
+            return;
+        }
+
+    }
+
+
+    // =========================================
+    // ENVIAR CAMBIOS
+    // =========================================
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/update-client",
+                {
+                    method:
+                        "POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            id_usuario:
+                                clienteEditarSeleccionado
+                                    .id_usuario,
+
+                            nombre,
+                            apellido,
+                            telefono,
+                            provincia,
+                            canton,
+                            distrito,
+
+                            direccion_exacta:
+                                direccion,
+
+                            correo,
+                            password
+
+                        })
+                }
+            );
+
+
+        const data =
+            await respuesta.json();
+
+
+        if(
+            !respuesta.ok ||
+            !data.ok
+        ){
+
+            mostrarMensajeClientes(
+                "✕ " + (
+                    data.mensaje ||
+                    "No se pudo actualizar el cliente"
+                ),
+                "error"
+            );
+
+            return;
+        }
+
+
+        // =========================================
+        // ÉXITO
+        // =========================================
+
+        document.getElementById(
+            "editarClientePassword"
+        ).value =
+            "";
+
+
+        // Actualizar nuevamente la tabla
+        // para reflejar nombre/apellido nuevos
+        await cargarClientes();
+
+
+        // Cerrar modal
+        cerrarEditarCliente();
+
+
+        // Mostrar mensaje existente de la página
+        mostrarMensajeExito(
+            "Cliente actualizado correctamente"
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Error actualizando cliente:",
+            error
+        );
+
+
+        mostrarMensajeClientes(
+            "✕ No se pudo actualizar el cliente",
+            "error"
+        );
+
+    }
+
+}
+
+/* ================================
+   ELIMINAR CLIENTE
+
+   Lo conectaremos al modal de
+   confirmación en el siguiente paso.
+================================ */
+
+let clienteEliminarSeleccionado = null;
+
+
+// ======================================================
+// ABRIR CONFIRMACIÓN ELIMINAR CLIENTE
+// ======================================================
+
+function eliminarClienteLista(
+    cliente
+){
+
+    clienteEliminarSeleccionado =
+        cliente;
+
+
+    document.getElementById(
+        "nombreClienteEliminar"
+    ).textContent =
+        `${cliente.nombre} ${cliente.apellido}`;
+
+
+    document.getElementById(
+        "modalConfirmarEliminarCliente"
+    ).classList.add(
+        "activo"
+    );
+
+}
+
+
+// ======================================================
+// CERRAR CONFIRMACIÓN ELIMINAR CLIENTE
+// ======================================================
+
+function cerrarConfirmacionEliminarCliente(){
+
+    document.getElementById(
+        "modalConfirmarEliminarCliente"
+    ).classList.remove(
+        "activo"
+    );
+
+    clienteEliminarSeleccionado =
+        null;
+
+}
+
+
+// ======================================================
+// ELIMINAR CLIENTE
+// ======================================================
+
+async function eliminarClienteManual(){
+
+    if(
+        !clienteEliminarSeleccionado ||
+        !clienteEliminarSeleccionado.id_usuario
+    ){
+
+        mostrarMensajeClientes(
+            "Seleccione un cliente válido",
+            "advertencia"
+        );
+
+        return;
+    }
+
+
+    const boton =
+        document.getElementById(
+            "btnConfirmarEliminarCliente"
+        );
+
+
+    boton.disabled = true;
+
+    boton.textContent =
+        "Eliminando...";
+
+
+    try{
+
+        const respuesta =
+            await fetch(
+                "/delete-client",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        id_usuario:
+                            clienteEliminarSeleccionado
+                                .id_usuario
+                    })
+                }
+            );
+
+
+        const data =
+            await respuesta.json();
+
+
+        if(
+            !respuesta.ok ||
+            !data.ok
+        ){
+
+            mostrarMensajeClientes(
+                data.mensaje ||
+                "No se pudo eliminar el cliente",
+                "error"
+            );
+
+            return;
+        }
+
+
+        document.getElementById(
+            "modalConfirmarEliminarCliente"
+        ).classList.remove(
+            "activo"
+        );
+
+
+        clienteEliminarSeleccionado =
+            null;
+
+
+        await cargarClientes();
+
+
+        mostrarMensajeClientes(
+            "✓ Cliente eliminado correctamente",
+            "exito"
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Error eliminando cliente:",
+            error
+        );
+
+
+        mostrarMensajeClientes(
+            "No se pudo eliminar el cliente",
+            "error"
+        );
+
+
+    }finally{
+
+        boton.disabled = false;
+
+        boton.textContent =
+            "Sí, eliminar";
+
+    }
+
+}
+
+
+/* ================================
+   INICIO
+================================ */
+
+cargarClientes();
+
+</script>
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
