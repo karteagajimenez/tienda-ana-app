@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -900,7 +900,7 @@ function moneda(valor){
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2
             }
-        );
+        ).replace(/[\u00A0\u202F ]/g, ".");
 
 }
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -1027,13 +1027,13 @@ async function cargarArchivados(){
                     <td>
                         ₡${precioProducto.toLocaleString(
                             "es-CR"
-                        )}
+                        ).replace(/[\u00A0\u202F ]/g, ".")}
                     </td>
 
                     <td>
                         ₡${envio.toLocaleString(
                             "es-CR"
-                        )}
+                        ).replace(/[\u00A0\u202F ]/g, ".")}
                     </td>
 
                     <td>
@@ -1041,7 +1041,7 @@ async function cargarArchivados(){
                             p.total_abonado
                         ).toLocaleString(
                             "es-CR"
-                        )}
+                        ).replace(/[\u00A0\u202F ]/g, ".")}
                     </td>
 
                     <td>

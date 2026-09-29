@@ -6215,7 +6215,7 @@ function formatearMontoPedido(monto){
             minimumFractionDigits: 0,
             maximumFractionDigits: 2
         }
-    );
+    ).replace(/[\u00A0\u202F ]/g, ".");
 
 }
 // ======================================================
@@ -7279,6 +7279,7 @@ document
 
 </body>
 </html>
+
 
 
 

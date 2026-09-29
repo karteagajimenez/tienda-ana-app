@@ -1563,7 +1563,7 @@ async function cargar(){
 
                                         ₡${precioProducto.toLocaleString(
                                             "es-CR"
-                                        )}
+                                        ).replace(/[\u00A0\u202F ]/g, ".")}
 
                                     </td>
 
@@ -1575,7 +1575,7 @@ async function cargar(){
                                                 ? "₡" +
                                                   envioFactura.toLocaleString(
                                                       "es-CR"
-                                                  )
+                                                  ).replace(/[\u00A0\u202F ]/g, ".")
                                                 : ""
                                         }
 
@@ -1589,7 +1589,7 @@ async function cargar(){
                                                 ? "₡" +
                                                   abonoFactura.toLocaleString(
                                                       "es-CR"
-                                                  )
+                                                  ).replace(/[\u00A0\u202F ]/g, ".")
                                                 : ""
                                         }
 
@@ -1895,6 +1895,7 @@ cargar();
 </body>
 
 </html>
+
 
 
 

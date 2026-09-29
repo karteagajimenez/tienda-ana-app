@@ -970,7 +970,7 @@ function moneda(valor){
                 minimumFractionDigits:0,
                 maximumFractionDigits:2
             }
-        );
+        ).replace(/[\u00A0\u202F ]/g, ".");
 
 }
 
@@ -1562,3 +1562,4 @@ cargarArticulos();
 </body>
 
 </html>
+

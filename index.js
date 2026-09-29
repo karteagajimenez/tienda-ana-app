@@ -5669,7 +5669,7 @@ app.post(
                                                     return res.status(400).json({
                                                         ok: false,
                                                         mensaje:
-                                                            `El monto máximo permitido para este abono es ₡${maximoPermitido.toLocaleString('es-CR')}.`
+                                                            `El monto máximo permitido para este abono es ₡${maximoPermitido.toLocaleString('es-CR').replace(/[\u00A0\u202F ]/g, ".")}.`
                                                     });
 
                                                 }
@@ -6244,7 +6244,7 @@ const totalFactura =
                                                         .json({
                                                             ok: false,
                                                             mensaje:
-                                                                `El saldo pendiente de esta factura es ₡${saldoPendiente.toLocaleString('es-CR')}. No puede ingresar un abono mayor.`
+                                                                `El saldo pendiente de esta factura es ₡${saldoPendiente.toLocaleString('es-CR').replace(/[\u00A0\u202F ]/g, ".")}. No puede ingresar un abono mayor.`
                                                         });
 
                                                 }
@@ -8564,3 +8564,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 http://localhost:${PORT}`);
 });
+
