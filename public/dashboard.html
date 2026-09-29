@@ -1810,6 +1810,37 @@ body.menu-abierto {
         >
 
 
+        <!-- 🔹 NOTA DEL ARTÍCULO -->
+        <label
+            for="notaArticuloPedido"
+            style="
+                display:block;
+                font-weight:bold;
+                color:#555;
+                margin-top:12px;
+                margin-bottom:7px;
+            "
+        >
+            Nota
+        </label>
+
+        <textarea
+            id="notaArticuloPedido"
+            placeholder="Ejemplo: Color azul"
+            style="
+                width:100%;
+                min-height:80px;
+                padding:12px;
+                border:1px solid #ccc;
+                border-radius:6px;
+                box-sizing:border-box;
+                font-family:inherit;
+                font-size:14px;
+                resize:vertical;
+            "
+        ></textarea>
+
+
         <!-- 🔥 BOTONES MODAL -->
         <div
             class="botones"
@@ -2896,6 +2927,10 @@ btnGuardarEditarArticuloPedido.addEventListener(
         const nombre =
             document.getElementById(
                 "editarPedidoNombre"
+            ).value.trim();
+        const notaArticulo =
+            document.getElementById(
+                "notaArticuloPedido"
             ).value.trim();
 
         const cantidad =
@@ -5619,9 +5654,12 @@ function actualizarPrecioPorCantidad(){
     ){
         return;
     }
+        const notaArticulo =
+            document.getElementById(
+                "notaArticuloPedido"
+            ).value.trim();
 
-    const cantidad =
-        Math.max(
+        const cantidad =        Math.max(
             Number(cantidadInput.value) || 1,
             1
         );
@@ -5767,6 +5805,10 @@ btnAbrirArticulo.addEventListener(
         cantidadInput.value = 1;
         precioInput.value = '';
 
+
+    document.getElementById(
+        "notaArticuloPedido"
+    ).value = '';
         articuloSeleccionado = null;
         precioUnitarioSeleccionado = null;
 
@@ -5792,6 +5834,10 @@ function cerrarModalArticulo(){
     cantidadInput.value = 1;
     precioInput.value = '';
 
+
+    document.getElementById(
+        "notaArticuloPedido"
+    ).value = '';
     articuloSeleccionado = null;
     precioUnitarioSeleccionado = null;
 
@@ -5818,6 +5864,10 @@ document
 
         const nombreArticulo =
             articuloInput.value.trim();
+        const notaArticulo =
+            document.getElementById(
+                "notaArticuloPedido"
+            ).value.trim();
 
         const cantidad =
             Math.max(
@@ -5888,6 +5938,9 @@ document
                     ? articuloSeleccionado.descripcion || null
                     : null,
 
+
+            nota:
+                notaArticulo || null,
             cantidad:
                 cantidad,
 
@@ -6643,6 +6696,10 @@ renderizarDetallePedido();
             precioInput.value = '';
 
 
+
+    document.getElementById(
+        "notaArticuloPedido"
+    ).value = '';
             listaArticulos
                 .classList
                 .remove('mostrar');
@@ -7222,6 +7279,14 @@ document
 
 </body>
 </html>
+
+
+
+
+
+
+
+
 
 
 

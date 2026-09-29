@@ -1210,6 +1210,10 @@ body > table > thead {
         Seleccione estado
     </option>
 
+    <option value="COMPRADO">
+        Comprado
+    </option>
+
     <option value="EN_CAMINO">
         En Camino
     </option>
@@ -1748,6 +1752,8 @@ function traducirEstado(estado){
 
         case "COLOMBIA":
             return "Colombia";
+        case "COMPRADO":
+            return "Comprado";
 
         case "EN_CAMINO":
             return "En Camino";
@@ -6198,4 +6204,8 @@ cargarPedidos();
 
 </body>
 </html>
+
+
+
+
 
