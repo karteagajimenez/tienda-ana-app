@@ -777,63 +777,75 @@ app.get('/clientes', protegerAdmin, (req, res) => {
             u.id_usuario,
             u.nombre,
             u.apellido,
-
-            IFNULL((
-                SELECT SUM(factura.saldo)
-                FROM (
-                    SELECT
-                        p2.id_usuario,
-
-                        COALESCE(
-                            p2.grupo_compra,
-                            CONCAT('pedido-', p2.id_pedido)
-                        ) AS factura,
-
-                        GREATEST(
-                            SUM(IFNULL(p2.total_precio, 0))
-                            +
-                            (
-                                SUM(IFNULL(p2.peso_gramos, 0))
-                                / 1000
-                            ) * 6000
-                            -
-                            IFNULL((
-                                SELECT SUM(a.monto_abono)
-                                FROM abonos a
-                                INNER JOIN pedidos pa
-                                    ON pa.id_pedido = a.id_pedido
-                                WHERE pa.id_usuario = p2.id_usuario
-                                AND (
-                                    (
-                                        p2.grupo_compra IS NOT NULL
-                                        AND pa.grupo_compra = p2.grupo_compra
-                                    )
-                                    OR
-                                    (
-                                        p2.grupo_compra IS NULL
-                                        AND pa.id_pedido = p2.id_pedido
-                                    )
-                                )
-                            ), 0),
-                            0
-                        ) AS saldo
-
-                    FROM pedidos p2
-
-                    GROUP BY
-                        p2.id_usuario,
-                        COALESCE(
-                            p2.grupo_compra,
-                            CONCAT('pedido-', p2.id_pedido)
-                        )
-
-                ) AS factura
-
-                WHERE factura.id_usuario = u.id_usuario
-
-            ), 0) AS saldo_pendiente
+            IFNULL(s.saldo_pendiente, 0) AS saldo_pendiente
 
         FROM usuarios u
+
+        LEFT JOIN (
+            SELECT
+                f.id_usuario,
+                SUM(
+                    GREATEST(
+                        f.total_productos
+                        + ((f.peso_total / 1000) * 6000)
+                        - IFNULL(a.total_abonado, 0),
+                        0
+                    )
+                ) AS saldo_pendiente
+
+            FROM (
+                SELECT
+                    p.id_usuario,
+
+                    COALESCE(
+                        p.grupo_compra,
+                        CONCAT('pedido-', p.id_pedido)
+                    ) AS factura,
+
+                    SUM(IFNULL(p.total_precio, 0)) AS total_productos,
+                    SUM(IFNULL(p.peso_gramos, 0)) AS peso_total
+
+                FROM pedidos p
+
+                GROUP BY
+                    p.id_usuario,
+                    COALESCE(
+                        p.grupo_compra,
+                        CONCAT('pedido-', p.id_pedido)
+                    )
+            ) f
+
+            LEFT JOIN (
+                SELECT
+                    pa.id_usuario,
+
+                    COALESCE(
+                        pa.grupo_compra,
+                        CONCAT('pedido-', pa.id_pedido)
+                    ) AS factura,
+
+                    SUM(a.monto_abono) AS total_abonado
+
+                FROM abonos a
+
+                INNER JOIN pedidos pa
+                    ON pa.id_pedido = a.id_pedido
+
+                GROUP BY
+                    pa.id_usuario,
+                    COALESCE(
+                        pa.grupo_compra,
+                        CONCAT('pedido-', pa.id_pedido)
+                    )
+            ) a
+                ON a.id_usuario = f.id_usuario
+                AND a.factura = f.factura
+
+            GROUP BY
+                f.id_usuario
+
+        ) s
+            ON s.id_usuario = u.id_usuario
 
         WHERE u.tipo_usuario = 'cliente'
 
@@ -858,7 +870,6 @@ app.get('/clientes', protegerAdmin, (req, res) => {
     });
 
 });
-
 
 // ======================================================
 // 🔹 CREAR CLIENTE MANUAL
@@ -8629,5 +8640,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 http://localhost:${PORT}`);
 });
+
 
 
