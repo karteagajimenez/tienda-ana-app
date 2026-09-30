@@ -779,27 +779,57 @@ app.get('/clientes', protegerAdmin, (req, res) => {
             u.apellido,
 
             IFNULL((
-                SELECT SUM(
-                    GREATEST(
-                        IFNULL(p.total_precio, 0)
-                        +
-                        (
-                            IFNULL(p.peso_gramos, 0) /
-                            1000
-                        ) * 6000
-                        -
-                        IFNULL((
-                            SELECT SUM(a.monto_abono)
-                            FROM abonos a
-                            WHERE a.id_pedido = p.id_pedido
-                        ), 0),
-                        0
-                    )
-                )
+                SELECT SUM(factura.saldo)
+                FROM (
+                    SELECT
+                        p2.id_usuario,
 
-                FROM pedidos p
+                        COALESCE(
+                            p2.grupo_compra,
+                            CONCAT('pedido-', p2.id_pedido)
+                        ) AS factura,
 
-                WHERE p.id_usuario = u.id_usuario
+                        GREATEST(
+                            SUM(IFNULL(p2.total_precio, 0))
+                            +
+                            (
+                                SUM(IFNULL(p2.peso_gramos, 0))
+                                / 1000
+                            ) * 6000
+                            -
+                            IFNULL((
+                                SELECT SUM(a.monto_abono)
+                                FROM abonos a
+                                INNER JOIN pedidos pa
+                                    ON pa.id_pedido = a.id_pedido
+                                WHERE pa.id_usuario = p2.id_usuario
+                                AND (
+                                    (
+                                        p2.grupo_compra IS NOT NULL
+                                        AND pa.grupo_compra = p2.grupo_compra
+                                    )
+                                    OR
+                                    (
+                                        p2.grupo_compra IS NULL
+                                        AND pa.id_pedido = p2.id_pedido
+                                    )
+                                )
+                            ), 0),
+                            0
+                        ) AS saldo
+
+                    FROM pedidos p2
+
+                    GROUP BY
+                        p2.id_usuario,
+                        COALESCE(
+                            p2.grupo_compra,
+                            CONCAT('pedido-', p2.id_pedido)
+                        )
+
+                ) AS factura
+
+                WHERE factura.id_usuario = u.id_usuario
 
             ), 0) AS saldo_pendiente
 
@@ -828,6 +858,7 @@ app.get('/clientes', protegerAdmin, (req, res) => {
     });
 
 });
+
 
 // ======================================================
 // 🔹 CREAR CLIENTE MANUAL
@@ -8598,4 +8629,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 http://localhost:${PORT}`);
 });
+
 
