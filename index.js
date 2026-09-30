@@ -771,28 +771,62 @@ app.get('/logout', (req, res) => {
 
 // 🔹 CLIENTES
 app.get('/clientes', protegerAdmin, (req, res) => {
+
     conexion.query(`
         SELECT
-            MIN(id_usuario) AS id_usuario,
-            nombre,
-            apellido
-        FROM usuarios
-        WHERE tipo_usuario = 'cliente'
-        GROUP BY
-            LOWER(TRIM(nombre)),
-            LOWER(TRIM(apellido)),
-            nombre,
-            apellido
-        ORDER BY nombre ASC, apellido ASC
+            u.id_usuario,
+            u.nombre,
+            u.apellido,
+
+            IFNULL((
+                SELECT SUM(
+                    GREATEST(
+                        IFNULL(p.total_precio, 0)
+                        +
+                        (
+                            IFNULL(p.peso_gramos, 0) /
+                            1000
+                        ) * 6000
+                        -
+                        IFNULL((
+                            SELECT SUM(a.monto_abono)
+                            FROM abonos a
+                            WHERE a.id_pedido = p.id_pedido
+                        ), 0),
+                        0
+                    )
+                )
+
+                FROM pedidos p
+
+                WHERE p.id_usuario = u.id_usuario
+
+            ), 0) AS saldo_pendiente
+
+        FROM usuarios u
+
+        WHERE u.tipo_usuario = 'cliente'
+
+        ORDER BY
+            u.nombre ASC,
+            u.apellido ASC
+
     `, (err, results) => {
 
         if (err) {
-            console.log("❌ Error cargando clientes:", err);
+
+            console.log(
+                "❌ Error cargando clientes:",
+                err
+            );
+
             return res.json([]);
         }
 
         res.json(results);
+
     });
+
 });
 
 // ======================================================

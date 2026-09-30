@@ -48,7 +48,7 @@ body{
 
 .btn-menu-lateral{
     position:fixed;
-    top:28px;
+    top:19px;
     left:18px;
     z-index:6000;
 
@@ -760,6 +760,16 @@ body {
     width:auto;
 }
 
+.tabla-contenedor .col-saldo{
+    width:260px;
+    text-align:center;
+}
+
+.tabla-contenedor th.col-saldo,
+.tabla-contenedor td.col-saldo{
+    text-align:center !important;
+}
+
 .tabla-contenedor .col-accion{
     width:190px;
 }
@@ -961,16 +971,30 @@ body {
    ALINEAR TÍTULO CLIENTES CON BOTÓN MENÚ
 ====================================================== */
 
+/* ======================================================
+   ALINEAR MENÚ Y TÍTULO LISTA CLIENTES
+====================================================== */
+
 .header h1{
     position:relative;
-    top:-9px;
+    top:0;
 }
 
+/* Computadora */
+.btn-menu-lateral{
+    top:15px;
+}
+
+/* Celular */
 @media(max-width:700px){
 
     .header h1{
         position:relative;
         top:0;
+    }
+
+    .btn-menu-lateral{
+        top:14px;
     }
 
 }
@@ -1269,6 +1293,54 @@ body {
     }
 }
 
+
+/* ======================================================
+   CORRECCION FINAL ALINEACION TITULO CON MENU
+====================================================== */
+
+.header h1{
+    position:relative !important;
+    top:-27px !important;
+}
+
+@media(max-width:700px){
+
+    .header h1{
+        top:-20px !important;
+    }
+
+}
+
+/* ======================================================
+   ALINEACION EMOJI + LISTA CLIENTES
+====================================================== */
+
+.header h1{
+    line-height:1 !important;
+    display:flex !important;
+    align-items:center !important;
+    gap:8px;
+}
+
+/* ======================================================
+   AJUSTE FINAL - TEXTO LISTA CLIENTES
+====================================================== */
+
+
+
+/* ======================================================
+   AJUSTE INDEPENDIENTE - ICONO Y TEXTO LISTA CLIENTES
+====================================================== */
+
+.header .icono-lista-clientes{
+    display:inline-block;
+    transform:translateY(0) !important;
+}
+
+.header .texto-lista-clientes{
+    display:inline-block;
+    transform:translateY(3px) !important;
+}
 </style>
 
 </head>
@@ -1346,7 +1418,8 @@ body {
 <div class="header">
 
     <h1>
-        👥 Clientes
+        <span class="icono-lista-clientes">👥</span>
+        <span class="texto-lista-clientes">Lista clientes</span>
     </h1>
         <img
             src="logo.jpg"
@@ -1391,6 +1464,10 @@ body {
 
                 <th>
                     Nombre completo
+                </th>
+
+                <th class="col-saldo">
+                    Saldo pendiente
                 </th>
 
                 <th class="col-accion">
@@ -2137,6 +2214,60 @@ function mostrarClientes(){
 
 
             // ==========================================
+            // SALDO PENDIENTE
+            // ==========================================
+
+            const tdSaldo =
+                document.createElement(
+                    "td"
+                );
+
+            tdSaldo.className =
+                "col-saldo";
+
+            tdSaldo.style.textAlign =
+                "center";
+
+            const saldoPendiente =
+                Math.max(
+                    Number(cliente.saldo_pendiente) || 0,
+                    0
+                );
+
+            if(saldoPendiente > 0){
+
+                tdSaldo.textContent =
+                    "₡" +
+                    saldoPendiente
+                        .toLocaleString(
+                            "es-CR",
+                            {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 2
+                            }
+                        )
+                        .replace(/[\u00A0\u202F ]/g, ".");
+
+                tdSaldo.style.color =
+                    "#e53935";
+
+                tdSaldo.style.fontWeight =
+                    "700";
+
+            }else{
+
+                tdSaldo.textContent =
+                    "—";
+
+                tdSaldo.style.color =
+                    "#20c96b";
+
+                tdSaldo.style.fontWeight =
+                    "800";
+            }
+
+
+            // ==========================================
             // ACCIONES
             // ==========================================
 
@@ -2214,6 +2345,11 @@ function mostrarClientes(){
 
             fila.appendChild(
                 tdNombre
+            );
+
+
+            fila.appendChild(
+                tdSaldo
             );
 
 
