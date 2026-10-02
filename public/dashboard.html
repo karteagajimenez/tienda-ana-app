@@ -845,10 +845,47 @@ body.menu-abierto {
 
 
 
+
+
+
+
+
+
+/* =========================================================
+   CABECERA FIJA REAL - CREAR PEDIDO
+========================================================= */
+
+.cabecera-fija-crear-pedido {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 800;
+    background: linear-gradient(to right, #f8e1e7, #fdf6f0);
+    padding: 20px 20px 0 20px;
+    box-sizing: border-box;
 }
 
+/* Menu siempre por encima */
+.menu-lateral {
+    z-index: 1100;
+}
 
+@media (max-width: 768px) {
 
+    .cabecera-fija-crear-pedido {
+        padding: 12px 12px 0 12px;
+    }
+
+    .menu-lateral {
+        z-index: 1200;
+    }
+
+    .btn-menu-lateral {
+        z-index: 1300;
+    }
+
+}
 
 </style>
 </head>
@@ -1358,6 +1395,7 @@ body.menu-abierto {
 </div>
 
 <!-- 🔥 HEADER DERECHA -->
+<div id="cabeceraFijaCrearPedido" class="cabecera-fija-crear-pedido">
 <div class="header">
     <span class="admin">📊 Panel Administrador</span>
     <a href="/logout" class="logout">Cerrar sesión</a>
@@ -1372,6 +1410,8 @@ body.menu-abierto {
 </div>
 
 <hr>
+</div>
+<div id="espacioCabeceraCrearPedido" aria-hidden="true"></div>
 <form id="formPedido">
 
     <!-- 🔥 BUSCADOR CLIENTE -->
@@ -7326,6 +7366,22 @@ document
 </script>
 
 
+
+
+<script>
+function ajustarEspacioCabeceraCrearPedido() {
+    const cabecera = document.getElementById("cabeceraFijaCrearPedido");
+    const espacio = document.getElementById("espacioCabeceraCrearPedido");
+
+    if (!cabecera || !espacio) return;
+
+    espacio.style.height = cabecera.getBoundingClientRect().height + "px";
+}
+
+window.addEventListener("DOMContentLoaded", ajustarEspacioCabeceraCrearPedido);
+window.addEventListener("load", ajustarEspacioCabeceraCrearPedido);
+window.addEventListener("resize", ajustarEspacioCabeceraCrearPedido);
+</script>
 
 </body>
 </html>
