@@ -1491,6 +1491,10 @@ body.menu-abierto {
                         </th>
 
                         <th>
+                            Editar
+                        </th>
+
+                        <th>
                             Eliminar
                         </th>
 
@@ -1759,14 +1763,6 @@ body.menu-abierto {
         <span>Nuevo artículo</span>
     </button>
 
-    <button
-        type="button"
-        id="btnEditarArticuloPedido"
-        class="accion-articulo-pedido"
-    >
-        <span class="icono-editar-articulo">✎</span>
-        <span>Editar artículo</span>
-    </button>
 
 </div>
 
@@ -2857,9 +2853,7 @@ function abrirFormularioEditarArticuloPedido(
     document.getElementById(
         "editarPedidoPrecio"
     ).value =
-        item.precio_unidad ??
-        item.precio ??
-        0;
+        (Number(item.precio_unidad ?? item.precio ?? 0) * Number(item.cantidad || 1));
 
 
     document.getElementById(
@@ -2886,6 +2880,49 @@ function abrirFormularioEditarArticuloPedido(
         "flex";
 
 }
+
+// ======================================================
+// ACTUALIZAR PRECIO TOTAL AL CAMBIAR CANTIDAD
+// ======================================================
+
+document.getElementById(
+    "editarPedidoCantidad"
+).addEventListener("input", () => {
+
+    if (indiceArticuloPedidoEditando === null) {
+        return;
+    }
+
+    const item =
+        articulosPedido[indiceArticuloPedidoEditando];
+
+    if (!item) {
+        return;
+    }
+
+    const cantidad = Math.max(
+        Number(
+            document.getElementById(
+                "editarPedidoCantidad"
+            ).value
+        ) || 1,
+        1
+    );
+
+    const precioUnitario =
+        Number(
+            item.precio_unidad ??
+            item.precio ??
+            0
+        );
+
+    document.getElementById(
+        "editarPedidoPrecio"
+    ).value =
+        precioUnitario * cantidad;
+
+});
+
 // ======================================================
 // 🔹 CANCELAR EDICIÓN Y VOLVER A LA LISTA
 // ======================================================
@@ -2898,7 +2935,7 @@ btnCancelarEditarArticuloPedido.addEventListener(
             "none";
 
         modalSeleccionarArticuloEditar.style.display =
-            "flex";
+            "none";
 
         indiceArticuloPedidoEditando =
             null;
@@ -3020,7 +3057,7 @@ btnGuardarEditarArticuloPedido.addEventListener(
             cantidad;
 
         item.precio_unidad =
-            precio;
+            precio / cantidad;
 
         item.descripcion =
             descripcion;
@@ -3029,7 +3066,7 @@ btnGuardarEditarArticuloPedido.addEventListener(
             nota;
 
         item.total =
-            precio * cantidad;
+            precio;
 
             if(item.guardado === true){
     item.editado = true;
@@ -3050,7 +3087,7 @@ btnGuardarEditarArticuloPedido.addEventListener(
         // Volver a Agregar artículo
 
         modalAgregarArticulo.style.display =
-            "flex";
+            "none";
 
 
         // Ya no estamos editando ninguna línea
@@ -3069,22 +3106,6 @@ btnGuardarEditarArticuloPedido.addEventListener(
 // 🔹 ABRIR EDITAR ARTÍCULO
 // ======================================================
 
-btnEditarArticuloPedido.addEventListener(
-    "click",
-    () => {
-
-        mostrarArticulosPedidoParaEditar();
-
-        // Ocultar Agregar artículo
-        modalAgregarArticulo.style.display =
-            "none";
-
-        // Mostrar lista para editar
-        modalSeleccionarArticuloEditar.style.display =
-            "flex";
-
-    }
-);
 
 
 // ======================================================
@@ -6098,6 +6119,25 @@ ${
                     )}
                 </td>
 
+
+                <td
+                    style="
+                        padding:10px 5px;
+                        text-align:center;
+                    "
+                >
+                    <span
+                        onclick="abrirFormularioEditarArticuloPedido(${index})"
+                        style="
+                            font-size:21px;
+                            cursor:pointer;
+                            user-select:none;
+                        "
+                        title="Editar artículo"
+                    >
+                        ✎
+                    </span>
+                </td>
 
                 <td
                     style="
