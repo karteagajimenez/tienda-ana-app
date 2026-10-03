@@ -843,8 +843,1114 @@ body > table {
 body > table > thead {
     display: none;
 }
+
+
+/* =========================================================
+   FICHAS DE PEDIDO - IGUAL A GESTION DE PEDIDOS
+========================================================= */
+
+.ficha-pedido-modal {
+    width: 100%;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid #eadde2;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* INFORMACION SUPERIOR */
+
+.ficha-pedido-superior {
+    display: grid;
+    grid-template-columns: minmax(280px, 2fr) minmax(150px, 1fr) minmax(190px, 1fr);
+    align-items: stretch;
+    background: #fdf6f8;
+    border-bottom: 1px solid #eadde2;
+}
+
+.ficha-cliente {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 22px 25px;
+}
+
+.ficha-icono-cliente {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #f3dce4;
+    font-size: 23px;
+}
+
+.ficha-nombre {
+    font-size: 19px;
+    font-weight: 700;
+    color: #333333;
+    margin-bottom: 5px;
+}
+
+.ficha-pais {
+    font-size: 13px;
+    color: #777777;
+}
+
+.ficha-factura,
+.ficha-registro {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 18px 22px;
+    border-left: 1px solid #eadde2;
+}
+
+.ficha-factura span,
+.ficha-registro span {
+    display: block;
+    color: #8a6b76;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.ficha-factura strong,
+.ficha-registro strong {
+    color: #333333;
+    font-size: 18px;
+}
+
+
+/* DATOS DEL PEDIDO */
+
+.ficha-datos {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    padding: 25px 20px;
+    background: #ffffff;
+}
+
+.ficha-dato {
+    min-width: 0;
+    text-align: center;
+    padding: 5px 12px;
+    border-right: 1px solid #eeeeee;
+}
+
+.ficha-dato:last-child {
+    border-right: none;
+}
+
+.ficha-dato span {
+    display: block;
+    margin-bottom: 9px;
+    color: #8a6b76;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.ficha-dato strong {
+    display: block;
+    color: #333333;
+    font-size: 15px;
+    line-height: 1.35;
+}
+
+.ficha-dato strong.saldo-pendiente {
+    color: #c62828;
+}
+
+.ficha-dato strong.saldo-pagado {
+    color: #2e7d32;
+}
+
+
+/* ACCIONES */
+
+.ficha-acciones {
+    border-top: 1px solid #eadde2;
+}
+
+.ficha-acciones-titulo {
+    padding: 11px 20px;
+    background: #f3dce4;
+    color: #684d57;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.ficha-botones {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 18px 20px 22px;
+    background: #ffffff;
+}
+
+.ficha-botones button {
+    width: auto !important;
+    min-width: 105px;
+    margin: 0 !important;
+    padding: 9px 15px !important;
+    white-space: nowrap;
+}
+
+.ficha-sin-factura {
+    color: #888888;
+    font-size: 13px;
+}
+
+
+/* EVITAR EL ANCHO ANTIGUO DEL ACORDEON */
+
+#contenidoModalDetalleCliente .ficha-pedido-modal {
+    position: static !important;
+    left: auto !important;
+    margin-left: 0 !important;
+    max-width: 100% !important;
+}
+
+
+/* MOVIL */
+
+@media (max-width: 768px) {
+
+    .ficha-pedido-superior {
+        grid-template-columns: 1fr;
+    }
+
+    .ficha-factura,
+    .ficha-registro {
+        border-left: none;
+        border-top: 1px solid #eadde2;
+    }
+
+    .ficha-datos {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 15px;
+    }
+
+    .ficha-dato {
+        border-right: none;
+        border-bottom: 1px solid #eeeeee;
+        padding: 14px 8px;
+    }
+
+    .ficha-botones {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .ficha-botones button {
+        width: 100% !important;
+        min-width: 0;
+    }
+}
+
+/* =========================================================
+   AJUSTE FINAL - DETALLE DEL PEDIDO
+========================================================= */
+
+@media (min-width: 769px) {
+
+    /* MODAL MAS CORTO Y CENTRADO */
+    .modal-detalle-contenido {
+        width: min(1250px, 88vw) !important;
+        max-width: 1250px !important;
+    }
+
+    .contenido-modal-detalle {
+        padding: 22px 26px 26px !important;
+        overflow-x: hidden !important;
+    }
+
+
+    /* PARTE SUPERIOR */
+    .ficha-pedido-superior {
+        grid-template-columns: 1.45fr 0.75fr 0.85fr !important;
+        background: #ffffff !important;
+    }
+
+    .ficha-cliente {
+        padding: 20px 22px !important;
+    }
+
+    .ficha-icono-cliente {
+        width: 52px !important;
+        height: 52px !important;
+        min-width: 52px !important;
+        background: #f1d3dd !important;
+    }
+
+    .ficha-nombre {
+        font-size: 20px !important;
+    }
+
+    .ficha-factura,
+    .ficha-registro {
+        padding: 18px 22px !important;
+    }
+
+
+    /* DATOS COMO CUADROS */
+    .ficha-datos {
+        padding: 0 !important;
+        grid-template-columns: repeat(6, 1fr) !important;
+        border-top: 18px solid #ffffff;
+    }
+
+    .ficha-dato {
+        padding: 0 !important;
+        border-right: 1px solid #d8c6cc !important;
+        border-bottom: 1px solid #d8c6cc !important;
+    }
+
+    .ficha-dato:first-child {
+        border-left: 1px solid #d8c6cc !important;
+    }
+
+    .ficha-dato span {
+        margin: 0 !important;
+        padding: 11px 7px !important;
+
+        background: #b65f7d !important;
+        color: #ffffff !important;
+
+        font-size: 14px !important;
+        font-weight: 700 !important;
+    }
+
+    .ficha-dato strong {
+        min-height: 64px;
+
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+
+        padding: 10px 7px !important;
+
+        background: #ffffff !important;
+
+        font-size: 15px !important;
+        box-sizing: border-box;
+    }
+
+
+    /* ACCIONES */
+    .ficha-acciones {
+        margin-top: 18px !important;
+        border: 1px solid #dfcbd2 !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+
+    .ficha-acciones-titulo {
+        padding: 11px 18px !important;
+
+        background: #b65f7d !important;
+        color: #ffffff !important;
+
+        font-size: 15px !important;
+        font-weight: 700 !important;
+    }
+
+    .ficha-botones {
+        display: grid !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        gap: 9px !important;
+
+        padding: 17px 18px !important;
+    }
+
+    .ficha-botones button {
+        width: 100% !important;
+        min-width: 0 !important;
+
+        padding: 10px 6px !important;
+
+        font-size: 14px !important;
+        font-weight: 500 !important;
+    }
+
+}
+
+
+/* TITULO DEL MODAL CON ROSA FUERTE */
+.modal-detalle-cabecera {
+    background: #b65f7d !important;
+}
+
+
+/* MOVIL */
+@media (max-width: 768px) {
+
+    .ficha-pedido-superior {
+        background: #ffffff !important;
+    }
+
+    .ficha-dato span {
+        background: #b65f7d !important;
+        color: #ffffff !important;
+    }
+
+    .ficha-acciones-titulo {
+        background: #b65f7d !important;
+        color: #ffffff !important;
+    }
+
+}
+
+/* =========================================================
+   AJUSTES VISUALES FINALES DEL DOCUMENTO
+========================================================= */
+
+@media (min-width: 769px) {
+
+    /* Nombre apenas mas grande */
+    .ficha-nombre {
+        font-size: 21px !important;
+        font-weight: 700 !important;
+    }
+
+
+    /* FACTURA MAS CENTRADA */
+    .ficha-factura {
+        text-align: center !important;
+        align-items: center !important;
+    }
+
+    .ficha-factura span {
+        width: 100%;
+        text-align: center !important;
+    }
+
+    .ficha-factura strong {
+        width: 100%;
+        text-align: center !important;
+
+        font-size: 22px !important;
+        font-weight: 800 !important;
+    }
+
+
+    /* FACTURA PENDIENTE / PAGADA */
+    .ficha-factura strong.saldo-pendiente {
+        color: #d62828 !important;
+    }
+
+    .ficha-factura strong.saldo-pagado {
+        color: #238b45 !important;
+    }
+
+
+    /* ROSA MENOS FUERTE, COMO LA REFERENCIA */
+    .ficha-dato span,
+    .ficha-acciones-titulo {
+        background: #b96a86 !important;
+    }
+
+
+    /* BOTONES COMO LOS ORIGINALES */
+    .ficha-botones {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        flex-wrap: wrap !important;
+
+        gap: 10px !important;
+        padding: 17px 18px 21px !important;
+    }
+
+    .ficha-botones button {
+        width: auto !important;
+        min-width: 0 !important;
+
+        padding: 9px 16px !important;
+        margin: 0 !important;
+
+        border-radius: 7px !important;
+
+        font-size: 14px !important;
+        font-weight: 600 !important;
+    }
+
+
+    /* COLORES DE LOS BOTONES DE REFERENCIA */
+
+    .ficha-botones .peso {
+        background: #ad5b79 !important;
+        color: #ffffff !important;
+    }
+
+    .ficha-botones .pago {
+        background: #28c978 !important;
+        color: #ffffff !important;
+    }
+
+    .ficha-botones .estado {
+        background: #c28ca0 !important;
+        color: #ffffff !important;
+    }
+
+    .ficha-botones .detalles {
+        background: #b96f8b !important;
+        color: #ffffff !important;
+    }
+
+    .ficha-botones .editar {
+        background: #59a9d8 !important;
+        color: #ffffff !important;
+    }
+
+    .ficha-botones .archivar {
+        background: #f5ad3c !important;
+        color: #ffffff !important;
+    }
+
+    .ficha-botones .eliminar {
+        background: #ef4938 !important;
+        color: #ffffff !important;
+    }
+
+}
+
+/* =========================================================
+   AJUSTE DE COLORES Y BOTONES - DETALLE DEL PEDIDO
+========================================================= */
+
+/* Rosa principal mas suave */
+.modal-detalle-cabecera,
+.ficha-dato span,
+.ficha-acciones-titulo {
+    background: #c4879c !important;
+}
+
+/* Acciones centrado */
+.ficha-acciones-titulo {
+    text-align: center !important;
+}
+
+
+/* BOTONES IGUALES AL ESTILO ORIGINAL */
+
+.ficha-botones {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+}
+
+.ficha-botones button {
+    width: auto !important;
+    min-width: 85px !important;
+
+    padding: 10px 15px !important;
+    margin: 0 !important;
+
+    border: none !important;
+    outline: none !important;
+
+    border-radius: 7px !important;
+
+    color: #ffffff !important;
+
+    font-size: 16px !important;
+    font-weight: 600 !important;
+
+    box-shadow: none !important;
+}
+
+
+/* COLORES EXACTOS DEL ESTILO VISUAL */
+
+.ficha-botones .peso {
+    background: #b35f7d !important;
+}
+
+.ficha-botones .pago {
+    background: #28c978 !important;
+}
+
+.ficha-botones .estado {
+    background: #c98fa4 !important;
+}
+
+.ficha-botones .detalles {
+    background: #bb718d !important;
+}
+
+.ficha-botones .editar {
+    background: #58a9dc !important;
+}
+
+.ficha-botones .archivar {
+    background: #f7ad3d !important;
+}
+
+.ficha-botones .eliminar {
+    background: #ef4938 !important;
+}
+
+
+/* Mantener colores al pasar el mouse */
+.ficha-botones .peso:hover {
+    background: #b35f7d !important;
+}
+
+.ficha-botones .pago:hover {
+    background: #28c978 !important;
+}
+
+.ficha-botones .estado:hover {
+    background: #c98fa4 !important;
+}
+
+.ficha-botones .detalles:hover {
+    background: #bb718d !important;
+}
+
+.ficha-botones .editar:hover {
+    background: #58a9dc !important;
+}
+
+.ficha-botones .archivar:hover {
+    background: #f7ad3d !important;
+}
+
+.ficha-botones .eliminar:hover {
+    background: #ef4938 !important;
+}
+
+/* =========================================================
+   MODALES DE ACCIONES SIEMPRE DELANTE DE GESTION DE PEDIDO
+========================================================= */
+
+#modal,
+#modalEditarAbono,
+#modalEditarPeso,
+#modalConfirmarEliminar,
+#modalArchivar,
+#modalEditar {
+    z-index: 7000 !important;
+}
+
+
 </style>
 
+<style>
+/* =========================================================
+   ARCHIVADOS - MISMA PRESENTACIÓN QUE GESTIÓN DE PEDIDOS
+========================================================= */
+
+@media (min-width: 769px) {
+
+    .zona-superior-fija .barra-cliente-fija {
+        width: 800px !important;
+        max-width: calc(100% - 40px) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+
+        border-radius: 12px 12px 0 0;
+        overflow: hidden;
+    }
+
+    body > table#tablaArchivados {
+        width: 800px !important;
+        min-width: 0 !important;
+        max-width: calc(100% - 40px) !important;
+
+        margin-left: auto !important;
+        margin-right: auto !important;
+
+        border-radius: 0 0 12px 12px !important;
+        overflow: hidden;
+
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+}
+
+/* El modal no ocupa espacio en la página principal */
+#modalDetalleArchivado {
+    display: none;
+}
+
+#modalDetalleArchivado.abierto {
+    display: flex;
+}
+
+#contenidoModalDetalleArchivado {
+    display: block;
+}
+
+/* =========================================================
+   ARCHIVADOS - CUADRO PRINCIPAL IGUAL A GESTIÓN DE PEDIDOS
+   ========================================================= */
+
+@media (min-width: 769px) {
+
+    .barra-cliente-fija {
+        width: 800px !important;
+        max-width: calc(100% - 40px) !important;
+
+        margin-left: auto !important;
+        margin-right: auto !important;
+
+        border-radius: 10px 10px 0 0 !important;
+        overflow: hidden !important;
+    }
+
+    /* TABLA PRINCIPAL DE ARCHIVADOS */
+    body > table:has(#tablaArchivados) {
+        width: 800px !important;
+        min-width: 0 !important;
+        max-width: calc(100% - 40px) !important;
+
+        margin-left: auto !important;
+        margin-right: auto !important;
+
+        table-layout: fixed !important;
+
+        border-radius: 0 0 10px 10px !important;
+        overflow: hidden !important;
+
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    body > table:has(#tablaArchivados) th:first-child,
+    body > table:has(#tablaArchivados) td:first-child {
+        width: 150px !important;
+    }
+
+    body > table:has(#tablaArchivados) tbody tr {
+        background: #ffffff !important;
+    }
+
+    body > table:has(#tablaArchivados) tbody td {
+        height: 52px !important;
+    }
+}
+
+/* =========================================================
+   MODAL ARCHIVADOS
+   ========================================================= */
+
+#modalDetalleArchivado {
+    display: none;
+}
+
+#modalDetalleArchivado.abierto {
+    display: flex;
+}
+
+
+/* =========================================================
+   ARCHIVADOS - RÉPLICA EXACTA DEL CUADRO DE GESTIÓN
+   ========================================================= */
+
+@media (min-width: 769px) {
+
+    /* =========================================
+       ENCABEZADO # FACTURA / CLIENTE
+       ========================================= */
+
+    .barra-cliente-fija {
+
+        width: 950px !important;
+        max-width: calc(100% - 40px) !important;
+
+        margin-left: auto !important;
+        margin-right: auto !important;
+
+        display: grid !important;
+
+        grid-template-columns: 130px 1fr !important;
+
+        padding: 0 !important;
+
+        box-sizing: border-box !important;
+
+        border-radius: 10px 10px 0 0 !important;
+
+        overflow: hidden !important;
+    }
+
+
+    .barra-cliente-fija > div:first-child {
+
+        width: 130px !important;
+        min-width: 130px !important;
+        max-width: 130px !important;
+
+        box-sizing: border-box !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        padding: 12px 0 !important;
+
+        border-right: 2px solid rgba(255,255,255,0.75) !important;
+    }
+
+
+    .barra-cliente-fija > div:last-child {
+
+        width: auto !important;
+        min-width: 0 !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        padding: 12px 0 !important;
+    }
+
+
+    /* =========================================
+       CUADRO PRINCIPAL
+       ========================================= */
+
+    table:has(#tablaArchivados) {
+
+        width: 800px !important;
+
+        min-width: 800px !important;
+
+        max-width: calc(100% - 40px) !important;
+
+        margin-left: auto !important;
+        margin-right: auto !important;
+
+        margin-top: 190px !important;
+
+        table-layout: fixed !important;
+
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+
+        background: #ffffff !important;
+
+        border-radius: 0 0 12px 12px !important;
+
+        overflow: hidden !important;
+
+        box-shadow:
+            0 8px 20px rgba(0, 0, 0, 0.12) !important;
+    }
+
+
+    /* =========================================
+       OCULTAR ENCABEZADO ORIGINAL DE LA TABLA
+       ========================================= */
+
+    table:has(#tablaArchivados) thead {
+        display: none !important;
+    }
+
+
+    /* =========================================
+       COLUMNA FACTURA
+       ========================================= */
+
+    table:has(#tablaArchivados) tbody td:first-child {
+
+        width: 130px !important;
+        min-width: 130px !important;
+        max-width: 130px !important;
+
+        height: 52px !important;
+
+        padding: 0 !important;
+
+        box-sizing: border-box !important;
+
+        text-align: center !important;
+
+        vertical-align: middle !important;
+
+        border-right: 1px solid #d5d5d5 !important;
+
+        border-bottom: 1px solid #eeeeee !important;
+    }
+
+
+    /* =========================================
+       COLUMNA CLIENTE
+       ========================================= */
+
+    table:has(#tablaArchivados) tbody td:nth-child(2) {
+
+        width: auto !important;
+
+        height: 52px !important;
+
+        padding: 0 20px !important;
+
+        box-sizing: border-box !important;
+
+        vertical-align: middle !important;
+
+        border-bottom: 1px solid #eeeeee !important;
+    }
+
+
+    /* =========================================
+       FILAS
+       ========================================= */
+
+    table:has(#tablaArchivados) tbody tr {
+
+        height: 52px !important;
+
+        background: #ffffff !important;
+    }
+
+
+    table:has(#tablaArchivados) tbody tr:last-child td {
+
+        border-bottom: none !important;
+    }
+
+
+    /* =========================================
+       EL TEXTO DEL CLIENTE
+       ========================================= */
+
+    table:has(#tablaArchivados) tbody td:nth-child(2) {
+
+        text-align: left !important;
+    }
+
+
+    /* =========================================
+       PAGINACIÓN
+       ========================================= */
+
+    #paginacionArchivados {
+
+        width: 100% !important;
+
+        max-width: none !important;
+
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+}
+
+
+/* =========================================================
+   BUSCADOR - MISMO ANCHO VISUAL QUE GESTIÓN
+   ========================================================= */
+
+@media (min-width: 769px) {
+
+    #buscar {
+
+        width: 500px !important;
+
+        max-width: calc(100% - 40px) !important;
+
+        box-sizing: border-box !important;
+
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+}
+
+
+/* =========================================================
+   MODAL ARCHIVADOS
+   ========================================================= */
+
+#modalDetalleArchivado {
+    display: none;
+}
+
+#modalDetalleArchivado.abierto {
+    display: flex;
+}
+
+
+/* AJUSTE FINAL ARCHIVADOS IGUAL A GESTION */
+@media (min-width: 769px) {
+
+    table:has(#tablaArchivados) {
+        border-radius: 10px !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18) !important;
+    }
+
+    .barra-cliente-fija > div:first-child {
+        border-radius: 10px 0 0 0 !important;
+    }
+
+    .barra-cliente-fija > div:last-child {
+        border-radius: 0 10px 0 0 !important;
+    }
+
+    table:has(#tablaArchivados) tbody td:nth-child(2) {
+        padding-left: 45px !important;
+        padding-right: 10px !important;
+    }
+
+}
+
+@media (min-width: 769px) {
+
+    #tablaArchivados tr.fila-cliente:first-child td:first-child {
+        border-radius: 10px 0 0 0 !important;
+    }
+
+    #tablaArchivados tr.fila-cliente:first-child td:nth-child(2) {
+        border-radius: 0 10px 0 0 !important;
+    }
+}
+
+/* SOLUCION FINAL BORDES TABLA ARCHIVADOS */
+@media (min-width: 769px) {
+    table:has(#tablaArchivados) {
+        border-radius: 10px !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18) !important;
+    }
+}
+
+/* MODAL ARCHIVADOS - CENTRADO FINAL */
+
+#modalDetalleArchivado {
+    display: none !important;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 6000 !important;
+
+    background: rgba(0, 0, 0, 0.38) !important;
+
+    padding: 25px !important;
+    box-sizing: border-box !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#modalDetalleArchivado.abierto {
+    display: flex !important;
+}
+
+#modalDetalleArchivado .modal-detalle-archivado-contenido {
+    width: min(1250px, 88vw) !important;
+    max-width: 1250px !important;
+    max-height: calc(100vh - 50px) !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.28) !important;
+}
+
+#modalDetalleArchivado .modal-detalle-archivado-cabecera {
+    width: 100% !important;
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    padding: 14px 20px !important;
+
+    background: #c4879c !important;
+    color: #ffffff !important;
+}
+
+#modalDetalleArchivado .modal-detalle-archivado-cabecera h2 {
+    margin: 0 !important;
+    padding: 0 !important;
+
+    font-size: 20px !important;
+    color: #ffffff !important;
+}
+
+#modalDetalleArchivado .cerrar-modal-detalle-archivado {
+    width: auto !important;
+    min-width: 0 !important;
+
+    margin: 0 !important;
+    padding: 0 4px !important;
+
+    border: 0 !important;
+    background: transparent !important;
+    color: #ffffff !important;
+
+    font-size: 30px !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+}
+
+#modalDetalleArchivado .contenido-modal-detalle-archivado {
+    width: 100% !important;
+    box-sizing: border-box !important;
+
+    padding: 18px !important;
+
+    background: #ffffff !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    max-height: calc(100vh - 115px) !important;
+}
+
+#modalDetalleArchivado .ficha-pedido-modal {
+    width: 100% !important;
+    max-width: 100% !important;
+
+    position: static !important;
+    left: auto !important;
+
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+@media (max-width: 768px) {
+
+    #modalDetalleArchivado {
+        padding: 12px !important;
+    }
+
+    #modalDetalleArchivado .modal-detalle-archivado-contenido {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: calc(100vh - 24px) !important;
+    }
+
+    #modalDetalleArchivado .contenido-modal-detalle-archivado {
+        padding: 10px !important;
+        max-height: calc(100vh - 90px) !important;
+    }
+}
+
+/* AJUSTE ETIQUETA CLIENTE ARCHIVADOS */
+.ficha-etiqueta-cliente {
+    margin-bottom: 8px !important;
+    color: #8a6b76 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+}
+</style>
 </head>
 <body>
 <div
@@ -923,12 +2029,7 @@ body > table > thead {
           Volver a Gestión
         </button>
 
-        <button
-         id="btnExpandir"
-          onclick="toggleTodosClientesArchivados()"
-        >
-          Expandir
-        </button>
+        
 
         <button
             onclick="location.href='/logout'"
@@ -968,13 +2069,7 @@ body > table > thead {
             Volver a Gestión
         </button>
 
-        <button
-             id="btnExpandirMovil"
-            type="button"
-            onclick="toggleTodosClientesArchivados()"
-        >
-            Expandir
-        </button>
+        
 
         <button
             id="cerrarSesionMovil"
@@ -1000,8 +2095,13 @@ body > table > thead {
     placeholder="Buscar cliente archivado..."
     onkeyup="filtrar()"
 >
-<div class="barra-cliente-fija">
-    Cliente
+<div class="barra-cliente-fija" style="padding:0; display:flex; align-items:stretch; text-align:left;">
+    <div style="width:110px; min-width:110px; box-sizing:border-box; text-align:center; padding:12px 0; border-right:2px solid rgba(255,255,255,0.75);">
+        # Factura
+    </div>
+    <div style="flex:1; box-sizing:border-box; text-align:center; padding:12px 0;">
+        Cliente
+    </div>
 </div>
 
 </div>
@@ -1422,6 +2522,14 @@ async function cargarArchivados(){
                             )
                             : null,
 
+                    numero_factura:
+                        pedido.numero_factura !== null &&
+                        pedido.numero_factura !== undefined
+                            ? Number(
+                                pedido.numero_factura
+                            )
+                            : null,
+
                     pais_origen:
                         pedido.pais_origen || null,
 
@@ -1651,12 +2759,20 @@ function obtenerClientesArchivadosFiltrados(){
         }
     )
     .sort(
-        (a, b) =>
-            `${a.nombre} ${a.apellido}`
-            .localeCompare(
-                `${b.nombre} ${b.apellido}`,
-                "es"
-            )
+        (a, b) => {
+            const facturasA = Object.values(a.grupos)
+                .map(grupo => Number(grupo.numero_factura))
+                .filter(numero => Number.isFinite(numero) && numero > 0);
+
+            const facturasB = Object.values(b.grupos)
+                .map(grupo => Number(grupo.numero_factura))
+                .filter(numero => Number.isFinite(numero) && numero > 0);
+
+            const facturaA = facturasA.length ? Math.min(...facturasA) : Number.MAX_SAFE_INTEGER;
+            const facturaB = facturasB.length ? Math.min(...facturasB) : Number.MAX_SAFE_INTEGER;
+
+            return facturaA - facturaB;
+        }
     );
 
 }
@@ -1871,8 +2987,45 @@ const clientes =
     clientes.forEach(
         cliente => {
 
-            html += `
+            const grupos =
+                Object.values(cliente.grupos);
 
+            const gruposConFactura =
+                grupos
+                .filter(
+                    grupo =>
+                        Number(grupo.numero_factura) > 0
+                )
+                .sort(
+                    (a, b) =>
+                        Number(a.numero_factura) -
+                        Number(b.numero_factura)
+                );
+
+            const grupoPrincipal =
+                gruposConFactura.length > 0
+                    ? gruposConFactura[0]
+                    : null;
+
+            let numeroFactura = "-";
+            let claseFactura = "";
+
+            if(grupoPrincipal){
+
+                numeroFactura =
+                    grupoPrincipal.numero_factura;
+
+                const saldo =
+                    (Number(grupoPrincipal.envio_total) || 0) -
+                    (Number(grupoPrincipal.total_abonado) || 0);
+
+                claseFactura =
+                    saldo > 0
+                        ? "saldo-pendiente"
+                        : "saldo-pagado";
+            }
+
+            html += `
                 <tr
                     class="fila-cliente"
                     onclick="toggleClienteArchivado(
@@ -1882,12 +3035,25 @@ const clientes =
                 >
 
                     <td
+                        class="${claseFactura}"
                         style="
+                            width:110px;
+                            text-align:center;
+                            font-weight:bold;
+                            border-right:2px solid #d8d8d8;
+                        "
+                    >
+                        ${numeroFactura}
+                    </td>
+
+                    <td
+                        style="
+                            text-align:left;
+                            padding-left:45px;
                             font-weight:bold;
                             color:#a85c78;
                         "
                     >
-
                         <span
                             id="flecha-archivado-${cliente.id_usuario}"
                         >
@@ -1896,11 +3062,9 @@ const clientes =
 
                         ${cliente.nombre}
                         ${cliente.apellido}
-
                     </td>
 
                 </tr>
-
 
                 <tr
                     id="detalle-cliente-archivado-${cliente.id_usuario}"
@@ -1908,32 +3072,68 @@ const clientes =
                 >
 
                     <td
-                        colspan="1"
+                        colspan="2"
                         style="
                             padding:0;
                             background:#fdf6f0;
                         "
                     >
-
                         <div
                             id="contenido-cliente-archivado-${cliente.id_usuario}"
                         >
                         </div>
-
                     </td>
 
                 </tr>
-
             `;
 
         }
     );
 
-
     tabla.innerHTML =
         html;
 
 actualizarPaginacionArchivados();
+
+    // Bordes del cuadro de Archivados iguales a Gestión
+    const tablaVisualArchivados = document.querySelector("table:has(#tablaArchivados)");
+
+    if(tablaVisualArchivados){
+        tablaVisualArchivados.style.setProperty("border-radius", "10px", "important");
+        tablaVisualArchivados.style.setProperty("overflow", "hidden", "important");
+        tablaVisualArchivados.style.setProperty(
+            "box-shadow",
+            "0 4px 14px rgba(0, 0, 0, 0.18)",
+            "important"
+        );
+    }
+
+
+/* Alinear exactamente la raya del encabezado con la raya de Factura */
+requestAnimationFrame(() => {
+
+    const celdaFactura =
+        document.querySelector("#tablaArchivados tr td:first-child");
+
+    const encabezadoFactura =
+        document.querySelector(".barra-cliente-fija > div:first-child");
+
+    if(celdaFactura && encabezadoFactura){
+
+        const posicion =
+            celdaFactura.getBoundingClientRect().right;
+
+        encabezadoFactura.style.width =
+            `${posicion}px`;
+
+        encabezadoFactura.style.minWidth =
+            `${posicion}px`;
+
+        encabezadoFactura.style.maxWidth =
+            `${posicion}px`;
+    }
+
+});
 
 }
 /* =========================================================
@@ -1944,50 +3144,54 @@ function toggleClienteArchivado(
     idUsuario
 ){
 
-    const fila =
+    const modal =
         document.getElementById(
-            `detalle-cliente-archivado-${idUsuario}`
+            "modalDetalleArchivado"
         );
 
-    const flecha =
+    const contenidoModal =
         document.getElementById(
-            `flecha-archivado-${idUsuario}`
+            "contenidoModalDetalleArchivado"
         );
 
-    if(!fila || !flecha){
+    if(
+        !modal ||
+        !contenidoModal
+    ){
         return;
     }
 
+    const clientes =
+        obtenerClientesArchivadosFiltrados();
 
-    const estaAbierto =
-        fila.style.display ===
-        "table-row";
-
-
-    if(estaAbierto){
-
-        fila.style.display =
-            "none";
-
-        flecha.textContent =
-            "▶";
-
-    }else{
-
-        fila.style.display =
-            "table-row";
-
-        flecha.textContent =
-            "▼";
-
-        mostrarFacturasArchivadasCliente(
-            idUsuario,
-            true
+    const cliente =
+        clientes.find(
+            c =>
+                Number(c.id_usuario) ===
+                Number(idUsuario)
         );
 
+    if(!cliente){
+        return;
     }
 
+    contenidoModal.innerHTML = "";
+
+    modal.dataset.clienteId =
+        String(idUsuario);
+
+    modal.classList.add(
+        "abierto"
+    );
+
+    mostrarFacturasArchivadasCliente(
+        idUsuario,
+        true
+    );
+
 }
+
+
 
 /* =========================================================
    EXPANDIR / COLAPSAR TODOS LOS CLIENTES ARCHIVADOS
@@ -2151,7 +3355,6 @@ function mostrarFacturasArchivadasCliente(
             )
         ];
 
-
     if(!cliente){
 
         if(modoAcordeon){
@@ -2175,7 +3378,7 @@ function mostrarFacturasArchivadasCliente(
 
         contenedor =
             document.getElementById(
-                `contenido-cliente-archivado-${idUsuario}`
+                "contenidoModalDetalleArchivado"
             );
 
         if(!contenedor){
@@ -2277,6 +3480,8 @@ function mostrarFacturasArchivadasCliente(
 
     let html = "";
 
+    let htmlModalDocumento = "";
+
 
     grupos.forEach(
         ([claveGrupo, grupo]) => {
@@ -2360,6 +3565,24 @@ function mostrarFacturasArchivadasCliente(
             }
 
 
+            /*
+                NUMERO REAL DE FACTURA
+
+                IMPORTANTE:
+                Ya no usamos grupo_compra como
+                número visible de factura.
+
+                El número mostrado debe ser
+                exactamente el mismo de Gestión
+                y del PDF.
+            */
+
+            const numeroFactura =
+                grupo.numero_factura
+                    ? grupo.numero_factura
+                    : "-";
+
+
             let acciones = "";
 
 
@@ -2369,40 +3592,40 @@ function mostrarFacturasArchivadasCliente(
 
                 acciones = `
 
-    <button
-        class="btn-detalles-archivado"
-        onclick="verDetallesArchivados(
-            ${cliente.id_usuario},
-            ${grupo.grupo_compra}
-        )"
-    >
-        Detalles
-    </button>
+                    <button
+                        class="btn-detalles-archivado"
+                        onclick="verDetallesArchivados(
+                            ${cliente.id_usuario},
+                            ${grupo.grupo_compra}
+                        )"
+                    >
+                        Detalles
+                    </button>
 
 
-    <button
-        class="btn-desarchivar"
-        onclick="desarchivarFactura(
-            ${cliente.id_usuario},
-            ${grupo.grupo_compra}
-        )"
-    >
-        Desarchivar
-    </button>
+                    <button
+                        class="btn-desarchivar"
+                        onclick="desarchivarFactura(
+                            ${cliente.id_usuario},
+                            ${grupo.grupo_compra}
+                        )"
+                    >
+                        Desarchivar
+                    </button>
 
 
-    <button
-        class="btn-eliminar-archivado"
-        onclick="abrirEliminarArchivado(
-            ${cliente.id_usuario},
-            ${grupo.grupo_compra},
-            null
-        )"
-    >
-        Eliminar
-    </button>
+                    <button
+                        class="btn-eliminar-archivado"
+                        onclick="abrirEliminarArchivado(
+                            ${cliente.id_usuario},
+                            ${grupo.grupo_compra},
+                            null
+                        )"
+                    >
+                        Eliminar
+                    </button>
 
-`;
+                `;
 
             }else{
 
@@ -2441,6 +3664,208 @@ function mostrarFacturasArchivadasCliente(
             }
 
 
+            /*
+                =================================================
+                VISTA MODAL
+                IGUAL A GESTION DE PEDIDOS
+                =================================================
+            */
+
+            if(modoAcordeon){
+
+                htmlModalDocumento += `
+
+                    <section class="ficha-pedido-modal">
+
+                        <div class="ficha-pedido-superior">
+
+
+                            <div class="ficha-cliente">
+
+                                <div class="ficha-icono-cliente">
+                                    👤
+                                </div>
+
+                                <div>
+
+                                    <div class="ficha-etiqueta-cliente">
+                                        👤 Cliente
+                                    </div>
+
+                                    <div class="ficha-nombre">
+                                        ${cliente.nombre}
+                                        ${cliente.apellido}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="ficha-factura">
+
+                                <span>
+                                    📄 # Factura
+                                </span>
+
+                                <strong class="${claseSaldo}">
+                                    ${numeroFactura}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="ficha-registro">
+
+                                <span>
+                                    📦 Fecha archivado
+                                </span>
+
+                                <strong>
+                                    ${
+                                        grupo.fecha_archivado
+                                            ? grupo.fecha_archivado
+                                            : "-"
+                                    }
+                                </strong>
+
+                            </div>
+
+                            
+
+
+                        </div>
+
+
+                        <div class="ficha-datos">
+
+
+                            <div class="ficha-dato">
+
+                                <span>
+                                    ⚖️ Peso
+                                </span>
+
+                                <strong>
+                                    ${grupo.peso_total} g
+                                </strong>
+
+                            </div>
+
+
+                            <div class="ficha-dato">
+
+                                <span>
+                                    💰 Valor del Peso
+                                </span>
+
+                                <strong>
+                                    ${moneda(
+                                        grupo.envio_total
+                                    )}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="ficha-dato">
+
+                                <span>
+                                    📦 Estado
+                                </span>
+
+                                <strong>
+                                    ${estadoMostrar}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="ficha-dato">
+
+                                <span>
+                                    💵 Abono
+                                </span>
+
+                                <strong>
+                                    ${moneda(
+                                        grupo.total_abonado
+                                    )}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="ficha-dato">
+
+                                <span>
+                                    💳 Saldo
+                                </span>
+
+                                <strong
+                                    class="${claseSaldo}"
+                                >
+                                    ${moneda(
+                                        saldo
+                                    )}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="ficha-dato">
+
+                                <span>
+                                    📅 Fecha
+                                </span>
+
+                                <strong>
+                                    ${
+                                        grupo.fecha_abono
+                                            ? grupo.fecha_abono
+                                            : "-"
+                                    }
+                                </strong>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="ficha-acciones">
+
+                            <div class="ficha-acciones-titulo">
+                                Acciones
+                            </div>
+
+
+                            <div class="ficha-botones">
+
+                                ${acciones}
+
+                            </div>
+
+                        </div>
+
+
+                        
+
+
+                    </section>
+
+                `;
+
+            }
+
+
+            /*
+                =================================================
+                TABLA PRINCIPAL DE ARCHIVADOS
+                SE CONSERVA
+                =================================================
+            */
+
             html += `
 
                 <tr>
@@ -2450,13 +3875,16 @@ function mostrarFacturasArchivadasCliente(
                         ${cliente.apellido}
                     </td>
 
+
                     <td>
                         ${paisMostrar}
                     </td>
 
+
                     <td>
                         ${grupo.peso_total} g
                     </td>
+
 
                     <td>
                         ${moneda(
@@ -2464,15 +3892,18 @@ function mostrarFacturasArchivadasCliente(
                         )}
                     </td>
 
+
                     <td>
                         ${estadoMostrar}
                     </td>
+
 
                     <td>
                         ${moneda(
                             grupo.total_abonado
                         )}
                     </td>
+
 
                     <td
                         class="${claseSaldo}"
@@ -2482,6 +3913,7 @@ function mostrarFacturasArchivadasCliente(
                         )}
                     </td>
 
+
                     <td>
                         ${
                             grupo.fecha_abono
@@ -2489,6 +3921,7 @@ function mostrarFacturasArchivadasCliente(
                                 : "-"
                         }
                     </td>
+
 
                     <td
                         class="fecha-archivado"
@@ -2499,6 +3932,7 @@ function mostrarFacturasArchivadasCliente(
                                 : "-"
                         }
                     </td>
+
 
                     <td>
                         ${acciones}
@@ -2512,49 +3946,16 @@ function mostrarFacturasArchivadasCliente(
     );
 
 
+    /*
+        =================================================
+        MOSTRAR FICHAS EN EL MODAL
+        =================================================
+    */
+
     if(modoAcordeon){
 
-        contenedor.innerHTML = `
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>Cliente</th>
-
-                        <th>País de origen</th>
-
-                        <th>Peso</th>
-
-                        <th>Valor del Peso</th>
-
-                        <th>Estado</th>
-
-                        <th>Abono</th>
-
-                        <th>Saldo</th>
-
-                        <th>Fecha</th>
-
-                        <th>Archivado</th>
-
-                        <th>Acciones</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    ${html}
-
-                </tbody>
-
-            </table>
-
-        `;
+        contenedor.innerHTML =
+            htmlModalDocumento;
 
     }else{
 
@@ -2564,6 +3965,7 @@ function mostrarFacturasArchivadasCliente(
     }
 
 }
+
 /* =========================================================
    BUSCADOR
 ========================================================= */
@@ -2686,9 +4088,20 @@ async function confirmarDesarchivar(){
         }
 
 
+        // Cerrar confirmación de desarchivar
         cerrarModalDesarchivar();
 
+        // Cerrar también el modal grande del pedido archivado
+        cerrarModalDetalleArchivado();
+
+        // Actualizar inmediatamente la lista de Archivados
         await cargarArchivados();
+
+        // Mostrar confirmación al usuario
+        mostrarMensaje(
+            "Su factura fue desarchivada correctamente",
+            "exito"
+        );
 
 
     }catch(error){
@@ -2961,10 +4374,20 @@ async function confirmarEliminarArchivado(){
         }
 
 
+        // Cerrar confirmación de eliminar
         cancelarEliminarArchivado();
 
+        // Cerrar también el modal grande del pedido archivado
+        cerrarModalDetalleArchivado();
 
+        // Actualizar inmediatamente la lista de Archivados
         await cargarArchivados();
+
+        // Mostrar confirmación al usuario
+        mostrarMensaje(
+            "Su factura fue eliminada correctamente",
+            "exito"
+        );
 
 
     }catch(error){
@@ -3062,6 +4485,152 @@ iniciarArchivados();
 </script>
 
 
+
+<!-- MODAL DETALLE DEL PEDIDO ARCHIVADO -->
+<div
+    id="modalDetalleArchivado"
+    class="modal-detalle-archivado"
+>
+    <div class="modal-detalle-archivado-contenido">
+
+        <div class="modal-detalle-archivado-cabecera">
+
+            <h2>
+                Pedido archivado
+            </h2>
+
+            <button
+                type="button"
+                class="cerrar-modal-detalle-archivado"
+                onclick="cerrarModalDetalleArchivado()"
+            >
+                &times;
+            </button>
+
+        </div>
+
+        <div
+            id="contenidoModalDetalleArchivado"
+            class="contenido-modal-detalle-archivado"
+        >
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+function cerrarModalDetalleArchivado(){
+
+    const modal =
+        document.getElementById("modalDetalleArchivado");
+
+    const contenido =
+        document.getElementById("contenidoModalDetalleArchivado");
+
+    if(!modal) return;
+
+    const idUsuario =
+        modal.dataset.clienteId;
+
+    if(idUsuario){
+
+        const flecha =
+            document.getElementById(
+                `flecha-archivado-${idUsuario}`
+            );
+
+        if(flecha){
+            flecha.textContent = "▶";
+        }
+    }
+
+    modal.classList.remove("abierto");
+
+    if(contenido){
+        contenido.innerHTML = "";
+    }
+
+    delete modal.dataset.clienteId;
+}
+</script>
+
+<script>
+function mostrarMensaje(texto, tipo){
+
+    const anterior =
+        document.getElementById("mensajeArchivadosFlotante");
+
+    if(anterior){
+        anterior.remove();
+    }
+
+    const mensaje =
+        document.createElement("div");
+
+    mensaje.id =
+        "mensajeArchivadosFlotante";
+
+    mensaje.textContent =
+        texto;
+
+    mensaje.style.position =
+        "fixed";
+
+    mensaje.style.top =
+        "20px";
+
+    mensaje.style.left =
+        "50%";
+
+    mensaje.style.transform =
+        "translateX(-50%)";
+
+    mensaje.style.zIndex =
+        "10000";
+
+    mensaje.style.padding =
+        "13px 22px";
+
+    mensaje.style.borderRadius =
+        "8px";
+
+    mensaje.style.color =
+        "#ffffff";
+
+    mensaje.style.fontWeight =
+        "600";
+
+    mensaje.style.fontSize =
+        "15px";
+
+    mensaje.style.boxShadow =
+        "0 4px 14px rgba(0,0,0,0.20)";
+
+    mensaje.style.background =
+        tipo === "exito"
+            ? "#28a745"
+            : "#d62828";
+
+    document.body.appendChild(
+        mensaje
+    );
+
+    setTimeout(() => {
+
+        if(mensaje.parentNode){
+            mensaje.remove();
+        }
+
+    }, 3000);
+}
+</script>
 </body>
 
 </html>
+
+
+
+
+
+
