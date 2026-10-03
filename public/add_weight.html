@@ -7552,6 +7552,53 @@ function filtrar(){
     font-size: 13px !important;
     font-weight: 600 !important;
 }
+
+/* SEPARACION VISUAL ENTRE FACTURAS */
+/* TODAS LAS FACTURAS: BORDE GRIS ARRIBA Y ABAJO */
+#contenidoModalDetalleCliente .ficha-pedido-modal {
+    border-top: 3px solid #000000 !important;
+    border-bottom: 3px solid #000000 !important;
+}
+
+/* Separación cuando existe más de una factura */
+#contenidoModalDetalleCliente .ficha-pedido-modal + .ficha-pedido-modal {
+    margin-top: 20px !important;
+}
+
+/* AJUSTE LISTA DE CLIENTES SOLO EN CELULAR */
+@media (max-width: 768px) {
+
+    body > table.tabla-clientes-compacta {
+        width: 100% !important;
+        min-width: 0 !important;
+        table-layout: fixed !important;
+    }
+
+    /* Columna # Factura */
+    body > table.tabla-clientes-compacta tbody tr > td:first-child {
+        width: 27% !important;
+        min-width: 0 !important;
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Columna Cliente */
+    body > table.tabla-clientes-compacta tbody tr > td:nth-child(2) {
+        width: 73% !important;
+        padding: 12px 12px !important;
+        box-sizing: border-box !important;
+        text-align: left !important;
+    }
+
+    body > table.tabla-clientes-compacta tbody tr > td:nth-child(2) strong {
+        font-size: 18px !important;
+        line-height: 1.25 !important;
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+    }
+}
 </style>
 
 <script>
