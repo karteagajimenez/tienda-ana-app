@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -879,6 +879,182 @@
     color:#714f5b;
 }
 
+
+/* ESTADOS DEL CLIENTE - COLORES FALTANTES */
+.estado.COMPRADO {
+    background-color: #64748b;
+}
+
+.estado.LISTO_BOCA_ARENAL,
+.estado.LISTO_SANTA_ROSA,
+.estado.LISTO_SAN_JOSE {
+    background-color: #2563eb;
+}
+
+.estado.ENTREGADO_CORREOS_CR,
+.estado.ENTREGADO_TRANS_ARGUEDAS {
+    background-color: #15803d;
+}
+
+.estado.COLOMBIA,
+.estado.En_EEUU {
+    background-color: #3498db;
+}
+
+/* BORDES NEGROS FACTURAS CLIENTE */
+
+/* Título de cada factura a la izquierda */
+.separador-factura-cliente td {
+    text-align: left !important;
+    padding: 16px 20px !important;
+    border-top: 3px solid #333333 !important;
+    border-bottom: none !important;
+    background: #fff8fa !important;
+}
+
+.titulo-factura-cliente {
+    text-align: left !important;
+    width: 100%;
+}
+
+/* Flecha debajo del número de factura */
+.flecha-factura-cliente {
+    text-align: left !important;
+    margin-left: 12px;
+}
+
+/* Línea negra al finalizar cada factura */
+tbody tr:has(.estado) td {
+    border-bottom: 3px solid #333333 !important;
+}
+
+/* AJUSTE VISUAL FACTURAS CLIENTE OCTUBRE */
+
+/* Ocultar encabezado general sobrante */
+.tabla-container > table > thead {
+    display: none !important;
+}
+
+/* Título compacto, alineado a la izquierda */
+.separador-factura-cliente td {
+    text-align: left !important;
+    padding: 9px 18px !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    background: #fff8fa !important;
+}
+
+.titulo-factura-cliente {
+    text-align: left !important;
+    font-size: 16px !important;
+    line-height: 1.2 !important;
+}
+
+.flecha-factura-cliente {
+    display: none !important;
+}
+
+/* Borde negro encima del encabezado de cada factura */
+.encabezado-factura-cliente th {
+    border-top: 3px solid #333333 !important;
+}
+
+/* Mantener borde negro al finalizar cada factura */
+tbody tr:has(.estado) td {
+    border-bottom: 3px solid #333333 !important;
+}
+
+/* ESPACIO ENTRE FACTURAS CLIENTE */
+
+/* Separación desde la segunda factura */
+.separador-factura-cliente:not(:first-child) td {
+    padding-top: 24px !important;
+}
+
+/* Mantener compacto el título */
+.titulo-factura-cliente {
+    font-size: 16px !important;
+    line-height: 1.2 !important;
+}
+
+/* CUADRICULA NEGRA - FACTURAS DEL CLIENTE */
+.tabla-container .encabezado-factura-cliente th,
+.tabla-container #tabla > tr:not(.separador-factura-cliente):not(.encabezado-factura-cliente) > td {
+    border: 1px solid #333333 !important;
+}
+
+/* CENTRAR DATOS Y ENCABEZADOS - FACTURAS CLIENTE */
+.tabla-container .encabezado-factura-cliente th,
+.tabla-container #tabla > tr:not(.separador-factura-cliente):not(.encabezado-factura-cliente) > td {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* RESTAURAR DISENO ORIGINAL CON BORDES NEGROS */
+.tabla-container .encabezado-factura-cliente th,
+.tabla-container #tabla > tr:not(.separador-factura-cliente):not(.encabezado-factura-cliente) > td {
+    text-align: left !important;
+    vertical-align: middle !important;
+    border: 1px solid #333333 !important;
+}
+
+/* Esquinas redondeadas de cada factura */
+.tabla-container .encabezado-factura-cliente th:first-child {
+    border-top-left-radius: 10px !important;
+}
+.tabla-container .encabezado-factura-cliente th:last-child {
+    border-top-right-radius: 10px !important;
+}
+.tabla-container #tabla > tr:has(.estado) td:first-child {
+    border-bottom-left-radius: 10px !important;
+}
+.tabla-container #tabla > tr:has(.estado) td:last-child {
+    border-bottom-right-radius: 10px !important;
+}
+
+/* Bordes delgados, sin las lineas gruesas anteriores */
+.tabla-container .encabezado-factura-cliente th {
+    border-top: 1px solid #333333 !important;
+}
+.tabla-container #tabla > tr:has(.estado) td {
+    border-bottom: 1px solid #333333 !important;
+}
+
+/* CORRECCION ESQUINAS FACTURAS CLIENTE */
+.tabla-container table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
+
+.tabla-container .encabezado-factura-cliente th {
+    border-right: 0 !important;
+}
+
+.tabla-container .encabezado-factura-cliente th:last-child {
+    border-right: 1px solid #333333 !important;
+}
+
+.tabla-container #tabla > tr:not(.separador-factura-cliente):not(.encabezado-factura-cliente) > td {
+    border-top: 0 !important;
+    border-right: 0 !important;
+}
+
+.tabla-container #tabla > tr:not(.separador-factura-cliente):not(.encabezado-factura-cliente) > td:last-child {
+    border-right: 1px solid #333333 !important;
+}
+
+/* CENTRADO FINAL FACTURAS CLIENTE */
+.tabla-container .encabezado-factura-cliente th,
+.tabla-container #tabla > tr:not(.separador-factura-cliente):not(.encabezado-factura-cliente) > td {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* DATOS NEGROS EN NEGRITA - CLIENTE */
+.tabla-container #tabla > tr:not(.separador-factura-cliente):not(.encabezado-factura-cliente) > td {
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
 </style>
 
 </head>
@@ -1241,6 +1417,25 @@ function traducirEstado(e){
             };
 
 
+        case "COMPRADO":
+            return { texto: "Comprado", clase: "COMPRADO" };
+
+        case "LISTO_BOCA_ARENAL":
+            return { texto: "Listo para retirar en Boca de Arenal", clase: "LISTO_BOCA_ARENAL" };
+
+        case "LISTO_SANTA_ROSA":
+            return { texto: "Listo para retirar en Santa Rosa", clase: "LISTO_SANTA_ROSA" };
+
+        case "LISTO_SAN_JOSE":
+            return { texto: "Listo para retirar en San José", clase: "LISTO_SAN_JOSE" };
+
+        case "ENTREGADO_CORREOS_CR":
+            return { texto: "Entregado a Correos de Costa Rica", clase: "ENTREGADO_CORREOS_CR" };
+
+        case "ENTREGADO_TRANS_ARGUEDAS":
+            return { texto: "Entregado a Transportes Arguedas", clase: "ENTREGADO_TRANS_ARGUEDAS" };
+
+
         default:
 
             return {
@@ -1367,39 +1562,48 @@ async function cargar(){
 
             const facturas = {};
 
-
             data.forEach(pedido => {
 
-                const slot =
-                    Number(
-                        pedido.slot_factura
-                    ) || 1;
+                const grupoFactura =
+                    Number(pedido.grupo_compra);
 
+                if(!grupoFactura){
+                    return;
+                }
 
-                if(!facturas[slot]){
+                if(!facturas[grupoFactura]){
 
-                    facturas[slot] = [];
+                    facturas[grupoFactura] = {
+                        numero_factura:
+                            Number(pedido.numero_factura) || grupoFactura,
+                        pedidos: []
+                    };
 
                 }
 
-
-                facturas[slot].push(
+                facturas[grupoFactura].pedidos.push(
                     pedido
                 );
 
             });
 
 
-            // ========================================
-            // MOSTRAR FACTURA 1 / 2 / 3
-            // ========================================
+            const gruposFacturas =
+                Object.values(facturas)
+                    .sort(
+                        (a, b) =>
+                            a.numero_factura - b.numero_factura
+                    );
 
-            [1, 2, 3].forEach(
-                numeroFactura => {
 
+            gruposFacturas.forEach(
+                (factura, indiceFactura) => {
+
+                    const numeroFactura =
+                        factura.numero_factura;
 
                     const pedidosFactura =
-                        facturas[numeroFactura];
+                        factura.pedidos;
 
 
                     // Si esta factura todavía no existe,
@@ -1423,7 +1627,7 @@ async function cargar(){
                     // Factura 2 y 3 muestran una separación.
                     // ========================================
 
-                    if(numeroFactura > 1){
+                    if(indiceFactura >= 0){
 
                         html += `
 

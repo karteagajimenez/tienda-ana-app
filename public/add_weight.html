@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <link rel="icon" type="image/png" href="/favicon.png">
@@ -1827,6 +1827,15 @@ function traducirEstado(estado){
 
         case "EN_CAMINO":
             return "En Camino";
+
+        case "COSTA_RICA":
+            return "Llegó a Costa Rica";
+
+        case "EMPACANDO":
+            return "Empacando";
+
+        case "EMPACADO":
+            return "Empacado";
 
         case "LISTO_BOCA_ARENAL":
             return "Listo para retirar en Boca de Arenal";
@@ -5364,6 +5373,21 @@ const tipoGuardado = tipo;
 cerrarModal();
 
 await cargarPedidos();
+
+/* Actualizar visualmente la Gestion de pedido que permanece abierta */
+const modalGestionActualizado =
+    document.getElementById("modalDetalleCliente");
+
+if(
+    modalGestionActualizado &&
+    modalGestionActualizado.classList.contains("abierto") &&
+    modalGestionActualizado.dataset.clienteId
+){
+    mostrarFacturasCliente(
+        Number(modalGestionActualizado.dataset.clienteId),
+        true
+    );
+}
 
 if(tipoGuardado === "peso"){
 
