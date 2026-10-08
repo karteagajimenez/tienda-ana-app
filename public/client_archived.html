@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -530,7 +530,211 @@
     }
 
 }
-    </style>
+    
+/* FACTURAS ARCHIVADAS - MISMO FORMATO DEL CLIENTE */
+
+.tabla-container > table > thead {
+    display: none !important;
+}
+
+.separador-factura-cliente td {
+    background: #fff8fa !important;
+    color: #8f5368 !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    text-align: left !important;
+    padding: 12px 18px !important;
+    border: none !important;
+}
+
+.separador-factura-cliente:not(:first-child) td {
+    padding-top: 24px !important;
+}
+
+.encabezado-factura-cliente th {
+    background: #d38aa2 !important;
+    color: white !important;
+    text-align: center !important;
+    border: 1px solid #333333 !important;
+}
+
+.tabla-container table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
+
+.tabla-container #tabla > tr:not(.separador-factura-cliente):not(.encabezado-factura-cliente) > td {
+    text-align: center !important;
+    vertical-align: middle !important;
+    border: 1px solid #333333 !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
+
+
+/* DISENO FINAL ARCHIVADOS IGUAL A CLIENTES */
+
+.tabla-container > table > thead {
+    display: none !important;
+}
+
+.tabla-container table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
+
+.separador-factura-cliente td {
+    text-align: left !important;
+    padding: 9px 18px !important;
+    border: none !important;
+    background: #fff8fa !important;
+    color: #8f5368 !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+}
+
+.separador-factura-cliente:not(:first-child) td {
+    padding-top: 24px !important;
+}
+
+.encabezado-factura-cliente th {
+    background: #d38aa2 !important;
+    color: white !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    border: 1px solid #333333 !important;
+    border-right: 0 !important;
+}
+
+.encabezado-factura-cliente th:first-child {
+    border-top-left-radius: 10px !important;
+}
+
+.encabezado-factura-cliente th:last-child {
+    border-top-right-radius: 10px !important;
+    border-right: 1px solid #333333 !important;
+}
+
+.tabla-container #tabla > tr:not(.separador-factura-cliente):not(.encabezado-factura-cliente) > td {
+    text-align: center !important;
+    vertical-align: middle !important;
+    border: 1px solid #333333 !important;
+    border-top: 0 !important;
+    border-right: 0 !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
+
+.tabla-container #tabla > tr:not(.separador-factura-cliente):not(.encabezado-factura-cliente) > td:last-child {
+    border-right: 1px solid #333333 !important;
+}
+
+
+
+/* ==========================================
+   CORRECCION BORDES FACTURAS ARCHIVADAS
+   UNA SOLA TABLA VISUAL POR FACTURA
+========================================== */
+
+/* Quitar redondeo de las filas interiores */
+.tabla-container #tabla > tr:not(.encabezado-factura-cliente) > td {
+    border-radius: 0 !important;
+}
+
+/* Bordes de las filas de articulos */
+.tabla-container #tabla > tr:not(.separador-factura-cliente):not(.encabezado-factura-cliente) > td {
+    border-top: 0 !important;
+    border-bottom: 1px solid #333333 !important;
+    border-left: 1px solid #333333 !important;
+    border-right: 0 !important;
+}
+
+/* Cerrar borde derecho */
+.tabla-container #tabla > tr:not(.separador-factura-cliente):not(.encabezado-factura-cliente) > td:last-child {
+    border-right: 1px solid #333333 !important;
+}
+
+/* Redondear solo las esquinas inferiores de la ultima fila */
+
+
+/* Mantener las esquinas superiores del encabezado */
+.tabla-container .encabezado-factura-cliente th:first-child {
+    border-top-left-radius: 10px !important;
+}
+
+.tabla-container .encabezado-factura-cliente th:last-child {
+    border-top-right-radius: 10px !important;
+}
+
+
+/* ==========================================
+   BORDES DEFINITIVOS - FACTURAS ARCHIVADAS
+========================================== */
+
+/* Ninguna fila intermedia lleva esquinas redondeadas */
+.tabla-container #tabla > tr.fila-factura > td,
+.tabla-container #tabla > tr.ultima-fila-factura > td {
+    border-radius: 0 !important;
+    border-top: 0 !important;
+    border-bottom: 1px solid #333333 !important;
+}
+
+/* Esquinas inferiores solamente en el ultimo articulo */
+.tabla-container #tabla > tr.ultima-fila-factura > td:first-child {
+    border-bottom-left-radius: 10px !important;
+}
+
+.tabla-container #tabla > tr.ultima-fila-factura > td:last-child {
+    border-bottom-right-radius: 10px !important;
+}
+
+/* Esquinas superiores solamente en el encabezado */
+.tabla-container #tabla > tr.encabezado-factura-cliente > th:first-child {
+    border-top-left-radius: 10px !important;
+}
+
+.tabla-container #tabla > tr.encabezado-factura-cliente > th:last-child {
+    border-top-right-radius: 10px !important;
+}
+
+/* Bordes uniformes entre todos los articulos */
+.tabla-container #tabla > tr.fila-factura > td,
+.tabla-container #tabla > tr.ultima-fila-factura > td {
+    border-left: 1px solid #333333 !important;
+    border-right: 0 !important;
+}
+
+.tabla-container #tabla > tr.fila-factura > td:last-child,
+.tabla-container #tabla > tr.ultima-fila-factura > td:last-child {
+    border-right: 1px solid #333333 !important;
+}
+
+
+/* BORDES UNIFICADOS DE FACTURAS ARCHIVADAS */
+
+.tabla-container #tabla > tr.fila-factura > td,
+.tabla-container #tabla > tr.ultima-fila-factura > td {
+    border-radius: 0 !important;
+    border-top: 0 !important;
+    border-bottom: 1px solid #333333 !important;
+    border-left: 1px solid #333333 !important;
+    border-right: 0 !important;
+}
+
+.tabla-container #tabla > tr.fila-factura > td:last-child,
+.tabla-container #tabla > tr.ultima-fila-factura > td:last-child {
+    border-right: 1px solid #333333 !important;
+}
+
+.tabla-container #tabla > tr.ultima-fila-factura > td:first-child {
+    border-bottom-left-radius: 10px !important;
+}
+
+.tabla-container #tabla > tr.ultima-fila-factura > td:last-child {
+    border-bottom-right-radius: 10px !important;
+}
+
+</style>
 
 </head>
 
@@ -972,100 +1176,85 @@ async function cargarArchivados(){
         }
 
 
+        // FACTURAS ARCHIVADAS AGRUPADAS - OCTUBRE 2026
+
+        const facturas = new Map();
+
         data.forEach(p => {
+            const grupo = Number(p.grupo_compra);
+            const clave = grupo > 0
+                ? `grupo-${grupo}`
+                : `pedido-${p.id_pedido}`;
 
+            if (!facturas.has(clave)) {
+                facturas.set(clave, []);
+            }
 
-            const cantidad =
-                Number(
-                    p.cantidad
-                ) || 0;
-
-
-            const precioUnitario =
-                Number(
-                    p.precio_unidad
-                ) || 0;
-
-
-            const precioProducto =
-                precioUnitario *
-                cantidad;
-
-
-            const envio =
-                (
-                    (p.peso_gramos || 0)
-                    / 1000
-                )
-                * 6000;
-
-
-            const paisOrigen =
-                traducirPaisOrigen(
-                    p.pais_origen
-                );
-
-
-            const estado =
-                traducirEstado(
-                    p.estado
-                );
-
-
-            html += `
-
-                <tr>
-
-                    <td>
-                        ${p.articulo}
-                    </td>
-
-                    <td>
-                        ${p.cantidad}
-                    </td>
-
-                    <td>
-                        ₡${precioProducto.toLocaleString(
-                            "es-CR"
-                        ).replace(/[\u00A0\u202F ]/g, ".")}
-                    </td>
-
-                    <td>
-                        ₡${envio.toLocaleString(
-                            "es-CR"
-                        ).replace(/[\u00A0\u202F ]/g, ".")}
-                    </td>
-
-                    <td>
-                        ₡${Number(
-                            p.total_abonado
-                        ).toLocaleString(
-                            "es-CR"
-                        ).replace(/[\u00A0\u202F ]/g, ".")}
-                    </td>
-
-                    <td>
-                        ${paisOrigen}
-                    </td>
-
-                    <td>
-
-                        <span
-                            class="estado ${estado.clase}"
-                        >
-
-                            ${estado.texto}
-
-                        </span>
-
-                    </td>
-
-                </tr>
-
-            `;
-
+            facturas.get(clave).push(p);
         });
 
+        let numeroFactura = 0;
+
+        facturas.forEach(pedidos => {
+            numeroFactura++;
+
+            html += `
+                <tr class="separador-factura-cliente">
+                    <td colspan="7">
+                        <div class="titulo-factura-cliente">
+                            🧾 Factura ${Number(pedidos[0].numero_factura) || Number(pedidos[0].grupo_compra) || numeroFactura}
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="encabezado-factura-cliente">
+                    <th>Artículo</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Envío</th>
+                    <th>Abono General</th>
+                    <th>País de origen</th>
+                    <th>Estado del paquete</th>
+                </tr>
+            `;
+
+            pedidos.forEach((p, indicePedido) => {
+                const cantidad = Number(p.cantidad) || 0;
+                const precioUnitario = Number(p.precio_unidad) || 0;
+                const precioProducto = precioUnitario * cantidad;
+
+                const peso = Number(p.peso_gramos) || 0;
+                const pesoRedondeado =
+                    Math.floor(peso / 100) * 100 +
+                    ((peso % 100) < 25 ? 0 : (peso % 100) <= 55 ? 50 : 100);
+
+                const envio = (pesoRedondeado / 1000) * 6000;
+
+                const paisOrigen = traducirPaisOrigen(p.pais_origen);
+                const estado = traducirEstado(p.estado);
+
+                const moneda = valor =>
+                    "₡" + Number(valor || 0)
+                        .toLocaleString("es-CR")
+                        .replace(/[\u00A0\u202F ]/g, ".");
+
+                html += `
+                    <tr class="${indicePedido === pedidos.length - 1 ? 'ultima-fila-factura' : 'fila-factura'}">
+                        <td>${p.articulo}</td>
+                        <td>${p.cantidad}</td>
+                        <td>${moneda(precioProducto)}</td>
+                        <td>${moneda(envio)}</td>
+                        <td>${moneda(p.total_abonado)}</td>
+                        <td>${paisOrigen}</td>
+                        <td>
+                            <span class="estado ${estado.clase}">
+                                ${estado.texto}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+        });
 
         document.getElementById(
             "tabla"

@@ -5202,10 +5202,7 @@ if(
    NO PERMITIR ABONAR MÁS DEL SALDO
 ===================================================== */
 
-if(
-    valor >
-    saldoPendiente
-){
+if (Math.round(valor) > Math.round(saldoPendiente)){
 
     mostrarMensaje(
         `El saldo pendiente de esta factura es ${moneda(saldoPendiente)}. No puede ingresar un abono mayor.`
@@ -6730,10 +6727,19 @@ async function confirmarArchivar(){
 
         cancelarArchivar();
 
-
-        cerrarModalDetalleCliente();
-
         await cargarPedidos();
+
+        const clienteActualizado =
+            pedidosPorCliente[Number(idUsuario)];
+
+        if (
+            clienteActualizado &&
+            Object.keys(clienteActualizado.grupos || {}).length > 0
+        ) {
+            mostrarFacturasCliente(Number(idUsuario), true);
+        } else {
+            cerrarModalDetalleCliente();
+        }
 
         mostrarMensaje(
             "Factura archivada exitosamente",

@@ -1055,6 +1055,51 @@ tbody tr:has(.estado) td {
     color: #000000 !important;
     font-weight: 700 !important;
 }
+
+/* ==========================================
+   PRESENTACION CUANDO NO HAY PEDIDOS
+========================================== */
+
+.tabla-container:has(#tabla > tr:only-child .sin-pedidos) {
+    padding: 28px 24px;
+}
+
+.tabla-container:has(#tabla > tr:only-child .sin-pedidos) table {
+    border: none !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    width: 100%;
+}
+
+.tabla-container:has(#tabla > tr:only-child .sin-pedidos) td {
+    border: none !important;
+    background: transparent !important;
+    text-align: center !important;
+    color: #856d74 !important;
+    font-weight: 500 !important;
+    padding: 35px 15px !important;
+    font-size: 16px !important;
+}
+
+.tabla-container:has(#tabla > tr:only-child .sin-pedidos) td::before {
+    content: "▤";
+    display: block;
+    font-size: 34px;
+    color: #c48b9f;
+    margin-bottom: 12px;
+}
+
+
+/* CORRECCION FINAL - SIN PEDIDOS */
+.tabla-container:has(#tabla > tr:only-child .sin-pedidos)
+#tabla > tr:only-child > td {
+    border: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+}
 </style>
 
 </head>
@@ -1679,16 +1724,12 @@ async function cargar(){
                         pedidosFactura.reduce(
                             (total, pedido) => {
 
-                                return total +
-                                    (
-                                        (
-                                            Number(
-                                                pedido.peso_gramos
-                                            ) || 0
-                                        )
-                                        / 1000
-                                    )
-                                    * 6000;
+                                const peso = Number(pedido.peso_gramos) || 0;
+const pesoRedondeado =
+    Math.floor(peso / 100) * 100 +
+    ((peso % 100) < 25 ? 0 : (peso % 100) <= 55 ? 50 : 100);
+
+return total + (pesoRedondeado / 1000) * 6000;
 
                             },
                             0

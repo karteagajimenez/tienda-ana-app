@@ -1,4 +1,4 @@
-﻿require('dotenv').config();
+require('dotenv').config();
 
 const express = require('express');
 const mysql = require('mysql2');
@@ -5245,11 +5245,14 @@ app.get('/client-archived-orders/:id', protegerCliente, (req, res) => {
     conexion.query(`
         SELECT
             p.*,
+            g.numero_factura,
             IFNULL(
                 SUM(a.monto_abono),
                 0
             ) AS total_abonado
         FROM pedidos p
+        LEFT JOIN grupos_compra g
+            ON g.id_grupo = p.grupo_compra
         LEFT JOIN abonos a
             ON p.id_pedido = a.id_pedido
         WHERE
@@ -6187,11 +6190,13 @@ app.post(
                                     );
 
 
-                                const envioGeneral =
-                                    (
-                                        pesoGeneral /
-                                        1000
-                                    ) * 6000;
+                                const pesoRedondeado =
+    Math.floor(pesoGeneral / 100) * 100 +
+    ((pesoGeneral % 100) < 25 ? 0 :
+    (pesoGeneral % 100) <= 55 ? 50 : 100);
+
+const envioGeneral =
+    (pesoRedondeado / 1000) * 6000;
                                 const subtotalProductos =
     pedidosFactura.reduce(
         (

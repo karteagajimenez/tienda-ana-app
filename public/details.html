@@ -1202,9 +1202,11 @@ let totalPeso =
                    1000 gramos = ₡6000
                 ========================================= */
 
-                const envio =
-                    (peso / 1000) *
-                    6000;
+                const pesoRedondeado =
+    Math.floor(peso / 100) * 100 +
+    ((peso % 100) < 25 ? 0 : (peso % 100) <= 55 ? 50 : 100);
+
+const envio = (pesoRedondeado / 1000) * 6000;
 
 
 

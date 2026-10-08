@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -2598,9 +2598,11 @@ async function cargarArchivados(){
                VALOR ENVÍO
             ============================================= */
 
-            const envio =
-                (peso / 1000) *
-                6000;
+            const pesoRedondeado =
+    Math.floor(peso / 100) * 100 +
+    ((peso % 100) < 25 ? 0 : (peso % 100) <= 55 ? 50 : 100);
+
+const envio = (pesoRedondeado / 1000) * 6000;
 
 
             grupo.envio_total +=
@@ -4102,10 +4104,28 @@ async function confirmarDesarchivar(){
         cerrarModalDesarchivar();
 
         // Cerrar también el modal grande del pedido archivado
-        cerrarModalDetalleArchivado();
+        
 
         // Actualizar inmediatamente la lista de Archivados
         await cargarArchivados();
+
+        const clienteActualizado =
+            archivadosPorCliente[Number(idUsuario)];
+
+        if (
+            clienteActualizado &&
+            (
+                Object.keys(clienteActualizado.grupos || {}).length > 0 ||
+                (clienteActualizado.pedidos || []).length > 0
+            )
+        ) {
+            mostrarFacturasArchivadasCliente(
+                Number(idUsuario),
+                true
+            );
+        } else {
+            cerrarModalDetalleArchivado();
+        }
 
         // Mostrar confirmación al usuario
         mostrarMensaje(
@@ -4388,10 +4408,28 @@ async function confirmarEliminarArchivado(){
         cancelarEliminarArchivado();
 
         // Cerrar también el modal grande del pedido archivado
-        cerrarModalDetalleArchivado();
+        
 
         // Actualizar inmediatamente la lista de Archivados
         await cargarArchivados();
+
+        const clienteActualizado =
+            archivadosPorCliente[Number(idUsuario)];
+
+        if (
+            clienteActualizado &&
+            (
+                Object.keys(clienteActualizado.grupos || {}).length > 0 ||
+                (clienteActualizado.pedidos || []).length > 0
+            )
+        ) {
+            mostrarFacturasArchivadasCliente(
+                Number(idUsuario),
+                true
+            );
+        } else {
+            cerrarModalDetalleArchivado();
+        }
 
         // Mostrar confirmación al usuario
         mostrarMensaje(
