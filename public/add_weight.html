@@ -2153,8 +2153,11 @@ async function cargarPedidos(){
                ENVÍO
             ================================================= */
 
+            const pesoRedondeado =
+                Math.floor(peso / 100) * 100 + ((peso % 100) < 25 ? 0 : (peso % 100) <= 55 ? 50 : 100);
+
             const envio =
-                (peso / 1000) *
+                (pesoRedondeado / 1000) *
                 6000;
 
 
@@ -3374,7 +3377,7 @@ let saldo =
 
                         <div class="ficha-dato">
                             <span>Peso</span>
-                            <strong>${grupo.peso_total} g</strong>
+                            <strong>${Math.floor(grupo.peso_total / 100) * 100 + ((grupo.peso_total % 100) < 25 ? 0 : (grupo.peso_total % 100) <= 55 ? 50 : 100)} g</strong>
                         </div>
 
                         <div class="ficha-dato">
@@ -3539,7 +3542,7 @@ let saldo =
 
                     <td>
 
-                        ${grupo.peso_total} g
+                        ${Math.floor(grupo.peso_total / 100) * 100 + ((grupo.peso_total % 100) < 25 ? 0 : (grupo.peso_total % 100) <= 55 ? 50 : 100)} g
 
                     </td>
 
@@ -4481,9 +4484,9 @@ function abrirEditarPeso(){
 
 
     inputPesoViejo.value =
-        Number(
-            pedido.peso_gramos
-        ) || 0;
+    Math.floor((Number(pedido.peso_gramos) || 0) / 100) * 100 +
+    (((Number(pedido.peso_gramos) || 0) % 100) < 25 ? 0 :
+    ((Number(pedido.peso_gramos) || 0) % 100) <= 55 ? 50 : 100);
 
 
     inputPesoNuevo.value =
@@ -4580,9 +4583,9 @@ function cargarPesoParaEditar(){
     /* PESO ACTUAL - SOLO LECTURA */
 
     inputPesoViejo.value =
-        Number(
-            pedido.peso_gramos
-        ) || 0;
+    Math.floor((Number(pedido.peso_gramos) || 0) / 100) * 100 +
+    (((Number(pedido.peso_gramos) || 0) % 100) < 25 ? 0 :
+    ((Number(pedido.peso_gramos) || 0) % 100) <= 55 ? 50 : 100);
 
     labelPesoViejo.style.display =
         "block";
@@ -4684,6 +4687,20 @@ async function guardarEdicionPeso(){
 cerrarModal();
 
 await cargarPedidos();
+
+const modalPesoActualizado =
+    document.getElementById("modalDetalleCliente");
+
+if (
+    modalPesoActualizado &&
+    modalPesoActualizado.classList.contains("abierto") &&
+    modalPesoActualizado.dataset.clienteId
+) {
+    mostrarFacturasCliente(
+        Number(modalPesoActualizado.dataset.clienteId),
+        true
+    );
+}
 
 mostrarMensaje(
     "Peso editado exitosamente",
