@@ -27,7 +27,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
 
-    // 🔐 Renovar la duración mientras el usuario siga activo
+    // ðŸ” Renovar la duraciÃ³n mientras el usuario siga activo
     rolling: true,
 
     cookie: {
@@ -42,7 +42,7 @@ app.use(session({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 🔐 PROTECCIÓN PARA SUPERADMIN Y ADMIN
+// ðŸ” PROTECCIÃ“N PARA SUPERADMIN Y ADMIN
 function protegerAdmin(req, res, next) {
 
     if (!req.session.usuario) {
@@ -57,12 +57,12 @@ function protegerAdmin(req, res, next) {
     ) {
         return res
             .status(403)
-            .send('Acceso no autorizado ❌');
+            .send('Acceso no autorizado âŒ');
     }
 
     next();
 }
-// 🔐 PROTECCIÓN PARA CLIENTE
+// ðŸ” PROTECCIÃ“N PARA CLIENTE
 function protegerCliente(req, res, next) {
 
     if (!req.session.usuario) {
@@ -72,13 +72,13 @@ function protegerCliente(req, res, next) {
     if (req.session.usuario.tipo_usuario !== 'cliente') {
         return res
             .status(403)
-            .send('Acceso no autorizado ❌');
+            .send('Acceso no autorizado âŒ');
     }
 
     next();
 }
 
-// 🔐 PROTEGER DASHBOARD
+// ðŸ” PROTEGER DASHBOARD
 app.get('/dashboard.html', protegerAdmin, (req, res) => {
 
     res.sendFile(
@@ -86,10 +86,10 @@ app.get('/dashboard.html', protegerAdmin, (req, res) => {
     );
 });
 // ======================================================
-// 🔐 PROTEGER PÁGINAS DEL CLIENTE
+// ðŸ” PROTEGER PÃGINAS DEL CLIENTE
 // ======================================================
 
-// 🔐 Página principal del cliente
+// ðŸ” PÃ¡gina principal del cliente
 app.get('/client.html', protegerCliente, (req, res) => {
 
     res.sendFile(
@@ -99,7 +99,7 @@ app.get('/client.html', protegerCliente, (req, res) => {
 });
 
 
-// 🔐 Página de archivos del cliente
+// ðŸ” PÃ¡gina de archivos del cliente
 app.get('/client_archived.html', protegerCliente, (req, res) => {
 
     res.sendFile(
@@ -107,7 +107,7 @@ app.get('/client_archived.html', protegerCliente, (req, res) => {
     );
 
 });
-// 🔐 PROTEGER PÁGINAS ADMINISTRATIVAS
+// ðŸ” PROTEGER PÃGINAS ADMINISTRATIVAS
 const paginasAdmin = [
     'add_weight.html',
     'add_article.html',
@@ -131,7 +131,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 
-// 🔹 CONEXIÓN MYSQL 
+// ðŸ”¹ CONEXIÃ“N MYSQL 
 const conexion = mysql.createConnection({ 
     /*host: process.env.DB_HOST, 
     user: process.env.DB_USER, 
@@ -146,13 +146,13 @@ const conexion = mysql.createConnection({
 
 conexion.connect(err => {
     if (err) {
-        console.log('❌ Error de conexión:', err);
+        console.log('âŒ Error de conexiÃ³n:', err);
         return;
     }
-    console.log('✅ Conectado a MySQL');
+    console.log('âœ… Conectado a MySQL');
 });
 
-// 🔥 CORREO
+// ðŸ”¥ CORREO
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -161,21 +161,21 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// 🔹 INICIO
+// ðŸ”¹ INICIO
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 
 // ======================================================
-// 🔐 LÍMITE DE INTENTOS DE REGISTRO
+// ðŸ” LÃMITE DE INTENTOS DE REGISTRO
 // ======================================================
 
 const registerLimiter = rateLimit({
 
     windowMs: 15 * 60 * 1000, // 15 minutos
 
-    max: 5, // máximo 5 solicitudes
+    max: 5, // mÃ¡ximo 5 solicitudes
 
     standardHeaders: true,
 
@@ -189,7 +189,7 @@ const registerLimiter = rateLimit({
 
 
 // ======================================================
-// 🔹 REGISTRO
+// ðŸ”¹ REGISTRO
 // ======================================================
 
 app.post('/register', registerLimiter, async (req, res) => {
@@ -210,7 +210,7 @@ app.post('/register', registerLimiter, async (req, res) => {
 
 
         // ============================================
-        // 🔐 NORMALIZAR DATOS
+        // ðŸ” NORMALIZAR DATOS
         // ============================================
 
         const nombreNormalizado =
@@ -241,7 +241,7 @@ app.post('/register', registerLimiter, async (req, res) => {
 
 
         // ============================================
-        // 🔐 VALIDAR CAMPOS OBLIGATORIOS
+        // ðŸ” VALIDAR CAMPOS OBLIGATORIOS
         // ============================================
 
         if (
@@ -263,12 +263,12 @@ app.post('/register', registerLimiter, async (req, res) => {
 
 
         // ============================================
-        // 🔐 VALIDAR NOMBRE
+        // ðŸ” VALIDAR NOMBRE
         // SOLO LETRAS
         // ============================================
 
         const nombreValido =
-            /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+$/.test(
+            /^[A-Za-zÃÃ‰ÃÃ“ÃšÃ¡Ã©Ã­Ã³ÃºÃ‘Ã±ÃœÃ¼\s'-]+$/.test(
                 nombreNormalizado
             );
 
@@ -283,12 +283,12 @@ app.post('/register', registerLimiter, async (req, res) => {
 
 
         // ============================================
-        // 🔐 VALIDAR APELLIDO
+        // ðŸ” VALIDAR APELLIDO
         // SOLO LETRAS
         // ============================================
 
         const apellidoValido =
-            /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+$/.test(
+            /^[A-Za-zÃÃ‰ÃÃ“ÃšÃ¡Ã©Ã­Ã³ÃºÃ‘Ã±ÃœÃ¼\s'-]+$/.test(
                 apellidoNormalizado
             );
 
@@ -303,7 +303,7 @@ app.post('/register', registerLimiter, async (req, res) => {
 
 
         // ============================================
-        // 🔐 VALIDAR LONGITUD NOMBRE Y APELLIDO
+        // ðŸ” VALIDAR LONGITUD NOMBRE Y APELLIDO
         // ============================================
 
         if (
@@ -319,9 +319,9 @@ app.post('/register', registerLimiter, async (req, res) => {
 
 
         // ============================================
-        // 🔐 VALIDAR TELÉFONO
-        // SOLO NÚMEROS
-        // NO SE LIMITA A 8 DÍGITOS
+        // ðŸ” VALIDAR TELÃ‰FONO
+        // SOLO NÃšMEROS
+        // NO SE LIMITA A 8 DÃGITOS
         // ============================================
 
         const telefonoValido =
@@ -333,25 +333,25 @@ app.post('/register', registerLimiter, async (req, res) => {
         if (!telefonoValido) {
 
             return res.status(400).send(
-                "En el teléfono solo se permiten números."
+                "En el telÃ©fono solo se permiten nÃºmeros."
             );
 
         }
 
 
-        // Evitar números excesivamente largos
+        // Evitar nÃºmeros excesivamente largos
 
         if (telefonoNormalizado.length > 20) {
 
             return res.status(400).send(
-                "El número de teléfono es demasiado largo."
+                "El nÃºmero de telÃ©fono es demasiado largo."
             );
 
         }
 
 
         // ============================================
-        // 🔐 VALIDAR CORREO
+        // ðŸ” VALIDAR CORREO
         // ============================================
 
         const correoValido =
@@ -363,25 +363,25 @@ app.post('/register', registerLimiter, async (req, res) => {
         if (!correoValido) {
 
             return res.status(400).send(
-                "Ingrese un correo electrónico válido."
+                "Ingrese un correo electrÃ³nico vÃ¡lido."
             );
 
         }
 
 
         // ============================================
-        // 🔐 VALIDAR PROVINCIA
+        // ðŸ” VALIDAR PROVINCIA
         // ============================================
 
         const provinciasValidas = [
 
-            "San José",
+            "San JosÃ©",
             "Alajuela",
             "Cartago",
             "Heredia",
             "Guanacaste",
             "Puntarenas",
-            "Limón"
+            "LimÃ³n"
 
         ];
 
@@ -393,14 +393,14 @@ app.post('/register', registerLimiter, async (req, res) => {
         ) {
 
             return res.status(400).send(
-                "Seleccione una provincia válida."
+                "Seleccione una provincia vÃ¡lida."
             );
 
         }
 
 
         // ============================================
-        // 🔐 VALIDAR CAMPOS DE DIRECCIÓN
+        // ðŸ” VALIDAR CAMPOS DE DIRECCIÃ“N
         // ============================================
 
         if (
@@ -410,14 +410,14 @@ app.post('/register', registerLimiter, async (req, res) => {
         ) {
 
             return res.status(400).send(
-                "Uno de los datos de dirección es demasiado largo."
+                "Uno de los datos de direcciÃ³n es demasiado largo."
             );
 
         }
 
 
         // ============================================
-        // 🔐 VALIDAR CONTRASEÑA
+        // ðŸ” VALIDAR CONTRASEÃ‘A
         // ============================================
 
         const passwordValido =
@@ -430,14 +430,14 @@ app.post('/register', registerLimiter, async (req, res) => {
         if (!passwordValido) {
 
             return res.status(400).send(
-                "La contraseña debe tener mínimo 8 caracteres, al menos una letra y un número."
+                "La contraseÃ±a debe tener mÃ­nimo 8 caracteres, al menos una letra y un nÃºmero."
             );
 
         }
 
 
         // ============================================
-        // 🔐 COMPROBAR SI EL CORREO YA EXISTE
+        // ðŸ” COMPROBAR SI EL CORREO YA EXISTE
         // ============================================
 
         conexion.query(
@@ -459,25 +459,25 @@ app.post('/register', registerLimiter, async (req, res) => {
                 if (errorBuscar) {
 
                     console.log(
-                        "❌ Error verificando correo:",
+                        "âŒ Error verificando correo:",
                         errorBuscar
                     );
 
                     return res.status(500).send(
-                        "Error ❌"
+                        "Error âŒ"
                     );
 
                 }
 
 
                 // ============================================
-                // 🔐 CORREO YA REGISTRADO
+                // ðŸ” CORREO YA REGISTRADO
                 // ============================================
 
                 if (resultados.length > 0) {
 
                     return res.status(409).send(
-                        "Este correo ya está registrado. Inicie sesión o recupere su contraseña."
+                        "Este correo ya estÃ¡ registrado. Inicie sesiÃ³n o recupere su contraseÃ±a."
                     );
 
                 }
@@ -487,7 +487,7 @@ app.post('/register', registerLimiter, async (req, res) => {
 
 
                     // ============================================
-                    // 🔐 ENCRIPTAR CONTRASEÑA
+                    // ðŸ” ENCRIPTAR CONTRASEÃ‘A
                     // ============================================
 
                     const hash =
@@ -498,7 +498,7 @@ app.post('/register', registerLimiter, async (req, res) => {
 
 
                     // ============================================
-                    // 🔹 GUARDAR USUARIO
+                    // ðŸ”¹ GUARDAR USUARIO
                     // ============================================
 
                     conexion.query(
@@ -535,12 +535,12 @@ app.post('/register', registerLimiter, async (req, res) => {
                             if (err) {
 
                                 console.log(
-                                    "❌ Error registrando usuario:",
+                                    "âŒ Error registrando usuario:",
                                     err
                                 );
 
                                 return res.status(500).send(
-                                    "Error ❌"
+                                    "Error âŒ"
                                 );
 
                             }
@@ -548,7 +548,7 @@ app.post('/register', registerLimiter, async (req, res) => {
 
                             return res.send(`
                                 <h2 style="text-align:center;color:green;">
-                                    ✅ Registrado correctamente
+                                    âœ… Registrado correctamente
                                 </h2>
                             `);
 
@@ -559,12 +559,12 @@ app.post('/register', registerLimiter, async (req, res) => {
                 } catch (errorHash) {
 
                     console.log(
-                        "❌ Error preparando contraseña:",
+                        "âŒ Error preparando contraseÃ±a:",
                         errorHash
                     );
 
                     return res.status(500).send(
-                        "Error ❌"
+                        "Error âŒ"
                     );
 
                 }
@@ -576,32 +576,32 @@ app.post('/register', registerLimiter, async (req, res) => {
     } catch (error) {
 
         console.log(
-            "❌ Error en registro:",
+            "âŒ Error en registro:",
             error
         );
 
         return res.status(500).send(
-            "Error ❌"
+            "Error âŒ"
         );
 
     }
 
 });
-// 🔐 LÍMITE DE INTENTOS DE LOGIN
+// ðŸ” LÃMITE DE INTENTOS DE LOGIN
 const loginLimiter = rateLimit({
 
     windowMs: 15 * 60 * 1000, // 15 minutos
 
-    max: 5, // máximo 5 intentos fallidos por cuenta
+    max: 5, // mÃ¡ximo 5 intentos fallidos por cuenta
 
     standardHeaders: true,
 
     legacyHeaders: false,
 
-    // 🔐 Los inicios de sesión correctos no cuentan
+    // ðŸ” Los inicios de sesiÃ³n correctos no cuentan
     skipSuccessfulRequests: true,
 
-    // 🔐 Cada correo tiene su propio contador de intentos
+    // ðŸ” Cada correo tiene su propio contador de intentos
 keyGenerator: (req) => {
 
     const correo =
@@ -614,11 +614,11 @@ keyGenerator: (req) => {
 },
 
     message:
-        "Demasiados intentos de inicio de sesión para esta cuenta. Intente nuevamente en 15 minutos."
+        "Demasiados intentos de inicio de sesiÃ³n para esta cuenta. Intente nuevamente en 15 minutos."
 
 });
 
-// 🔹 LOGIN
+// ðŸ”¹ LOGIN
 app.post('/login', loginLimiter, (req, res) => {
 
     const { correo, password } = req.body;
@@ -637,13 +637,13 @@ conexion.query(
             if (err) {
                 return res
                     .status(500)
-                    .send("Error del servidor ❌");
+                    .send("Error del servidor âŒ");
             }
 
             if (results.length === 0) {
                 return res
                     .status(401)
-                    .send("Usuario o contraseña incorrectos ❌");
+                    .send("Usuario o contraseÃ±a incorrectos âŒ");
             }
 
             const usuario = results[0];
@@ -660,24 +660,24 @@ conexion.query(
             if (!ok) {
                 return res
                     .status(401)
-                    .send("Usuario o contraseña incorrectos ❌");
+                    .send("Usuario o contraseÃ±a incorrectos âŒ");
             }
 
-            // 🔐 CREAR UNA SESIÓN NUEVA DESPUÉS DEL LOGIN
+            // ðŸ” CREAR UNA SESIÃ“N NUEVA DESPUÃ‰S DEL LOGIN
             req.session.regenerate((err) => {
 
                 if (err) {
                     console.log(
-                        "❌ Error regenerando sesión:",
+                        "âŒ Error regenerando sesiÃ³n:",
                         err
                     );
 
                     return res
                         .status(500)
-                        .send("No se pudo iniciar sesión");
+                        .send("No se pudo iniciar sesiÃ³n");
                 }
 
-                // 🔐 GUARDAR DATOS DEL USUARIO EN LA NUEVA SESIÓN
+                // ðŸ” GUARDAR DATOS DEL USUARIO EN LA NUEVA SESIÃ“N
                 req.session.usuario = {
                     id_usuario: usuario.id_usuario,
                     tipo_usuario: usuario.tipo_usuario,
@@ -685,10 +685,10 @@ conexion.query(
                 };
 
 // ======================================================
-// ⏱️ DURACIÓN DE SESIÓN SEGÚN TIPO DE USUARIO
+// â±ï¸ DURACIÃ“N DE SESIÃ“N SEGÃšN TIPO DE USUARIO
 // ======================================================
 
-// 👤 CLIENTE: 5 minutos
+// ðŸ‘¤ CLIENTE: 5 minutos
 if (usuario.tipo_usuario === 'cliente') {
 
     req.session.cookie.maxAge =
@@ -696,7 +696,7 @@ if (usuario.tipo_usuario === 'cliente') {
 
 }
 
-// 👑 ADMIN / SUPERADMIN: 8 horas
+// ðŸ‘‘ ADMIN / SUPERADMIN: 8 horas
 else if (
     usuario.tipo_usuario === 'admin' ||
     usuario.tipo_usuario === 'superadmin'
@@ -711,16 +711,16 @@ else if (
 
                     if (err) {
                         console.log(
-                            "❌ Error guardando sesión:",
+                            "âŒ Error guardando sesiÃ³n:",
                             err
                         );
 
                         return res
                             .status(500)
-                            .send("No se pudo iniciar sesión");
+                            .send("No se pudo iniciar sesiÃ³n");
                     }
 
-                    // 👤 CLIENTE
+                    // ðŸ‘¤ CLIENTE
                     if (usuario.tipo_usuario === 'cliente') {
 
                         return res.redirect(
@@ -728,7 +728,7 @@ else if (
                         );
                     }
 
-                    // 👑 SUPERADMIN / ADMIN
+                    // ðŸ‘‘ SUPERADMIN / ADMIN
                     if (
                         usuario.tipo_usuario === 'superadmin' ||
                         usuario.tipo_usuario === 'admin'
@@ -748,17 +748,17 @@ else if (
     );
 });
 
-// 🔐 CERRAR SESIÓN
+// ðŸ” CERRAR SESIÃ“N
 app.get('/logout', (req, res) => {
 
     req.session.destroy((err) => {
 
         if (err) {
-            console.log('❌ Error cerrando sesión:', err);
+            console.log('âŒ Error cerrando sesiÃ³n:', err);
 
             return res
                 .status(500)
-                .send('No se pudo cerrar la sesión');
+                .send('No se pudo cerrar la sesiÃ³n');
         }
 
         res.clearCookie('connect.sid');
@@ -769,7 +769,7 @@ app.get('/logout', (req, res) => {
 
 
 
-// 🔹 CLIENTES
+// ðŸ”¹ CLIENTES
 app.get('/clientes', protegerAdmin, (req, res) => {
 
     conexion.query(`
@@ -858,7 +858,7 @@ app.get('/clientes', protegerAdmin, (req, res) => {
         if (err) {
 
             console.log(
-                "❌ Error cargando clientes:",
+                "âŒ Error cargando clientes:",
                 err
             );
 
@@ -872,7 +872,7 @@ app.get('/clientes', protegerAdmin, (req, res) => {
 });
 
 // ======================================================
-// 🔹 CREAR CLIENTE MANUAL
+// ðŸ”¹ CREAR CLIENTE MANUAL
 // ======================================================
 
 app.post(
@@ -956,7 +956,7 @@ app.post(
             // ======================================================
 
             const soloLetras =
-                /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+$/;
+                /^[A-Za-zÃÃ‰ÃÃ“ÃšÃ¡Ã©Ã­Ã³ÃºÃ‘Ã±ÃœÃ¼\s'-]+$/;
 
 
             if(
@@ -986,7 +986,7 @@ app.post(
 
 
             // ======================================================
-            // TELÉFONO SOLO NÚMEROS
+            // TELÃ‰FONO SOLO NÃšMEROS
             // ======================================================
 
             if(
@@ -998,14 +998,14 @@ app.post(
                 return res.status(400).json({
                     ok:false,
                     mensaje:
-                        "En el teléfono solo se permiten números"
+                        "En el telÃ©fono solo se permiten nÃºmeros"
                 });
 
             }
 
 
             // ======================================================
-            // CORREO Y CONTRASEÑA
+            // CORREO Y CONTRASEÃ‘A
             // ======================================================
 
             const tieneCorreo =
@@ -1023,7 +1023,7 @@ app.post(
                 return res.status(400).json({
                     ok:false,
                     mensaje:
-                        "Si ingresa un correo también debe ingresar una contraseña"
+                        "Si ingresa un correo tambiÃ©n debe ingresar una contraseÃ±a"
                 });
 
             }
@@ -1037,7 +1037,7 @@ app.post(
                 return res.status(400).json({
                     ok:false,
                     mensaje:
-                        "Si ingresa una contraseña también debe ingresar un correo"
+                        "Si ingresa una contraseÃ±a tambiÃ©n debe ingresar un correo"
                 });
 
             }
@@ -1057,7 +1057,7 @@ app.post(
                     return res.status(400).json({
                         ok:false,
                         mensaje:
-                            "Ingrese un correo electrónico válido"
+                            "Ingrese un correo electrÃ³nico vÃ¡lido"
                     });
 
                 }
@@ -1079,7 +1079,7 @@ app.post(
                     return res.status(400).json({
                         ok:false,
                         mensaje:
-                            "La contraseña debe tener mínimo 8 caracteres, al menos una letra y un número"
+                            "La contraseÃ±a debe tener mÃ­nimo 8 caracteres, al menos una letra y un nÃºmero"
                     });
 
                 }
@@ -1142,7 +1142,7 @@ app.post(
                             if(err){
 
                                 console.log(
-                                    "❌ Error guardando cliente:",
+                                    "âŒ Error guardando cliente:",
                                     err
                                 );
 
@@ -1191,7 +1191,7 @@ app.post(
                         if(err){
 
                             console.log(
-                                "❌ Error verificando correo:",
+                                "âŒ Error verificando correo:",
                                 err
                             );
 
@@ -1215,7 +1215,7 @@ app.post(
                                 .json({
                                     ok:false,
                                     mensaje:
-                                        "Este correo ya está registrado"
+                                        "Este correo ya estÃ¡ registrado"
                                 });
 
                         }
@@ -1236,7 +1236,7 @@ app.post(
         }catch(error){
 
             console.log(
-                "❌ Error creando cliente:",
+                "âŒ Error creando cliente:",
                 error
             );
 
@@ -1254,7 +1254,7 @@ app.post(
 );
 
 // ======================================================
-// 🔹 ACTUALIZAR CLIENTE
+// ðŸ”¹ ACTUALIZAR CLIENTE
 // ======================================================
 
 app.post(
@@ -1323,7 +1323,7 @@ app.post(
                 return res.status(400).json({
                     ok:false,
                     mensaje:
-                        "Seleccione un cliente válido"
+                        "Seleccione un cliente vÃ¡lido"
                 });
 
             }
@@ -1356,7 +1356,7 @@ app.post(
             // ======================================================
 
             const soloLetras =
-                /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+$/;
+                /^[A-Za-zÃÃ‰ÃÃ“ÃšÃ¡Ã©Ã­Ã³ÃºÃ‘Ã±ÃœÃ¼\s'-]+$/;
 
 
             if(
@@ -1390,7 +1390,7 @@ app.post(
 
 
             // ======================================================
-            // TELÉFONO
+            // TELÃ‰FONO
             // ======================================================
 
             if(
@@ -1402,7 +1402,7 @@ app.post(
                 return res.status(400).json({
                     ok:false,
                     mensaje:
-                        "En el teléfono solo se permiten números"
+                        "En el telÃ©fono solo se permiten nÃºmeros"
                 });
 
             }
@@ -1433,7 +1433,7 @@ app.post(
                     return res.status(400).json({
                         ok:false,
                         mensaje:
-                            "Ingrese un correo electrónico válido"
+                            "Ingrese un correo electrÃ³nico vÃ¡lido"
                     });
 
                 }
@@ -1442,7 +1442,7 @@ app.post(
 
 
             // ======================================================
-            // NUEVA CONTRASEÑA
+            // NUEVA CONTRASEÃ‘A
             // ======================================================
 
             if(tienePassword){
@@ -1459,7 +1459,7 @@ app.post(
                     return res.status(400).json({
                         ok:false,
                         mensaje:
-                            "La nueva contraseña debe tener mínimo 8 caracteres, al menos una letra y un número"
+                            "La nueva contraseÃ±a debe tener mÃ­nimo 8 caracteres, al menos una letra y un nÃºmero"
                     });
 
                 }
@@ -1493,7 +1493,7 @@ app.post(
                     if(errBuscar){
 
                         console.log(
-                            "❌ Error buscando cliente:",
+                            "âŒ Error buscando cliente:",
                             errBuscar
                         );
 
@@ -1528,7 +1528,7 @@ app.post(
 
 
                     // ==============================================
-                    // REGLA CORREO / CONTRASEÑA
+                    // REGLA CORREO / CONTRASEÃ‘A
                     // ==============================================
 
                     const teniaPassword =
@@ -1536,8 +1536,8 @@ app.post(
 
 
                     /*
-                        Si el cliente todavía NO tenía acceso:
-                        correo y contraseña deben agregarse juntos.
+                        Si el cliente todavÃ­a NO tenÃ­a acceso:
+                        correo y contraseÃ±a deben agregarse juntos.
                     */
 
                     if(
@@ -1551,7 +1551,7 @@ app.post(
                             .json({
                                 ok:false,
                                 mensaje:
-                                    "Para activar el acceso debe ingresar correo y contraseña"
+                                    "Para activar el acceso debe ingresar correo y contraseÃ±a"
                             });
 
                     }
@@ -1568,15 +1568,15 @@ app.post(
                             .json({
                                 ok:false,
                                 mensaje:
-                                    "Para activar el acceso debe ingresar correo y contraseña"
+                                    "Para activar el acceso debe ingresar correo y contraseÃ±a"
                             });
 
                     }
 
 
                     /*
-                        Si el cliente ya tenía acceso:
-                        puede cambiar datos y dejar Nueva contraseña vacía.
+                        Si el cliente ya tenÃ­a acceso:
+                        puede cambiar datos y dejar Nueva contraseÃ±a vacÃ­a.
                     */
 
                     if(
@@ -1654,7 +1654,7 @@ app.post(
                                     if(errActualizar){
 
                                         console.log(
-                                            "❌ Error actualizando cliente:",
+                                            "âŒ Error actualizando cliente:",
                                             errActualizar
                                         );
 
@@ -1718,7 +1718,7 @@ app.post(
                                 if(errCorreo){
 
                                     console.log(
-                                        "❌ Error verificando correo:",
+                                        "âŒ Error verificando correo:",
                                         errCorreo
                                     );
 
@@ -1742,7 +1742,7 @@ app.post(
                                         .json({
                                             ok:false,
                                             mensaje:
-                                                "Este correo ya está registrado"
+                                                "Este correo ya estÃ¡ registrado"
                                         });
 
                                 }
@@ -1766,7 +1766,7 @@ app.post(
         }catch(error){
 
             console.log(
-                "❌ Error actualizando cliente:",
+                "âŒ Error actualizando cliente:",
                 error
             );
 
@@ -1783,7 +1783,7 @@ app.post(
     }
 );
 // ======================================================
-// 🔴 ELIMINAR CLIENTE COMPLETAMENTE
+// ðŸ”´ ELIMINAR CLIENTE COMPLETAMENTE
 // ======================================================
 
 app.post(
@@ -1811,14 +1811,14 @@ app.post(
                 .json({
                     ok: false,
                     mensaje:
-                        "Cliente inválido"
+                        "Cliente invÃ¡lido"
                 });
 
         }
 
 
         // ======================================================
-        // INICIAR TRANSACCIÓN
+        // INICIAR TRANSACCIÃ“N
         // ======================================================
 
         conexion.beginTransaction(
@@ -1827,7 +1827,7 @@ app.post(
                 if(errorTransaccion){
 
                     console.log(
-                        "❌ Error iniciando eliminación del cliente:",
+                        "âŒ Error iniciando eliminaciÃ³n del cliente:",
                         errorTransaccion
                     );
 
@@ -1836,7 +1836,7 @@ app.post(
                         .json({
                             ok: false,
                             mensaje:
-                                "No se pudo iniciar la eliminación"
+                                "No se pudo iniciar la eliminaciÃ³n"
                         });
 
                 }
@@ -1868,7 +1868,7 @@ app.post(
                                 () => {
 
                                     console.log(
-                                        "❌ Error buscando cliente:",
+                                        "âŒ Error buscando cliente:",
                                         errorCliente
                                     );
 
@@ -1934,7 +1934,7 @@ app.post(
                                         () => {
 
                                             console.log(
-                                                "❌ Error buscando pedidos del cliente:",
+                                                "âŒ Error buscando pedidos del cliente:",
                                                 errorPedidos
                                             );
 
@@ -2007,7 +2007,7 @@ app.post(
                                                         () => {
 
                                                             console.log(
-                                                                "❌ Error eliminando pedidos:",
+                                                                "âŒ Error eliminando pedidos:",
                                                                 errorEliminarPedidos
                                                             );
 
@@ -2034,7 +2034,7 @@ app.post(
 
 
                                 // ======================================================
-                                // ELIMINAR GRUPOS QUE QUEDARON VACÍOS
+                                // ELIMINAR GRUPOS QUE QUEDARON VACÃOS
                                 // ======================================================
 
                                 const eliminarGrupos =
@@ -2074,7 +2074,7 @@ app.post(
                                                         () => {
 
                                                             console.log(
-                                                                "❌ Error eliminando grupos:",
+                                                                "âŒ Error eliminando grupos:",
                                                                 errorGrupos
                                                             );
 
@@ -2127,7 +2127,7 @@ app.post(
                                                         () => {
 
                                                             console.log(
-                                                                "❌ Error eliminando cliente:",
+                                                                "âŒ Error eliminando cliente:",
                                                                 errorUsuario
                                                             );
 
@@ -2184,7 +2184,7 @@ app.post(
                                                                 () => {
 
                                                                     console.log(
-                                                                        "❌ Error confirmando eliminación:",
+                                                                        "âŒ Error confirmando eliminaciÃ³n:",
                                                                         errorCommit
                                                                     );
 
@@ -2193,7 +2193,7 @@ app.post(
                                                                         .json({
                                                                             ok: false,
                                                                             mensaje:
-                                                                                "No se pudo completar la eliminación"
+                                                                                "No se pudo completar la eliminaciÃ³n"
                                                                         });
 
                                                                 }
@@ -2243,7 +2243,7 @@ app.post(
                                                     () => {
 
                                                         console.log(
-                                                            "❌ Error eliminando abonos:",
+                                                            "âŒ Error eliminando abonos:",
                                                             errorAbonos
                                                         );
 
@@ -2283,8 +2283,8 @@ app.post(
 
     }
 );
-// 🔹 ARTÍCULOS
-// Carga los artículos guardados en el catálogo.
+// ðŸ”¹ ARTÃCULOS
+// Carga los artÃ­culos guardados en el catÃ¡logo.
 app.get('/articulos', protegerAdmin, (req, res) => {
 
     conexion.query(`
@@ -2298,7 +2298,7 @@ app.get('/articulos', protegerAdmin, (req, res) => {
     `, (err, results) => {
 
         if (err) {
-            console.log("❌ Error cargando artículos:", err);
+            console.log("âŒ Error cargando artÃ­culos:", err);
             return res.json([]);
         }
 
@@ -2308,7 +2308,7 @@ app.get('/articulos', protegerAdmin, (req, res) => {
 
 });
 // ======================================================
-// 👤 ACTUALIZAR PERFIL DEL CLIENTE
+// ðŸ‘¤ ACTUALIZAR PERFIL DEL CLIENTE
 // ======================================================
 
 app.post(
@@ -2411,7 +2411,7 @@ app.post(
             // ======================================================
 
             const soloLetras =
-                /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+$/;
+                /^[A-Za-zÃÃ‰ÃÃ“ÃšÃ¡Ã©Ã­Ã³ÃºÃ‘Ã±ÃœÃ¼\s'-]+$/;
 
 
             if (
@@ -2449,7 +2449,7 @@ app.post(
 
 
             // ======================================================
-            // TELÉFONO SOLO NÚMEROS
+            // TELÃ‰FONO SOLO NÃšMEROS
             // ======================================================
 
             if (
@@ -2463,7 +2463,7 @@ app.post(
                     .json({
                         ok: false,
                         mensaje:
-                            "En el teléfono solo se permiten números"
+                            "En el telÃ©fono solo se permiten nÃºmeros"
                     });
 
             }
@@ -2488,7 +2488,7 @@ app.post(
                     .json({
                         ok: false,
                         mensaje:
-                            "Ingrese un correo electrónico válido"
+                            "Ingrese un correo electrÃ³nico vÃ¡lido"
                     });
 
             }
@@ -2499,13 +2499,13 @@ app.post(
             // ======================================================
 
             const provinciasValidas = [
-                "San José",
+                "San JosÃ©",
                 "Alajuela",
                 "Cartago",
                 "Heredia",
                 "Guanacaste",
                 "Puntarenas",
-                "Limón"
+                "LimÃ³n"
             ];
 
 
@@ -2520,14 +2520,14 @@ app.post(
                     .json({
                         ok: false,
                         mensaje:
-                            "Seleccione una provincia válida"
+                            "Seleccione una provincia vÃ¡lida"
                     });
 
             }
 
 
             // ======================================================
-            // NUEVA CONTRASEÑA
+            // NUEVA CONTRASEÃ‘A
             // ======================================================
 
             if (passwordNuevaLimpio) {
@@ -2547,7 +2547,7 @@ app.post(
                         .json({
                             ok: false,
                             mensaje:
-                                "La nueva contraseña debe tener mínimo 8 caracteres, al menos una letra y un número"
+                                "La nueva contraseÃ±a debe tener mÃ­nimo 8 caracteres, al menos una letra y un nÃºmero"
                         });
 
                 }
@@ -2563,7 +2563,7 @@ app.post(
                         .json({
                             ok: false,
                             mensaje:
-                                "Las nuevas contraseñas no coinciden"
+                                "Las nuevas contraseÃ±as no coinciden"
                         });
 
                 }
@@ -2598,7 +2598,7 @@ app.post(
                     if (errorBuscar) {
 
                         console.log(
-                            "❌ Error buscando perfil:",
+                            "âŒ Error buscando perfil:",
                             errorBuscar
                         );
 
@@ -2650,7 +2650,7 @@ app.post(
 
 
                     // ======================================================
-                    // SI CAMBIA CORREO, DEBE CAMBIAR CONTRASEÑA
+                    // SI CAMBIA CORREO, DEBE CAMBIAR CONTRASEÃ‘A
                     // ======================================================
 
                     if (
@@ -2663,15 +2663,15 @@ app.post(
                             .json({
                                 ok: false,
                                 mensaje:
-                                    "Si cambia el correo debe establecer una nueva contraseña"
+                                    "Si cambia el correo debe establecer una nueva contraseÃ±a"
                             });
 
                     }
 
 
                     // ======================================================
-                    // SI CAMBIA CORREO O CONTRASEÑA,
-                    // PEDIR CONTRASEÑA ACTUAL
+                    // SI CAMBIA CORREO O CONTRASEÃ‘A,
+                    // PEDIR CONTRASEÃ‘A ACTUAL
                     // ======================================================
 
                     if (
@@ -2687,14 +2687,14 @@ app.post(
                             .json({
                                 ok: false,
                                 mensaje:
-                                    "Ingrese su contraseña actual"
+                                    "Ingrese su contraseÃ±a actual"
                             });
 
                     }
 
 
                     // ======================================================
-                    // VERIFICAR CONTRASEÑA ACTUAL
+                    // VERIFICAR CONTRASEÃ‘A ACTUAL
                     // ======================================================
 
                     if (
@@ -2716,7 +2716,7 @@ app.post(
                                 .json({
                                     ok: false,
                                     mensaje:
-                                        "La contraseña actual es incorrecta"
+                                        "La contraseÃ±a actual es incorrecta"
                                 });
 
                         }
@@ -2725,7 +2725,7 @@ app.post(
 
 
                     // ======================================================
-                    // LÍMITE DE CAMBIO DE CONTRASEÑA:
+                    // LÃMITE DE CAMBIO DE CONTRASEÃ‘A:
                     // 1 CADA 24 HORAS
                     // ======================================================
 
@@ -2777,7 +2777,7 @@ app.post(
                                 .json({
                                     ok: false,
                                     mensaje:
-                                        `Solo puede cambiar la contraseña una vez cada 24 horas. Intente nuevamente en aproximadamente ${horasRestantes} hora(s).`
+                                        `Solo puede cambiar la contraseÃ±a una vez cada 24 horas. Intente nuevamente en aproximadamente ${horasRestantes} hora(s).`
                                 });
 
                         }
@@ -2810,7 +2810,7 @@ app.post(
                             if (errorCorreo) {
 
                                 console.log(
-                                    "❌ Error verificando correo:",
+                                    "âŒ Error verificando correo:",
                                     errorCorreo
                                 );
 
@@ -2834,14 +2834,14 @@ app.post(
                                     .json({
                                         ok: false,
                                         mensaje:
-                                            "Este correo ya está registrado"
+                                            "Este correo ya estÃ¡ registrado"
                                     });
 
                             }
 
 
                             // ======================================================
-                            // PREPARAR CONTRASEÑA
+                            // PREPARAR CONTRASEÃ‘A
                             // ======================================================
 
                             let nuevoHash =
@@ -2908,7 +2908,7 @@ app.post(
                                     ) {
 
                                         console.log(
-                                            "❌ Error actualizando perfil:",
+                                            "âŒ Error actualizando perfil:",
                                             errorActualizar
                                         );
 
@@ -2940,13 +2940,13 @@ app.post(
 
 
                                     // Actualizar nombre guardado
-                                    // en la sesión actual
+                                    // en la sesiÃ³n actual
                                     req.session.usuario.nombre =
                                         nombreLimpio;
 
 
-                                    // Si cambió correo o contraseña,
-                                    // cerrar la sesión por seguridad.
+                                    // Si cambiÃ³ correo o contraseÃ±a,
+                                    // cerrar la sesiÃ³n por seguridad.
                                     if (
                                         cambioCorreo ||
                                         cambioPassword
@@ -2961,7 +2961,7 @@ app.post(
                                                     ) {
 
                                                         console.log(
-                                                            "❌ Error cerrando sesión después de actualizar perfil:",
+                                                            "âŒ Error cerrando sesiÃ³n despuÃ©s de actualizar perfil:",
                                                             errorSesion
                                                         );
 
@@ -2976,7 +2976,7 @@ app.post(
                                                     return res.json({
                                                         ok: true,
                                                         mensaje:
-                                                            "Perfil actualizado correctamente. Inicie sesión nuevamente.",
+                                                            "Perfil actualizado correctamente. Inicie sesiÃ³n nuevamente.",
                                                         cerrarSesion:
                                                             true
                                                     });
@@ -3008,7 +3008,7 @@ app.post(
         } catch (error) {
 
             console.log(
-                "❌ Error actualizando perfil:",
+                "âŒ Error actualizando perfil:",
                 error
             );
 
@@ -3026,7 +3026,7 @@ app.post(
     }
 );
 
-// 🔹 CREAR ARTÍCULO
+// ðŸ”¹ CREAR ARTÃCULO
 app.post('/create-article',protegerAdmin, (req, res) => {
 
     const {
@@ -3038,7 +3038,7 @@ app.post('/create-article',protegerAdmin, (req, res) => {
     if (!nombre || String(nombre).trim() === '') {
         return res.status(400).json({
             ok: false,
-            mensaje: "Nombre de artículo requerido"
+            mensaje: "Nombre de artÃ­culo requerido"
         });
     }
 
@@ -3054,7 +3054,7 @@ app.post('/create-article',protegerAdmin, (req, res) => {
 
     // Primero revisamos si ya existe el mismo nombre.
 // Revisamos si ya existe el mismo nombre
-// con la misma descripción.
+// con la misma descripciÃ³n.
 conexion.query(`
     SELECT id_articulo
     FROM articulos
@@ -3067,7 +3067,7 @@ conexion.query(`
     descripcionLimpia
 ], (err, resultados) => {
         if (err) {
-            console.log("❌ Error buscando artículo:", err);
+            console.log("âŒ Error buscando artÃ­culo:", err);
             return res.status(500).json({
                 ok: false
             });
@@ -3077,7 +3077,7 @@ conexion.query(`
 
             return res.status(409).json({
                 ok: false,
-                mensaje: "Este artículo ya existe con la misma descripción"
+                mensaje: "Este artÃ­culo ya existe con la misma descripciÃ³n"
             });
 
         }
@@ -3097,7 +3097,7 @@ conexion.query(`
         ], (err, result) => {
 
             if (err) {
-                console.log("❌ Error guardando artículo:", err);
+                console.log("âŒ Error guardando artÃ­culo:", err);
                 return res.status(500).json({
                     ok: false
                 });
@@ -3113,7 +3113,7 @@ conexion.query(`
     });
 
 });
-// 🔹 ACTUALIZAR ARTÍCULO
+// ðŸ”¹ ACTUALIZAR ARTÃCULO
 app.post('/update-article',protegerAdmin, (req, res) => {
 
     const {
@@ -3140,7 +3140,7 @@ app.post('/update-article',protegerAdmin, (req, res) => {
     ){
         return res.status(400).json({
             ok:false,
-            mensaje:"Datos inválidos"
+            mensaje:"Datos invÃ¡lidos"
         });
     }
 
@@ -3161,13 +3161,13 @@ app.post('/update-article',protegerAdmin, (req, res) => {
         if(err){
 
             console.log(
-                "❌ Error actualizando artículo:",
+                "âŒ Error actualizando artÃ­culo:",
                 err
             );
 
             return res.status(500).json({
                 ok:false,
-                mensaje:"No se pudo actualizar el artículo"
+                mensaje:"No se pudo actualizar el artÃ­culo"
             });
         }
 
@@ -3175,7 +3175,7 @@ app.post('/update-article',protegerAdmin, (req, res) => {
 
             return res.status(404).json({
                 ok:false,
-                mensaje:"Artículo no encontrado"
+                mensaje:"ArtÃ­culo no encontrado"
             });
         }
 
@@ -3187,7 +3187,7 @@ app.post('/update-article',protegerAdmin, (req, res) => {
 
 });
 
-// 🔹 ELIMINAR ARTÍCULO
+// ðŸ”¹ ELIMINAR ARTÃCULO
 app.post(
     '/delete-article',
     protegerAdmin,
@@ -3206,7 +3206,7 @@ app.post(
             return res.status(400).json({
                 ok: false,
                 mensaje:
-                    "Artículo inválido"
+                    "ArtÃ­culo invÃ¡lido"
             });
 
         }
@@ -3221,14 +3221,14 @@ app.post(
             if(err){
 
                 console.log(
-                    "❌ Error eliminando artículo:",
+                    "âŒ Error eliminando artÃ­culo:",
                     err
                 );
 
                 return res.status(500).json({
                     ok: false,
                     mensaje:
-                        "No se pudo eliminar el artículo"
+                        "No se pudo eliminar el artÃ­culo"
                 });
 
             }
@@ -3240,7 +3240,7 @@ app.post(
                 return res.status(404).json({
                     ok: false,
                     mensaje:
-                        "Artículo no encontrado"
+                        "ArtÃ­culo no encontrado"
                 });
 
             }
@@ -3248,7 +3248,7 @@ app.post(
             return res.json({
                 ok: true,
                 mensaje:
-                    "Artículo eliminado exitosamente"
+                    "ArtÃ­culo eliminado exitosamente"
             });
 
         });
@@ -3256,7 +3256,7 @@ app.post(
     }
 );
 
-// 🔹 EDITAR PEDIDO
+// ðŸ”¹ EDITAR PEDIDO
 app.post(
     '/update-order',
     protegerAdmin,
@@ -3297,14 +3297,14 @@ app.post(
                 .json({
                     ok: false,
                     mensaje:
-                        "Datos inválidos"
+                        "Datos invÃ¡lidos"
                 });
 
         }
 
 
         /* =====================================================
-           BUSCAR ARTÍCULO DEL CATÁLOGO
+           BUSCAR ARTÃCULO DEL CATÃLOGO
         ===================================================== */
 
         conexion.query(
@@ -3329,7 +3329,7 @@ app.post(
                 if(err){
 
                     console.log(
-                        "❌ Error buscando artículo:",
+                        "âŒ Error buscando artÃ­culo:",
                         err
                     );
 
@@ -3338,7 +3338,7 @@ app.post(
                         .json({
                             ok: false,
                             mensaje:
-                                "Error al buscar el artículo"
+                                "Error al buscar el artÃ­culo"
                         });
 
                 }
@@ -3354,7 +3354,7 @@ app.post(
                         .json({
                             ok: false,
                             mensaje:
-                                "Artículo no encontrado"
+                                "ArtÃ­culo no encontrado"
                         });
 
                 }
@@ -3376,7 +3376,7 @@ app.post(
 
 
                 /* =====================================================
-                   ACTUALIZAR SOLO ARTÍCULO Y CANTIDAD
+                   ACTUALIZAR SOLO ARTÃCULO Y CANTIDAD
 
                    IMPORTANTE:
                    NO TOCAR peso_gramos.
@@ -3414,7 +3414,7 @@ app.post(
                         if(err){
 
                             console.log(
-                                "❌ Error actualizando pedido:",
+                                "âŒ Error actualizando pedido:",
                                 err
                             );
 
@@ -3458,10 +3458,10 @@ app.post(
 
     }
 );
-// 🔹 OBTENER USUARIO
+// ðŸ”¹ OBTENER USUARIO
 app.get('/user/:id', (req, res) => {
 
-    // 🔐 Debe existir una sesión iniciada
+    // ðŸ” Debe existir una sesiÃ³n iniciada
     if (!req.session.usuario) {
         return res.redirect('/login.html');
     }
@@ -3470,13 +3470,13 @@ app.get('/user/:id', (req, res) => {
 
     let id;
 
-    // 🔐 El cliente solo puede consultar sus propios datos
+    // ðŸ” El cliente solo puede consultar sus propios datos
     if (rol === 'cliente') {
 
         id = req.session.usuario.id_usuario;
 
     }
-    // 🔐 Admin y superadmin pueden consultar al cliente solicitado
+    // ðŸ” Admin y superadmin pueden consultar al cliente solicitado
     else if (
         rol === 'admin' ||
         rol === 'superadmin'
@@ -3489,7 +3489,7 @@ app.get('/user/:id', (req, res) => {
 
         return res
             .status(403)
-            .send('Acceso no autorizado ❌');
+            .send('Acceso no autorizado âŒ');
 
     }
 
@@ -3518,12 +3518,12 @@ app.get('/user/:id', (req, res) => {
 
 
 // ========================================
-// 🔥 GRUPOS DE COMPRA / FACTURAS
+// ðŸ”¥ GRUPOS DE COMPRA / FACTURAS
 // ========================================
 
 
 /*
-    🔹 CREAR NUEVA COMPRA
+    ðŸ”¹ CREAR NUEVA COMPRA
 
     Cada vez que Ana inicia una compra nueva
     en EEUU o Colombia, se crea un grupo nuevo.
@@ -3533,25 +3533,25 @@ app.get('/user/:id', (req, res) => {
     grupo 2 = Colombia
     grupo 3 = EEUU
 /*
-    🔹 OBTENER O CREAR FACTURA ACTIVA
+    ðŸ”¹ OBTENER O CREAR FACTURA ACTIVA
 
     REGLA:
 
     Un cliente puede tener solamente UNA factura
-    activa por país.
+    activa por paÃ­s.
 
     Ejemplo:
 
     Justin + EEUU
-    → todos los artículos nuevos de EEUU
+    â†’ todos los artÃ­culos nuevos de EEUU
       entran en la misma factura activa.
 
     Justin + COLOMBIA
-    → todos los artículos nuevos de Colombia
+    â†’ todos los artÃ­culos nuevos de Colombia
       entran en la misma factura activa.
 
     Cuando una factura se archiva, deja de
-    considerarse activa para ese cliente y país.
+    considerarse activa para ese cliente y paÃ­s.
 */
 
 app.post(
@@ -3597,7 +3597,7 @@ app.post(
             return res.status(400).json({
                 ok: false,
                 mensaje:
-                    'Número de factura inválido'
+                    'NÃºmero de factura invÃ¡lido'
             });
 
         }
@@ -3615,14 +3615,14 @@ app.post(
             return res.status(400).json({
                 ok: false,
                 mensaje:
-                    'Cliente inválido'
+                    'Cliente invÃ¡lido'
             });
 
         }
 
 
         /* =============================================
-           VALIDAR PAÍS
+           VALIDAR PAÃS
         ============================================= */
 
         if(
@@ -3634,7 +3634,7 @@ app.post(
             return res.status(400).json({
                 ok: false,
                 mensaje:
-                    'País de origen inválido'
+                    'PaÃ­s de origen invÃ¡lido'
             });
 
         }
@@ -3642,11 +3642,11 @@ app.post(
 
         /*
             =============================================
-            BUSCAR FACTURA ACTIVA DEL CLIENTE + PAÍS
+            BUSCAR FACTURA ACTIVA DEL CLIENTE + PAÃS
 
             Una factura se considera disponible si
-            todavía tiene al menos un pedido NO
-            archivado de ese cliente y ese país.
+            todavÃ­a tiene al menos un pedido NO
+            archivado de ese cliente y ese paÃ­s.
             =============================================
         */
 
@@ -3681,7 +3681,7 @@ app.post(
             if(errorBuscar){
 
                 console.log(
-                    '❌ ERROR BUSCANDO FACTURA ACTIVA:',
+                    'âŒ ERROR BUSCANDO FACTURA ACTIVA:',
                     errorBuscar
                 );
 
@@ -3740,7 +3740,7 @@ app.post(
                 =========================================
                 NO EXISTE FACTURA ACTIVA
 
-                Ahora sí creamos un grupo nuevo.
+                Ahora sÃ­ creamos un grupo nuevo.
                 =========================================
             */
 conexion.beginTransaction((errorTransaccion) => {
@@ -3748,7 +3748,7 @@ conexion.beginTransaction((errorTransaccion) => {
     if (errorTransaccion) {
 
         console.log(
-            '❌ ERROR INICIANDO TRANSACCIÓN:',
+            'âŒ ERROR INICIANDO TRANSACCIÃ“N:',
             errorTransaccion
         );
 
@@ -3775,14 +3775,14 @@ conexion.beginTransaction((errorTransaccion) => {
             return conexion.rollback(() => {
 
                 console.log(
-                    '❌ ERROR LEYENDO CONTADOR DE FACTURAS:',
+                    'âŒ ERROR LEYENDO CONTADOR DE FACTURAS:',
                     errorContador
                 );
 
                 return res.status(500).json({
                     ok: false,
                     mensaje:
-                        'No se pudo obtener el número de factura'
+                        'No se pudo obtener el nÃºmero de factura'
                 });
             });
         }
@@ -3805,14 +3805,14 @@ conexion.beginTransaction((errorTransaccion) => {
                 return conexion.rollback(() => {
 
                     console.log(
-                        '❌ ERROR ACTUALIZANDO CONTADOR:',
+                        'âŒ ERROR ACTUALIZANDO CONTADOR:',
                         errorActualizar
                     );
 
                     return res.status(500).json({
                         ok: false,
                         mensaje:
-                            'No se pudo generar el número de factura'
+                            'No se pudo generar el nÃºmero de factura'
                     });
                 });
             }
@@ -3838,7 +3838,7 @@ conexion.beginTransaction((errorTransaccion) => {
                     return conexion.rollback(() => {
 
                         console.log(
-                            '❌ ERROR CREANDO GRUPO DE COMPRA:',
+                            'âŒ ERROR CREANDO GRUPO DE COMPRA:',
                             errorCrear
                         );
 
@@ -3858,7 +3858,7 @@ conexion.beginTransaction((errorTransaccion) => {
                         return conexion.rollback(() => {
 
                             console.log(
-                                '❌ ERROR CONFIRMANDO FACTURA:',
+                                'âŒ ERROR CONFIRMANDO FACTURA:',
                                 errorCommit
                             );
 
@@ -3909,7 +3909,7 @@ conexion.beginTransaction((errorTransaccion) => {
 });
 
 // ======================================================
-// 🔹 CREAR PEDIDO
+// ðŸ”¹ CREAR PEDIDO
 // ======================================================
 
 app.post('/create-order', protegerAdmin, (req, res) => {
@@ -3929,7 +3929,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
 
     // ======================================================
-    // 🔐 NORMALIZAR DATOS
+    // ðŸ” NORMALIZAR DATOS
     // ======================================================
 
     const idUsuario =
@@ -3959,7 +3959,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
 
     // ======================================================
-    // 🔐 VALIDAR CLIENTE
+    // ðŸ” VALIDAR CLIENTE
     // ======================================================
 
     if(
@@ -3969,14 +3969,14 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
         return res.status(400).json({
             ok: false,
-            mensaje: 'Cliente inválido'
+            mensaje: 'Cliente invÃ¡lido'
         });
 
     }
 
 
     // ======================================================
-    // 🔐 VALIDAR ARTÍCULO
+    // ðŸ” VALIDAR ARTÃCULO
     // ======================================================
 
     if(
@@ -3985,14 +3985,14 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
         return res.status(400).json({
             ok: false,
-            mensaje: 'Artículo inválido'
+            mensaje: 'ArtÃ­culo invÃ¡lido'
         });
 
     }
 
 
     // ======================================================
-    // 🔐 VALIDAR CANTIDAD
+    // ðŸ” VALIDAR CANTIDAD
     // ======================================================
 
     if(
@@ -4002,14 +4002,14 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
         return res.status(400).json({
             ok: false,
-            mensaje: 'Cantidad inválida'
+            mensaje: 'Cantidad invÃ¡lida'
         });
 
     }
 
 
     // ======================================================
-    // 🔐 VALIDAR PRECIO
+    // ðŸ” VALIDAR PRECIO
     // ======================================================
 
     if(
@@ -4019,14 +4019,14 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
         return res.status(400).json({
             ok: false,
-            mensaje: 'Precio inválido'
+            mensaje: 'Precio invÃ¡lido'
         });
 
     }
 
 
     // ======================================================
-    // 🔐 VALIDAR GRUPO / FACTURA
+    // ðŸ” VALIDAR GRUPO / FACTURA
     // ======================================================
 
     if(
@@ -4036,14 +4036,14 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
         return res.status(400).json({
             ok: false,
-            mensaje: 'Factura inválida'
+            mensaje: 'Factura invÃ¡lida'
         });
 
     }
 
 
     // ======================================================
-    // 🔐 NORMALIZAR PAÍS
+    // ðŸ” NORMALIZAR PAÃS
     // ======================================================
 
     let paisOrigen =
@@ -4055,8 +4055,8 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
 
     /*
-        También aceptamos el valor antiguo
-        que utiliza el botón del dashboard.
+        TambiÃ©n aceptamos el valor antiguo
+        que utiliza el botÃ³n del dashboard.
     */
 
     if(
@@ -4084,14 +4084,14 @@ app.post('/create-order', protegerAdmin, (req, res) => {
         return res.status(400).json({
             ok: false,
             mensaje:
-                'País de origen inválido'
+                'PaÃ­s de origen invÃ¡lido'
         });
 
     }
 
 
     // ======================================================
-    // 🔹 ESTADO INICIAL SEGÚN PAÍS
+    // ðŸ”¹ ESTADO INICIAL SEGÃšN PAÃS
     // ======================================================
 
     const estadoInicial =
@@ -4101,7 +4101,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
 
     // ======================================================
-    // 🔐 COMPROBAR QUE EL CLIENTE EXISTE
+    // ðŸ” COMPROBAR QUE EL CLIENTE EXISTE
     // ======================================================
 
     conexion.query(`
@@ -4119,7 +4119,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
         if(errorCliente){
 
             console.log(
-                '❌ Error verificando cliente:',
+                'âŒ Error verificando cliente:',
                 errorCliente
             );
 
@@ -4147,7 +4147,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
 
         // ==================================================
-        // 🔐 COMPROBAR GRUPO / FACTURA
+        // ðŸ” COMPROBAR GRUPO / FACTURA
         // ==================================================
 
         conexion.query(`
@@ -4166,7 +4166,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
             if(errorGrupo){
 
                 console.log(
-                    '❌ Error verificando factura:',
+                    'âŒ Error verificando factura:',
                     errorGrupo
                 );
 
@@ -4198,7 +4198,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
 
             // ==================================================
-            // 🔐 FACTURA DEBE ESTAR ACTIVA
+            // ðŸ” FACTURA DEBE ESTAR ACTIVA
             // ==================================================
 
             if(
@@ -4208,14 +4208,14 @@ app.post('/create-order', protegerAdmin, (req, res) => {
                 return res.status(400).json({
                     ok: false,
                     mensaje:
-                        'La factura ya no está activa'
+                        'La factura ya no estÃ¡ activa'
                 });
 
             }
 
 
             // ==================================================
-            // 🔐 PAÍS DE FACTURA DEBE COINCIDIR
+            // ðŸ” PAÃS DE FACTURA DEBE COINCIDIR
             // ==================================================
 
             if(
@@ -4228,7 +4228,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
                 return res.status(400).json({
                     ok: false,
                     mensaje:
-                        'El país de la factura no coincide con el pedido'
+                        'El paÃ­s de la factura no coincide con el pedido'
                 });
 
             }
@@ -4236,7 +4236,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
             /*
                 ==================================================
-                🔐 EVITAR MEZCLAR CLIENTES EN UNA FACTURA
+                ðŸ” EVITAR MEZCLAR CLIENTES EN UNA FACTURA
 
                 Si el grupo ya tiene pedidos activos,
                 todos deben pertenecer al mismo cliente.
@@ -4258,7 +4258,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
                 if(errorPedidoGrupo){
 
                     console.log(
-                        '❌ Error verificando pedidos de la factura:',
+                        'âŒ Error verificando pedidos de la factura:',
                         errorPedidoGrupo
                     );
 
@@ -4289,7 +4289,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
 
                 // ==============================================
-                // 🔹 CALCULAR TOTAL DEL PRODUCTO
+                // ðŸ”¹ CALCULAR TOTAL DEL PRODUCTO
                 // ==============================================
 
                 const totalPrecio =
@@ -4298,7 +4298,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 
 
                 // ==============================================
-                // 🔹 GUARDAR PEDIDO
+                // ðŸ”¹ GUARDAR PEDIDO
                 // ==============================================
 
                 conexion.query(`
@@ -4337,7 +4337,7 @@ app.post('/create-order', protegerAdmin, (req, res) => {
                     if(errorInsertar){
 
                         console.log(
-                            '❌ Error creando pedido:',
+                            'âŒ Error creando pedido:',
                             errorInsertar
                         );
 
@@ -4373,13 +4373,13 @@ app.post('/create-order', protegerAdmin, (req, res) => {
 });
 
 // ======================================================
-// 🔹 ACTUALIZAR ARTÍCULO DE UN PEDIDO / FACTURA
+// ðŸ”¹ ACTUALIZAR ARTÃCULO DE UN PEDIDO / FACTURA
 // ======================================================
 
 app.post('/update-order-detail', protegerAdmin, (req, res) => {
 
     console.log(
-    '🟣 UPDATE ORDER RECIBIDO:',
+    'ðŸŸ£ UPDATE ORDER RECIBIDO:',
     req.body
    );
 
@@ -4410,7 +4410,7 @@ app.post('/update-order-detail', protegerAdmin, (req, res) => {
     ){
         return res.status(400).json({
             ok: false,
-            mensaje: 'Pedido inválido'
+            mensaje: 'Pedido invÃ¡lido'
         });
     }
 
@@ -4421,7 +4421,7 @@ app.post('/update-order-detail', protegerAdmin, (req, res) => {
     ){
         return res.status(400).json({
             ok: false,
-            mensaje: 'Cantidad inválida'
+            mensaje: 'Cantidad invÃ¡lida'
         });
     }
 
@@ -4432,7 +4432,7 @@ app.post('/update-order-detail', protegerAdmin, (req, res) => {
     ){
         return res.status(400).json({
             ok: false,
-            mensaje: 'Precio inválido'
+            mensaje: 'Precio invÃ¡lido'
         });
     }
 
@@ -4450,7 +4450,7 @@ app.post('/update-order-detail', protegerAdmin, (req, res) => {
     if(!articuloLimpio){
         return res.status(400).json({
             ok: false,
-            mensaje: 'El artículo es obligatorio'
+            mensaje: 'El artÃ­culo es obligatorio'
         });
     }
 
@@ -4482,14 +4482,14 @@ app.post('/update-order-detail', protegerAdmin, (req, res) => {
         if(error){
 
             console.log(
-                '❌ Error actualizando pedido:',
+                'âŒ Error actualizando pedido:',
                 error
             );
 
             return res.status(500).json({
                 ok: false,
                 mensaje:
-                    'No se pudo actualizar el artículo'
+                    'No se pudo actualizar el artÃ­culo'
             });
         }
 
@@ -4499,7 +4499,7 @@ app.post('/update-order-detail', protegerAdmin, (req, res) => {
             return res.status(404).json({
                 ok: false,
                 mensaje:
-                    'No se encontró el artículo del pedido'
+                    'No se encontrÃ³ el artÃ­culo del pedido'
             });
         }
 
@@ -4507,7 +4507,7 @@ app.post('/update-order-detail', protegerAdmin, (req, res) => {
         return res.json({
             ok: true,
             mensaje:
-                'Artículo actualizado correctamente'
+                'ArtÃ­culo actualizado correctamente'
         });
 
     });
@@ -4515,7 +4515,7 @@ app.post('/update-order-detail', protegerAdmin, (req, res) => {
 });
 
 
-// 🔹 CALCULAR ENVÍO
+// ðŸ”¹ CALCULAR ENVÃO
 app.post('/calcular-envio', (req, res) => {
     const { peso_gramos } = req.body;
     const peso = Number(peso_gramos) || 0;
@@ -4525,7 +4525,7 @@ app.post('/calcular-envio', (req, res) => {
 });
 
 // ======================================================
-// 🔹 CARGAR PEDIDO ACTIVO DE UN CLIENTE + PAÍS
+// ðŸ”¹ CARGAR PEDIDO ACTIVO DE UN CLIENTE + PAÃS
 // ======================================================
 
 app.get(
@@ -4572,7 +4572,7 @@ app.get(
 
 
         // ======================================================
-        // 🔐 VALIDAR CLIENTE
+        // ðŸ” VALIDAR CLIENTE
         // ======================================================
 
         if(
@@ -4582,14 +4582,14 @@ app.get(
 
             return res.status(400).json({
                 ok:false,
-                mensaje:'Cliente inválido'
+                mensaje:'Cliente invÃ¡lido'
             });
 
         }
 
 
         // ======================================================
-        // 🔐 VALIDAR PAÍS
+        // ðŸ” VALIDAR PAÃS
         // ======================================================
 
         const paisesValidos = [
@@ -4606,14 +4606,14 @@ app.get(
 
             return res.status(400).json({
                 ok:false,
-                mensaje:'País de origen inválido'
+                mensaje:'PaÃ­s de origen invÃ¡lido'
             });
 
         }
 
 
         // ======================================================
-        // 🔥 BUSCAR FACTURA ACTIVA DEL CLIENTE + PAÍS
+        // ðŸ”¥ BUSCAR FACTURA ACTIVA DEL CLIENTE + PAÃS
         // ======================================================
 
         conexion.query(`
@@ -4647,7 +4647,7 @@ app.get(
             if(errorGrupo){
 
                 console.log(
-                    '❌ Error buscando pedido activo:',
+                    'âŒ Error buscando pedido activo:',
                     errorGrupo
                 );
 
@@ -4683,7 +4683,7 @@ app.get(
 
 
             // ======================================================
-            // 🔥 CARGAR SOLO LOS ARTÍCULOS DE ESA FACTURA
+            // ðŸ”¥ CARGAR SOLO LOS ARTÃCULOS DE ESA FACTURA
             // ======================================================
 
             conexion.query(`
@@ -4719,14 +4719,14 @@ app.get(
                 if(errorPedidos){
 
                     console.log(
-                        '❌ Error cargando artículos del pedido:',
+                        'âŒ Error cargando artÃ­culos del pedido:',
                         errorPedidos
                     );
 
                     return res.status(500).json({
                         ok:false,
                         mensaje:
-                            'No se pudieron cargar los artículos'
+                            'No se pudieron cargar los artÃ­culos'
                     });
 
                 }
@@ -4786,7 +4786,7 @@ conexion.query(
         if(errorAbonos){
 
             console.log(
-                '❌ Error cargando abonos de la factura:',
+                'âŒ Error cargando abonos de la factura:',
                 errorAbonos
             );
 
@@ -4836,7 +4836,7 @@ conexion.query(
     }
 );
 // ======================================================
-// 🔹 VER PEDIDOS ACTIVOS ADMIN
+// ðŸ”¹ VER PEDIDOS ACTIVOS ADMIN
 // ======================================================
 
 app.get('/orders', protegerAdmin, (req, res) => {
@@ -4847,6 +4847,7 @@ app.get('/orders', protegerAdmin, (req, res) => {
             u.nombre,
             u.apellido,
             g.numero_factura,
+            g.tarifa_envio_personalizada,
             IFNULL(SUM(a.monto_abono), 0) AS total_abonado,
             MAX(a.metodo_pago) AS metodo_pago,
             MAX(a.fecha_abono) AS fecha_abono,
@@ -4877,7 +4878,7 @@ app.get('/orders', protegerAdmin, (req, res) => {
         if (err) {
 
             console.log(
-                "❌ Error cargando pedidos activos:",
+                "âŒ Error cargando pedidos activos:",
                 err
             );
 
@@ -4891,7 +4892,7 @@ app.get('/orders', protegerAdmin, (req, res) => {
 });
 
 // ======================================================
-// 🔹 VER PEDIDOS ARCHIVADOS
+// ðŸ”¹ VER PEDIDOS ARCHIVADOS
 // ======================================================
 
 app.get('/archived-orders', protegerAdmin, (req, res) => {
@@ -4929,7 +4930,7 @@ app.get('/archived-orders', protegerAdmin, (req, res) => {
         if (err) {
 
             console.log(
-                "❌ Error cargando pedidos archivados:",
+                "âŒ Error cargando pedidos archivados:",
                 err
             );
 
@@ -4943,7 +4944,7 @@ app.get('/archived-orders', protegerAdmin, (req, res) => {
 });
 
 // ======================================================
-// 🔹 ARCHIVAR PEDIDOS ACTIVOS DE UNA FACTURA DEL CLIENTE
+// ðŸ”¹ ARCHIVAR PEDIDOS ACTIVOS DE UNA FACTURA DEL CLIENTE
 // ======================================================
 
 app.post('/archive-client-orders', protegerAdmin, (req, res) => {
@@ -4956,7 +4957,7 @@ app.post('/archive-client-orders', protegerAdmin, (req, res) => {
 
 
     // ======================================================
-    // 🔐 VALIDAR CLIENTE
+    // ðŸ” VALIDAR CLIENTE
     // ======================================================
 
     if(
@@ -4966,14 +4967,14 @@ app.post('/archive-client-orders', protegerAdmin, (req, res) => {
 
         return res.status(400).json({
             ok: false,
-            mensaje: "Cliente inválido"
+            mensaje: "Cliente invÃ¡lido"
         });
 
     }
 
 
     // ======================================================
-    // 🔐 VALIDAR GRUPO / FACTURA
+    // ðŸ” VALIDAR GRUPO / FACTURA
     // ======================================================
 
     if(
@@ -4983,14 +4984,14 @@ app.post('/archive-client-orders', protegerAdmin, (req, res) => {
 
         return res.status(400).json({
             ok: false,
-            mensaje: "Factura inválida"
+            mensaje: "Factura invÃ¡lida"
         });
 
     }
 
 
     // ======================================================
-    // 🔹 ARCHIVAR SOLO ESA FACTURA DEL CLIENTE
+    // ðŸ”¹ ARCHIVAR SOLO ESA FACTURA DEL CLIENTE
     // ======================================================
 
     conexion.query(`
@@ -5012,7 +5013,7 @@ app.post('/archive-client-orders', protegerAdmin, (req, res) => {
         if(err){
 
             console.log(
-                "❌ Error archivando factura:",
+                "âŒ Error archivando factura:",
                 err
             );
 
@@ -5051,7 +5052,7 @@ app.post('/archive-client-orders', protegerAdmin, (req, res) => {
 });
 
 // ======================================================
-// 🔹 DESARCHIVAR UNA FACTURA DEL CLIENTE
+// ðŸ”¹ DESARCHIVAR UNA FACTURA DEL CLIENTE
 // ======================================================
 
 app.post('/unarchive-client-orders', protegerAdmin, (req, res) => {
@@ -5064,7 +5065,7 @@ app.post('/unarchive-client-orders', protegerAdmin, (req, res) => {
 
 
     // ======================================================
-    // 🔐 VALIDAR CLIENTE
+    // ðŸ” VALIDAR CLIENTE
     // ======================================================
 
     if(
@@ -5074,14 +5075,14 @@ app.post('/unarchive-client-orders', protegerAdmin, (req, res) => {
 
         return res.status(400).json({
             ok: false,
-            mensaje: "Cliente inválido"
+            mensaje: "Cliente invÃ¡lido"
         });
 
     }
 
 
     // ======================================================
-    // 🔐 VALIDAR GRUPO / FACTURA
+    // ðŸ” VALIDAR GRUPO / FACTURA
     // ======================================================
 
     if(
@@ -5091,14 +5092,14 @@ app.post('/unarchive-client-orders', protegerAdmin, (req, res) => {
 
         return res.status(400).json({
             ok: false,
-            mensaje: "Factura inválida"
+            mensaje: "Factura invÃ¡lida"
         });
 
     }
 
 
     // ======================================================
-    // 🔹 DESARCHIVAR SOLO ESA FACTURA DEL CLIENTE
+    // ðŸ”¹ DESARCHIVAR SOLO ESA FACTURA DEL CLIENTE
     // ======================================================
 
     conexion.query(`
@@ -5121,7 +5122,7 @@ app.post('/unarchive-client-orders', protegerAdmin, (req, res) => {
         if(err){
 
             console.log(
-                "❌ Error desarchivando factura:",
+                "âŒ Error desarchivando factura:",
                 err
             );
 
@@ -5141,7 +5142,7 @@ app.post('/unarchive-client-orders', protegerAdmin, (req, res) => {
             return res.status(404).json({
                 ok: false,
                 mensaje:
-                    "No se encontró la factura archivada"
+                    "No se encontrÃ³ la factura archivada"
             });
 
         }
@@ -5159,12 +5160,12 @@ app.post('/unarchive-client-orders', protegerAdmin, (req, res) => {
 
 });
 // ======================================================
-// 🔹 CLIENTE VE SUS PEDIDOS ACTIVOS
+// ðŸ”¹ CLIENTE VE SUS PEDIDOS ACTIVOS
 // ======================================================
 
 app.get('/client-orders/:id', protegerCliente, (req, res) => {
 
-    // Por seguridad usamos el usuario de la sesión
+    // Por seguridad usamos el usuario de la sesiÃ³n
     const id = req.session.usuario.id_usuario;
 
     conexion.query(`
@@ -5172,6 +5173,7 @@ app.get('/client-orders/:id', protegerCliente, (req, res) => {
             p.*,
             g.slot_factura,
             g.numero_factura,
+            g.tarifa_envio_personalizada,
 
             (
                 SELECT IFNULL(
@@ -5217,7 +5219,7 @@ app.get('/client-orders/:id', protegerCliente, (req, res) => {
         if (err) {
 
             console.log(
-                "❌ Error cargando pedidos del cliente:",
+                "âŒ Error cargando pedidos del cliente:",
                 err
             );
 
@@ -5231,13 +5233,13 @@ app.get('/client-orders/:id', protegerCliente, (req, res) => {
 
 });
 // ======================================================
-// 🔹 CLIENTE VE SUS PEDIDOS ARCHIVADOS
+// ðŸ”¹ CLIENTE VE SUS PEDIDOS ARCHIVADOS
 // ======================================================
 
 app.get('/client-archived-orders/:id', protegerCliente, (req, res) => {
 
     // Igual que arriba: el cliente solamente puede
-    // consultar los pedidos de su propia sesión.
+    // consultar los pedidos de su propia sesiÃ³n.
     const id =
         req.session.usuario.id_usuario;
 
@@ -5267,7 +5269,7 @@ app.get('/client-archived-orders/:id', protegerCliente, (req, res) => {
         if (err) {
 
             console.log(
-                "❌ Error cargando archivos del cliente:",
+                "âŒ Error cargando archivos del cliente:",
                 err
             );
 
@@ -5282,12 +5284,12 @@ app.get('/client-archived-orders/:id', protegerCliente, (req, res) => {
 
 });
 // ======================================================
-// 🔹 ABONOS
+// ðŸ”¹ ABONOS
 // ======================================================
 
 
 // ======================================================
-// 🔹 OBTENER ABONOS DE UN PEDIDO
+// ðŸ”¹ OBTENER ABONOS DE UN PEDIDO
 // ======================================================
 
 app.get(
@@ -5305,7 +5307,7 @@ app.get(
 
             return res.status(400).json({
                 ok: false,
-                mensaje: "Pedido inválido"
+                mensaje: "Pedido invÃ¡lido"
             });
 
         }
@@ -5329,7 +5331,7 @@ app.get(
             if (err) {
 
                 console.log(
-                    "❌ Error cargando abonos:",
+                    "âŒ Error cargando abonos:",
                     err
                 );
 
@@ -5351,7 +5353,7 @@ app.get(
     }
 );
 // ======================================================
-// 🔹 EDITAR UN ABONO
+// ðŸ”¹ EDITAR UN ABONO
 // ======================================================
 
 app.post(
@@ -5379,14 +5381,14 @@ app.post(
 
             return res.status(400).json({
                 ok: false,
-                mensaje: "Datos de abono inválidos"
+                mensaje: "Datos de abono invÃ¡lidos"
             });
 
         }
 
 
         // ======================================================
-        // INICIAR TRANSACCIÓN
+        // INICIAR TRANSACCIÃ“N
         // ======================================================
 
         conexion.beginTransaction(
@@ -5395,14 +5397,14 @@ app.post(
                 if (errorTransaccion) {
 
                     console.log(
-                        "❌ Error iniciando edición de abono:",
+                        "âŒ Error iniciando ediciÃ³n de abono:",
                         errorTransaccion
                     );
 
                     return res.status(500).json({
                         ok: false,
                         mensaje:
-                            "No se pudo iniciar la edición del abono"
+                            "No se pudo iniciar la ediciÃ³n del abono"
                     });
 
                 }
@@ -5447,7 +5449,7 @@ app.post(
                                 () => {
 
                                     console.log(
-                                        "❌ Error buscando abono:",
+                                        "âŒ Error buscando abono:",
                                         errorAbono
                                     );
 
@@ -5529,7 +5531,7 @@ app.post(
                                     return res.status(400).json({
                                         ok: false,
                                         mensaje:
-                                            "La factura no tiene un grupo válido"
+                                            "La factura no tiene un grupo vÃ¡lido"
                                     });
 
                                 }
@@ -5572,7 +5574,7 @@ app.post(
                                         () => {
 
                                             console.log(
-                                                "❌ Error buscando factura:",
+                                                "âŒ Error buscando factura:",
                                                 errorFactura
                                             );
 
@@ -5704,7 +5706,7 @@ app.post(
                                                 () => {
 
                                                     console.log(
-                                                        "❌ Error verificando otros abonos:",
+                                                        "âŒ Error verificando otros abonos:",
                                                         errorOtrosAbonos
                                                     );
 
@@ -5733,7 +5735,7 @@ app.post(
 
 
                                         // ======================================================
-                                        // NO PERMITIR QUE LA EDICIÓN
+                                        // NO PERMITIR QUE LA EDICIÃ“N
                                         // SUPERE EL TOTAL DE LA FACTURA
                                         // ======================================================
 
@@ -5748,7 +5750,7 @@ app.post(
                                                     return res.status(400).json({
                                                         ok: false,
                                                         mensaje:
-                                                            `El monto máximo permitido para este abono es ₡${maximoPermitido.toLocaleString('es-CR').replace(/[\u00A0\u202F ]/g, ".")}.`
+                                                            `El monto mÃ¡ximo permitido para este abono es â‚¡${maximoPermitido.toLocaleString('es-CR').replace(/[\u00A0\u202F ]/g, ".")}.`
                                                     });
 
                                                 }
@@ -5784,7 +5786,7 @@ app.post(
                                                         () => {
 
                                                             console.log(
-                                                                "❌ Error actualizando abono:",
+                                                                "âŒ Error actualizando abono:",
                                                                 errorActualizar
                                                             );
 
@@ -5832,14 +5834,14 @@ app.post(
                                                                 () => {
 
                                                                     console.log(
-                                                                        "❌ Error confirmando edición del abono:",
+                                                                        "âŒ Error confirmando ediciÃ³n del abono:",
                                                                         errorCommit
                                                                     );
 
                                                                     return res.status(500).json({
                                                                         ok: false,
                                                                         mensaje:
-                                                                            "No se pudo completar la edición del abono"
+                                                                            "No se pudo completar la ediciÃ³n del abono"
                                                                     });
 
                                                                 }
@@ -5912,7 +5914,7 @@ app.post(
                 .json({
                     ok: false,
                     mensaje:
-                        "Datos de abono inválidos."
+                        "Datos de abono invÃ¡lidos."
                 });
 
         }
@@ -5924,7 +5926,7 @@ app.post(
                 if(errorTransaccion){
 
                     console.log(
-                        "❌ Error iniciando transacción de abono:",
+                        "âŒ Error iniciando transacciÃ³n de abono:",
                         errorTransaccion
                     );
 
@@ -5971,7 +5973,7 @@ app.post(
                                 () => {
 
                                     console.log(
-                                        "❌ Error buscando pedido:",
+                                        "âŒ Error buscando pedido:",
                                         errorPedido
                                     );
 
@@ -6062,7 +6064,7 @@ app.post(
                                         .json({
                                             ok: false,
                                             mensaje:
-                                                "La factura seleccionada no tiene un grupo válido."
+                                                "La factura seleccionada no tiene un grupo vÃ¡lido."
                                         });
 
                                 }
@@ -6075,7 +6077,7 @@ app.post(
                            BUSCAR TODOS LOS PEDIDOS
                            DE ESTA FACTURA
 
-                           También los bloqueamos mientras
+                           TambiÃ©n los bloqueamos mientras
                            se registra el abono.
                         ================================================= */
 
@@ -6109,7 +6111,7 @@ app.post(
                                         () => {
 
                                             console.log(
-                                                "❌ Error buscando factura:",
+                                                "âŒ Error buscando factura:",
                                                 errorFactura
                                             );
 
@@ -6162,10 +6164,10 @@ app.post(
 
 
                                 /* =================================================
-                                   PESO GENERAL / ENVÍO GENERAL
+                                   PESO GENERAL / ENVÃO GENERAL
 
                                    Normalmente el peso general
-                                   está guardado en el primer pedido.
+                                   estÃ¡ guardado en el primer pedido.
 
                                    Sumamos todos para mantener
                                    compatibilidad con registros anteriores.
@@ -6190,13 +6192,7 @@ app.post(
                                     );
 
 
-                                const pesoRedondeado =
-    Math.floor(pesoGeneral / 100) * 100 +
-    ((pesoGeneral % 100) < 25 ? 0 :
-    (pesoGeneral % 100) <= 55 ? 50 : 100);
-
-const envioGeneral =
-    (pesoRedondeado / 1000) * 6000;
+                                const envioGeneral = (pesoGeneral / 1000) * 6000;
                                 const subtotalProductos =
     pedidosFactura.reduce(
         (
@@ -6252,7 +6248,7 @@ const totalFactura =
                                                 () => {
 
                                                     console.log(
-                                                        "❌ Error consultando abonos:",
+                                                        "âŒ Error consultando abonos:",
                                                         errorAbonos
                                                     );
 
@@ -6298,7 +6294,7 @@ const totalFactura =
                                                         .json({
                                                             ok: false,
                                                             mensaje:
-                                                                "Esta factura ya está completamente pagada."
+                                                                "Esta factura ya estÃ¡ completamente pagada."
                                                         });
 
                                                 }
@@ -6325,7 +6321,7 @@ const totalFactura =
                                                         .json({
                                                             ok: false,
                                                             mensaje:
-                                                                `El saldo pendiente de esta factura es ₡${saldoPendiente.toLocaleString('es-CR').replace(/[\u00A0\u202F ]/g, ".")}. No puede ingresar un abono mayor.`
+                                                                `El saldo pendiente de esta factura es â‚¡${saldoPendiente.toLocaleString('es-CR').replace(/[\u00A0\u202F ]/g, ".")}. No puede ingresar un abono mayor.`
                                                         });
 
                                                 }
@@ -6395,7 +6391,7 @@ const totalFactura =
                                                         () => {
 
                                                             console.log(
-                                                                "❌ Error guardando abono:",
+                                                                "âŒ Error guardando abono:",
                                                                 errorInsertar
                                                             );
 
@@ -6424,7 +6420,7 @@ const totalFactura =
                                                                 () => {
 
                                                                     console.log(
-                                                                        "❌ Error confirmando abono:",
+                                                                        "âŒ Error confirmando abono:",
                                                                         errorCommit
                                                                     );
 
@@ -6468,7 +6464,7 @@ const totalFactura =
 
     }
 );
-// 🔥 ACTUALIZAR PESO GENERAL
+// ðŸ”¥ ACTUALIZAR PESO GENERAL
 app.post(
     '/update-weight',
     protegerAdmin,
@@ -6497,7 +6493,7 @@ app.post(
                 .json({
                     ok: false,
                     mensaje:
-                        "Datos de peso inválidos"
+                        "Datos de peso invÃ¡lidos"
                 });
 
         }
@@ -6524,7 +6520,7 @@ app.post(
                 if(err){
 
                     console.log(
-                        "❌ Error actualizando peso:",
+                        "âŒ Error actualizando peso:",
                         err
                     );
 
@@ -6567,20 +6563,72 @@ app.post(
 );
 
 
-// 🔹 CAMBIAR ESTADO
+// ðŸ”¹ CAMBIAR ESTADO
+// ======================================================
+// EDITAR TARIFA DE ENVIO DE UNA FACTURA
+// ======================================================
+app.post('/update-shipping-rate', protegerAdmin, (req, res) => {
+
+    const idGrupo = Number(req.body.grupo_compra);
+    const tarifa = Number(req.body.tarifa_envio_personalizada);
+
+    if (
+        !Number.isInteger(idGrupo) ||
+        idGrupo <= 0 ||
+        !Number.isFinite(tarifa) ||
+        tarifa < 0
+    ) {
+        return res.status(400).json({
+            ok: false,
+            mensaje: "Datos de tarifa invalidos"
+        });
+    }
+
+    conexion.query(
+        `
+        UPDATE grupos_compra
+        SET tarifa_envio_personalizada = ?
+        WHERE id_grupo = ?
+        `,
+        [tarifa, idGrupo],
+        (err, resultado) => {
+
+            if (err) {
+                console.error("Error al editar tarifa:", err);
+
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: "No se pudo actualizar la tarifa"
+                });
+            }
+
+            if (resultado.affectedRows === 0) {
+                return res.status(404).json({
+                    ok: false,
+                    mensaje: "Factura no encontrada"
+                });
+            }
+
+            return res.json({
+                ok: true,
+                mensaje: "Tarifa actualizada correctamente"
+            });
+        }
+    );
+});
 app.post('/update-status',protegerAdmin,  (req, res) => {
     const { id_pedido, estado } = req.body;
 
     conexion.query(`
         UPDATE pedidos SET estado = ? WHERE id_pedido = ?
     `, [estado, id_pedido], (err) => {
-        if (err) return res.send("Error ❌");
+        if (err) return res.send("Error âŒ");
         res.json({ ok: true });
     });
 });
 
 // ======================================================
-// 🔹 ELIMINAR UN PEDIDO ACTIVO
+// ðŸ”¹ ELIMINAR UN PEDIDO ACTIVO
 // ======================================================
 
 app.post('/delete-order', protegerAdmin, (req, res) => {
@@ -6590,7 +6638,7 @@ app.post('/delete-order', protegerAdmin, (req, res) => {
     if (!idPedido) {
         return res.status(400).json({
             ok: false,
-            mensaje: "Pedido inválido"
+            mensaje: "Pedido invÃ¡lido"
         });
     }
 
@@ -6598,13 +6646,13 @@ app.post('/delete-order', protegerAdmin, (req, res) => {
 
         if (errorTransaccion) {
             console.log(
-                "❌ Error iniciando eliminación:",
+                "âŒ Error iniciando eliminaciÃ³n:",
                 errorTransaccion
             );
 
             return res.status(500).json({
                 ok: false,
-                mensaje: "No se pudo iniciar la eliminación"
+                mensaje: "No se pudo iniciar la eliminaciÃ³n"
             });
         }
 
@@ -6618,7 +6666,7 @@ app.post('/delete-order', protegerAdmin, (req, res) => {
                 return conexion.rollback(() => {
 
                     console.log(
-                        "❌ Error eliminando abonos:",
+                        "âŒ Error eliminando abonos:",
                         errorAbonos
                     );
 
@@ -6641,7 +6689,7 @@ app.post('/delete-order', protegerAdmin, (req, res) => {
                     return conexion.rollback(() => {
 
                         console.log(
-                            "❌ Error eliminando pedido:",
+                            "âŒ Error eliminando pedido:",
                             errorPedido
                         );
 
@@ -6672,13 +6720,13 @@ app.post('/delete-order', protegerAdmin, (req, res) => {
                         return conexion.rollback(() => {
 
                             console.log(
-                                "❌ Error confirmando eliminación:",
+                                "âŒ Error confirmando eliminaciÃ³n:",
                                 errorCommit
                             );
 
                             return res.status(500).json({
                                 ok: false,
-                                mensaje: "No se pudo completar la eliminación"
+                                mensaje: "No se pudo completar la eliminaciÃ³n"
                             });
 
                         });
@@ -6700,7 +6748,7 @@ app.post('/delete-order', protegerAdmin, (req, res) => {
 });
 
 // ======================================================
-// 🔹 ELIMINAR UNA FACTURA ARCHIVADA ESPECÍFICA
+// ðŸ”¹ ELIMINAR UNA FACTURA ARCHIVADA ESPECÃFICA
 // ======================================================
 
 app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
@@ -6726,7 +6774,7 @@ app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
     ) {
         return res.status(400).json({
             ok: false,
-            mensaje: "Cliente inválido"
+            mensaje: "Cliente invÃ¡lido"
         });
     }
 
@@ -6750,7 +6798,7 @@ app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
     ) {
         return res.status(400).json({
             ok: false,
-            mensaje: "Factura o pedido inválido"
+            mensaje: "Factura o pedido invÃ¡lido"
         });
     }
 
@@ -6760,13 +6808,13 @@ app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
         if (errorTransaccion) {
 
             console.log(
-                "❌ Error iniciando transacción:",
+                "âŒ Error iniciando transacciÃ³n:",
                 errorTransaccion
             );
 
             return res.status(500).json({
                 ok: false,
-                mensaje: "No se pudo iniciar la eliminación"
+                mensaje: "No se pudo iniciar la eliminaciÃ³n"
             });
         }
 
@@ -6835,7 +6883,7 @@ app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
                     return conexion.rollback(() => {
 
                         console.log(
-                            "❌ Error buscando factura archivada:",
+                            "âŒ Error buscando factura archivada:",
                             errorBuscar
                         );
 
@@ -6854,7 +6902,7 @@ app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
 
                         return res.status(404).json({
                             ok: false,
-                            mensaje: "No se encontró la factura archivada seleccionada"
+                            mensaje: "No se encontrÃ³ la factura archivada seleccionada"
                         });
 
                     });
@@ -6880,7 +6928,7 @@ app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
                             return conexion.rollback(() => {
 
                                 console.log(
-                                    "❌ Error eliminando abonos:",
+                                    "âŒ Error eliminando abonos:",
                                     errorAbonos
                                 );
 
@@ -6907,7 +6955,7 @@ app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
                                     return conexion.rollback(() => {
 
                                         console.log(
-                                            "❌ Error eliminando pedidos:",
+                                            "âŒ Error eliminando pedidos:",
                                             errorPedidos
                                         );
 
@@ -6922,7 +6970,7 @@ app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
 
                                 /*
                                     Si era una factura con grupo,
-                                    revisamos si el grupo quedó sin pedidos.
+                                    revisamos si el grupo quedÃ³ sin pedidos.
                                 */
 
                                 if (
@@ -6944,7 +6992,7 @@ app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
                                                 return conexion.rollback(() => {
 
                                                     console.log(
-                                                        "❌ Error revisando grupo:",
+                                                        "âŒ Error revisando grupo:",
                                                         errorContar
                                                     );
 
@@ -6978,7 +7026,7 @@ app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
                                                             return conexion.rollback(() => {
 
                                                                 console.log(
-                                                                    "❌ Error eliminando grupo:",
+                                                                    "âŒ Error eliminando grupo:",
                                                                     errorGrupo
                                                                 );
 
@@ -7021,13 +7069,13 @@ app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
                                             return conexion.rollback(() => {
 
                                                 console.log(
-                                                    "❌ Error confirmando eliminación:",
+                                                    "âŒ Error confirmando eliminaciÃ³n:",
                                                     errorCommit
                                                 );
 
                                                 return res.status(500).json({
                                                     ok: false,
-                                                    mensaje: "No se pudo completar la eliminación"
+                                                    mensaje: "No se pudo completar la eliminaciÃ³n"
                                                 });
 
                                             });
@@ -7059,53 +7107,53 @@ app.post('/delete-archived-client-orders', protegerAdmin, (req, res) => {
 
 });
 
-// 🔐 LÍMITE DE SOLICITUDES PARA RECUPERAR CONTRASEÑA
+// ðŸ” LÃMITE DE SOLICITUDES PARA RECUPERAR CONTRASEÃ‘A
 const forgotPasswordLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 3, // máximo 3 solicitudes
+    max: 3, // mÃ¡ximo 3 solicitudes
     standardHeaders: true,
     legacyHeaders: false,
-    message: "Demasiadas solicitudes de recuperación. Intente nuevamente en 15 minutos."
+    message: "Demasiadas solicitudes de recuperaciÃ³n. Intente nuevamente en 15 minutos."
 });
 
 
-// 🔹 OLVIDÉ CONTRASEÑA
+// ðŸ”¹ OLVIDÃ‰ CONTRASEÃ‘A
 app.post('/forgot-password', forgotPasswordLimiter, (req, res) => {
 
-    console.log("📩 Entró una solicitud de recuperación");
+    console.log("ðŸ“© EntrÃ³ una solicitud de recuperaciÃ³n");
 
     const correo = String(req.body.correo || '')
         .trim()
         .toLowerCase();
 
     const mensajeGenerico =
-        "Si el correo está registrado, recibirás un enlace para recuperar tu contraseña.";
+        "Si el correo estÃ¡ registrado, recibirÃ¡s un enlace para recuperar tu contraseÃ±a.";
 
     if (!correo) {
         return res
             .status(400)
-            .send("Ingrese un correo electrónico");
+            .send("Ingrese un correo electrÃ³nico");
     }
 
-    // 🔹 COMPROBAR SI EL USUARIO EXISTE
+    // ðŸ”¹ COMPROBAR SI EL USUARIO EXISTE
     conexion.query(
         `SELECT id_usuario FROM usuarios WHERE correo = ? LIMIT 1`,
         [correo],
         (err, resultados) => {
 
             if (err) {
-                console.log("❌ Error buscando usuario:", err);
+                console.log("âŒ Error buscando usuario:", err);
 
                 return res
                     .status(500)
                     .send("Error del servidor");
             }
 
-            // 🔐 NO REVELAR SI EL CORREO EXISTE O NO
+            // ðŸ” NO REVELAR SI EL CORREO EXISTE O NO
             if (resultados.length === 0) {
 
                 console.log(
-                    "ℹ️ Solicitud recibida para un correo no registrado"
+                    "â„¹ï¸ Solicitud recibida para un correo no registrado"
                 );
 
                 return res
@@ -7113,17 +7161,17 @@ app.post('/forgot-password', forgotPasswordLimiter, (req, res) => {
                     .send(mensajeGenerico);
             }
 
-            console.log("✅ Solicitud de recuperación válida");
+            console.log("âœ… Solicitud de recuperaciÃ³n vÃ¡lida");
 
-            // 🔹 GENERAR TOKEN
+            // ðŸ”¹ GENERAR TOKEN
             const token =
                 crypto.randomBytes(32).toString('hex');
 
-            // 🔹 15 MINUTOS
+            // ðŸ”¹ 15 MINUTOS
             const expiracion =
                 Date.now() + (15 * 60 * 1000);
 
-            // 🔹 GUARDAR TOKEN
+            // ðŸ”¹ GUARDAR TOKEN
             conexion.query(
                 `
                 UPDATE usuarios
@@ -7138,7 +7186,7 @@ app.post('/forgot-password', forgotPasswordLimiter, (req, res) => {
                     if (errorToken) {
 
                         console.log(
-                            "❌ Error guardando token:",
+                            "âŒ Error guardando token:",
                             errorToken
                         );
 
@@ -7148,10 +7196,10 @@ app.post('/forgot-password', forgotPasswordLimiter, (req, res) => {
                     }
 
                     console.log(
-                        "✅ Token guardado correctamente"
+                        "âœ… Token guardado correctamente"
                     );
 
-                    // 🔹 LINK DE RECUPERACIÓN
+                    // ðŸ”¹ LINK DE RECUPERACIÃ“N
                     /*const link =
                         `http://localhost:3000/reset-password/${token}`;
                     */
@@ -7161,7 +7209,7 @@ app.post('/forgot-password', forgotPasswordLimiter, (req, res) => {
                     const link = `${BASE_URL}/reset-password/${token}`;
 
                     console.log(
-                        "📤 Intentando enviar correo..."
+                        "ðŸ“¤ Intentando enviar correo..."
                     );
 
                     try {
@@ -7175,7 +7223,7 @@ const { data, error } =
             correo,
 
         subject:
-            'Recuperar contraseña - Tienda Ana',
+            'Recuperar contraseÃ±a - Tienda Ana',
 
         html: `
             <div style="
@@ -7195,11 +7243,11 @@ const { data, error } =
                 </h2>
 
                 <p>
-                    Recibimos una solicitud para cambiar tu contraseña.
+                    Recibimos una solicitud para cambiar tu contraseÃ±a.
                 </p>
 
                 <p>
-                    Presiona el siguiente botón para crear una nueva contraseña:
+                    Presiona el siguiente botÃ³n para crear una nueva contraseÃ±a:
                 </p>
 
                 <div style="
@@ -7218,13 +7266,13 @@ const { data, error } =
                             font-weight: bold;
                         "
                     >
-                        Cambiar contraseña
+                        Cambiar contraseÃ±a
                     </a>
 
                 </div>
 
                 <p>
-                    Este enlace tiene una duración de 15 minutos.
+                    Este enlace tiene una duraciÃ³n de 15 minutos.
                 </p>
 
                 <p style="
@@ -7244,7 +7292,7 @@ if (error) {
 }
 
 console.log(
-    "✅ CORREO DE RECUPERACIÓN ENVIADO:",
+    "âœ… CORREO DE RECUPERACIÃ“N ENVIADO:",
     data.id
 );
 
@@ -7255,12 +7303,12 @@ console.log(
                     } catch (errorCorreo) {
 
                         console.log(
-                            "❌ ERROR ENVIANDO RECUPERACIÓN:"
+                            "âŒ ERROR ENVIANDO RECUPERACIÃ“N:"
                         );
 
                         console.log(errorCorreo);
 
-                        // 🔐 NO REVELAR INFORMACIÓN AL USUARIO
+                        // ðŸ” NO REVELAR INFORMACIÃ“N AL USUARIO
                         return res
                             .status(200)
                             .send(mensajeGenerico);
@@ -7271,9 +7319,9 @@ console.log(
     );
 });
 
-// 🔥 RESET PASSWORD (BONITO)
+// ðŸ”¥ RESET PASSWORD (BONITO)
 // ======================================================
-// 🔥 PÁGINA PARA CAMBIAR CONTRASEÑA
+// ðŸ”¥ PÃGINA PARA CAMBIAR CONTRASEÃ‘A
 // ======================================================
 
 function paginaNuevaPassword(token, mensaje = "", tipo = "") {
@@ -7309,7 +7357,7 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
             content="width=device-width, initial-scale=1.0"
         >
 
-        <title>Cambiar contraseña - Tienda Ana</title>
+        <title>Cambiar contraseÃ±a - Tienda Ana</title>
 
         <style>
 
@@ -7471,7 +7519,7 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
 
 
             /* ========================================
-               🔐 REQUISITOS DE CONTRASEÑA
+               ðŸ” REQUISITOS DE CONTRASEÃ‘A
             ======================================== */
 
             .password-requisitos {
@@ -7606,7 +7654,7 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
                 line-height: 1.5;
             }
 /* ========================================
-   🔐 MODAL CONFIRMAR CAMBIO CONTRASEÑA
+   ðŸ” MODAL CONFIRMAR CAMBIO CONTRASEÃ‘A
 ======================================== */
 
 .modal-confirmacion {
@@ -7806,7 +7854,7 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
             <div class="encabezado">
 
                 <h1>
-                    Tienda Ana Compras 🛍️
+                    Tienda Ana Compras ðŸ›ï¸
                 </h1>
 
                 <img
@@ -7828,18 +7876,18 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
              style="${token ? '' : 'display:none;'}"
 >
                 <div class="icono">
-                    🔐
+                    ðŸ”
                 </div>
 
 
                 <h2>
-                    Nueva contraseña
+                    Nueva contraseÃ±a
                 </h2>
 
 
                 <p class="descripcion">
 
-                    Cree una nueva contraseña
+                    Cree una nueva contraseÃ±a
                     para ingresar nuevamente
                     a su cuenta.
 
@@ -7857,7 +7905,7 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
                         type="password"
                         name="password"
                         id="nuevaPassword"
-                        placeholder="Nueva contraseña"
+                        placeholder="Nueva contraseÃ±a"
                         autocomplete="new-password"
                         minlength="8"
                         required
@@ -7868,16 +7916,16 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
                         id="passwordRequisitos"
                         class="password-requisitos"
                     >
-                        ⚠️ La contraseña debe tener mínimo
+                        âš ï¸ La contraseÃ±a debe tener mÃ­nimo
                         8 caracteres, al menos una letra
-                        y un número.
+                        y un nÃºmero.
                     </div>
 
 
                     <input
                         type="password"
                         name="confirm"
-                        placeholder="Confirmar contraseña"
+                        placeholder="Confirmar contraseÃ±a"
                         autocomplete="new-password"
                         required
                     >
@@ -7885,7 +7933,7 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
 
                     <button type="submit">
 
-                        Confirmar contraseña
+                        Confirmar contraseÃ±a
 
                     </button>
 
@@ -7893,7 +7941,7 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
                 </form>
 
 <!-- ========================================
-     🔐 MODAL CONFIRMAR CAMBIO CONTRASEÑA
+     ðŸ” MODAL CONFIRMAR CAMBIO CONTRASEÃ‘A
 ======================================== -->
 
 <div
@@ -7904,7 +7952,7 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
     <div class="modal-contenido">
 
         <div class="modal-icono">
-            🔐
+            ðŸ”
         </div>
 
      <h3>
@@ -7912,13 +7960,13 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
 </h3>
 
 <p>
-    Por seguridad, la contraseña solo puede
+    Por seguridad, la contraseÃ±a solo puede
     cambiarse una vez cada 24 horas.
 
     <br><br>
 
     <strong>
-        ¿Desea continuar?
+        Â¿Desea continuar?
     </strong>
 </p>
 
@@ -7948,9 +7996,9 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
 
                 <div class="seguridad">
 
-                    🔒 Por seguridad,
-                    el enlace de recuperación
-                    tiene una duración limitada.
+                    ðŸ”’ Por seguridad,
+                    el enlace de recuperaciÃ³n
+                    tiene una duraciÃ³n limitada.
 
                 </div>
 
@@ -7964,7 +8012,7 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
         <script>
 
             // ========================================
-            // 🔐 VALIDAR CONTRASEÑA MIENTRAS ESCRIBE
+            // ðŸ” VALIDAR CONTRASEÃ‘A MIENTRAS ESCRIBE
             // ========================================
 
             const passwordInput =
@@ -8012,7 +8060,7 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
                         passwordInput.value;
 
 
-                    // Si está vacío, ocultar mensaje
+                    // Si estÃ¡ vacÃ­o, ocultar mensaje
 
                     if (password.length === 0) {
 
@@ -8044,7 +8092,7 @@ function paginaNuevaPassword(token, mensaje = "", tipo = "") {
 
 
      // ========================================
-// 🔐 ELEMENTOS DEL MODAL
+// ðŸ” ELEMENTOS DEL MODAL
 // ========================================
 
 const modalConfirmacion =
@@ -8064,7 +8112,7 @@ const btnConfirmarCambio =
 
 
 // ========================================
-// 🔐 ABRIR MODAL AL ENVIAR FORMULARIO
+// ðŸ” ABRIR MODAL AL ENVIAR FORMULARIO
 // ========================================
 
 formNuevaPassword.addEventListener(
@@ -8098,7 +8146,7 @@ formNuevaPassword.addEventListener(
 
 
 // ========================================
-// 🔹 CANCELAR CAMBIO
+// ðŸ”¹ CANCELAR CAMBIO
 // ========================================
 
 btnCancelarCambio.addEventListener(
@@ -8114,7 +8162,7 @@ btnCancelarCambio.addEventListener(
 
 
 // ========================================
-// ✅ CONFIRMAR CAMBIO
+// âœ… CONFIRMAR CAMBIO
 // ========================================
 
 btnConfirmarCambio.addEventListener(
@@ -8142,7 +8190,7 @@ btnConfirmarCambio.addEventListener(
 
 // ======================================================
 // ======================================================
-// 🔥 MOSTRAR CAMBIO DE CONTRASEÑA
+// ðŸ”¥ MOSTRAR CAMBIO DE CONTRASEÃ‘A
 // ======================================================
 
 app.get('/reset-password/:token', (req, res) => {
@@ -8152,7 +8200,7 @@ app.get('/reset-password/:token', (req, res) => {
 
 
     // ============================================
-    // 🔐 VALIDAR FORMATO DEL TOKEN
+    // ðŸ” VALIDAR FORMATO DEL TOKEN
     // ============================================
 
     const tokenValido =
@@ -8161,17 +8209,17 @@ app.get('/reset-password/:token', (req, res) => {
     if (!tokenValido) {
 
         console.log(
-            "⚠️ Intento de recuperación con token inválido"
+            "âš ï¸ Intento de recuperaciÃ³n con token invÃ¡lido"
         );
 
         return res.send(
             paginaNuevaPassword(
                 "",
                 `
-                ⚠️ Este enlace es inválido
-                o está dañado.
-                Solicite una nueva recuperación
-                de contraseña.
+                âš ï¸ Este enlace es invÃ¡lido
+                o estÃ¡ daÃ±ado.
+                Solicite una nueva recuperaciÃ³n
+                de contraseÃ±a.
 
                 <br><br>
 
@@ -8187,7 +8235,7 @@ app.get('/reset-password/:token', (req, res) => {
 
 
     // ============================================
-    // 🔹 COMPROBAR TOKEN EN LA BASE DE DATOS
+    // ðŸ”¹ COMPROBAR TOKEN EN LA BASE DE DATOS
     // ============================================
 
     conexion.query(`
@@ -8209,7 +8257,7 @@ app.get('/reset-password/:token', (req, res) => {
         if (err) {
 
             console.log(
-                "❌ Error comprobando token:",
+                "âŒ Error comprobando token:",
                 err
             );
 
@@ -8217,8 +8265,8 @@ app.get('/reset-password/:token', (req, res) => {
                 paginaNuevaPassword(
                     "",
                     `
-                    ❌ No fue posible verificar
-                    el enlace de recuperación.
+                    âŒ No fue posible verificar
+                    el enlace de recuperaciÃ³n.
                     `,
                     "error"
                 )
@@ -8232,10 +8280,10 @@ app.get('/reset-password/:token', (req, res) => {
                 paginaNuevaPassword(
                     "",
                     `
-                    ⚠️ Este enlace es inválido
-                    o ya expiró.
-                    Solicite una nueva recuperación
-                    de contraseña.
+                    âš ï¸ Este enlace es invÃ¡lido
+                    o ya expirÃ³.
+                    Solicite una nueva recuperaciÃ³n
+                    de contraseÃ±a.
 
                     <br><br>
 
@@ -8263,7 +8311,7 @@ app.get('/reset-password/:token', (req, res) => {
 
 
 // ======================================================
-// 🔥 GUARDAR NUEVA CONTRASEÑA
+// ðŸ”¥ GUARDAR NUEVA CONTRASEÃ‘A
 // ======================================================
 
 app.post('/reset-password/:token', (req, res) => {
@@ -8273,7 +8321,7 @@ app.post('/reset-password/:token', (req, res) => {
 
 
     // ============================================
-    // 🔐 VALIDAR FORMATO DEL TOKEN
+    // ðŸ” VALIDAR FORMATO DEL TOKEN
     // ============================================
 
     const tokenValido =
@@ -8282,20 +8330,20 @@ app.post('/reset-password/:token', (req, res) => {
     if (!tokenValido) {
 
         console.log(
-            "⚠️ Intento de cambio con token inválido"
+            "âš ï¸ Intento de cambio con token invÃ¡lido"
         );
 
         return res.send(
             paginaNuevaPassword(
                 "",
                 `
-                ⚠️ Este enlace de recuperación
-                es inválido o está dañado.
+                âš ï¸ Este enlace de recuperaciÃ³n
+                es invÃ¡lido o estÃ¡ daÃ±ado.
 
                 <br><br>
 
-                Solicite una nueva recuperación
-                de contraseña.
+                Solicite una nueva recuperaciÃ³n
+                de contraseÃ±a.
 
                 <br><br>
 
@@ -8318,7 +8366,7 @@ app.post('/reset-password/:token', (req, res) => {
 
 
     // ============================================
-    // 🔹 VALIDAR CAMPOS
+    // ðŸ”¹ VALIDAR CAMPOS
     // ============================================
 
     if (!password || !confirm) {
@@ -8327,7 +8375,7 @@ app.post('/reset-password/:token', (req, res) => {
             paginaNuevaPassword(
                 token,
                 `
-                ⚠️ Complete ambos campos
+                âš ï¸ Complete ambos campos
                 para continuar.
                 `,
                 "error"
@@ -8338,7 +8386,7 @@ app.post('/reset-password/:token', (req, res) => {
 
 
     // ============================================
-    // 🔐 VALIDAR SEGURIDAD DE LA CONTRASEÑA
+    // ðŸ” VALIDAR SEGURIDAD DE LA CONTRASEÃ‘A
     // ============================================
 
     const passwordValido =
@@ -8350,9 +8398,9 @@ app.post('/reset-password/:token', (req, res) => {
             paginaNuevaPassword(
                 token,
                 `
-                ⚠️ La contraseña debe tener
+                âš ï¸ La contraseÃ±a debe tener
                 al menos 8 caracteres,
-                una letra y un número.
+                una letra y un nÃºmero.
                 `,
                 "error"
             )
@@ -8362,7 +8410,7 @@ app.post('/reset-password/:token', (req, res) => {
 
 
     // ============================================
-    // 🔹 VALIDAR QUE COINCIDAN
+    // ðŸ”¹ VALIDAR QUE COINCIDAN
     // ============================================
 
     if (password !== confirm) {
@@ -8371,9 +8419,9 @@ app.post('/reset-password/:token', (req, res) => {
             paginaNuevaPassword(
                 token,
                 `
-                ⚠️ Las contraseñas
+                âš ï¸ Las contraseÃ±as
                 no coinciden.
-                Inténtelo nuevamente.
+                IntÃ©ntelo nuevamente.
                 `,
                 "error"
             )
@@ -8383,7 +8431,7 @@ app.post('/reset-password/:token', (req, res) => {
 
 
     // ============================================
-    // 🔹 COMPROBAR TOKEN ANTES DE CAMBIAR
+    // ðŸ”¹ COMPROBAR TOKEN ANTES DE CAMBIAR
     // ============================================
 
     conexion.query(`
@@ -8408,7 +8456,7 @@ app.post('/reset-password/:token', (req, res) => {
         if (err) {
 
             console.log(
-                "❌ Error comprobando token:",
+                "âŒ Error comprobando token:",
                 err
             );
 
@@ -8416,8 +8464,8 @@ app.post('/reset-password/:token', (req, res) => {
                 paginaNuevaPassword(
                     token,
                     `
-                    ❌ Ocurrió un error
-                    al verificar la recuperación.
+                    âŒ OcurriÃ³ un error
+                    al verificar la recuperaciÃ³n.
                     `,
                     "error"
                 )
@@ -8431,8 +8479,8 @@ app.post('/reset-password/:token', (req, res) => {
                 paginaNuevaPassword(
                     "",
                     `
-                    ⚠️ El enlace de recuperación
-                    es inválido o ya expiró.
+                    âš ï¸ El enlace de recuperaciÃ³n
+                    es invÃ¡lido o ya expirÃ³.
 
                     <br><br>
 
@@ -8447,7 +8495,7 @@ app.post('/reset-password/:token', (req, res) => {
         }
 
 // ============================================
-// 🔐 LIMITAR CAMBIO DE CONTRASEÑA A 1 CADA 24 HORAS
+// ðŸ” LIMITAR CAMBIO DE CONTRASEÃ‘A A 1 CADA 24 HORAS
 // ============================================
 
 const ultimoCambio = results[0].ultimo_cambio_password;
@@ -8477,12 +8525,12 @@ if (ultimoCambio) {
             paginaNuevaPassword(
                 "",
                 `
-                🔒 Por seguridad, solo puede cambiar
-                su contraseña una vez cada 24 horas.
+                ðŸ”’ Por seguridad, solo puede cambiar
+                su contraseÃ±a una vez cada 24 horas.
 
                 <br><br>
 
-                Podrá volver a cambiarla
+                PodrÃ¡ volver a cambiarla
                 aproximadamente en
                 <strong>${horasRestantes} hora(s)</strong>.
 
@@ -8503,7 +8551,7 @@ if (ultimoCambio) {
 
 
             // ============================================
-            // 🔹 ENCRIPTAR NUEVA CONTRASEÑA
+            // ðŸ”¹ ENCRIPTAR NUEVA CONTRASEÃ‘A
             // ============================================
 
             const hash =
@@ -8515,7 +8563,7 @@ if (ultimoCambio) {
 
 
             // ============================================
-            // 🔹 GUARDAR NUEVA CONTRASEÑA
+            // ðŸ”¹ GUARDAR NUEVA CONTRASEÃ‘A
             // ============================================
 
             conexion.query(`
@@ -8541,7 +8589,7 @@ if (ultimoCambio) {
                 if (errorActualizar) {
 
                     console.log(
-                        "❌ Error actualizando contraseña:",
+                        "âŒ Error actualizando contraseÃ±a:",
                         errorActualizar
                     );
 
@@ -8549,9 +8597,9 @@ if (ultimoCambio) {
                         paginaNuevaPassword(
                             token,
                             `
-                            ❌ No fue posible
-                            actualizar la contraseña.
-                            Inténtelo nuevamente.
+                            âŒ No fue posible
+                            actualizar la contraseÃ±a.
+                            IntÃ©ntelo nuevamente.
                             `,
                             "error"
                         )
@@ -8568,8 +8616,8 @@ if (ultimoCambio) {
                         paginaNuevaPassword(
                             "",
                             `
-                            ⚠️ No fue posible
-                            actualizar la contraseña.
+                            âš ï¸ No fue posible
+                            actualizar la contraseÃ±a.
                             El enlace puede haber expirado.
                             `,
                             "error"
@@ -8580,14 +8628,14 @@ if (ultimoCambio) {
 
 
                 // ============================================
-                // 🔹 MISMA PÁGINA + MENSAJE ARRIBA
+                // ðŸ”¹ MISMA PÃGINA + MENSAJE ARRIBA
                 // ============================================
 
                 return res.send(
                     paginaNuevaPassword(
                         "",
                         `
-                        ✅ Su contraseña ha sido
+                        âœ… Su contraseÃ±a ha sido
                         actualizada correctamente.
 
                         <br><br>
@@ -8596,7 +8644,7 @@ if (ultimoCambio) {
                         <a href="/login.html">
                             inicio
                         </a>
-                        para iniciar sesión.
+                        para iniciar sesiÃ³n.
                         `,
                         "ok"
                     )
@@ -8610,7 +8658,7 @@ if (ultimoCambio) {
 
 
             console.log(
-                "❌ Error preparando contraseña:",
+                "âŒ Error preparando contraseÃ±a:",
                 errorHash
             );
 
@@ -8619,8 +8667,8 @@ if (ultimoCambio) {
                 paginaNuevaPassword(
                     token,
                     `
-                    ❌ No fue posible
-                    actualizar la contraseña.
+                    âŒ No fue posible
+                    actualizar la contraseÃ±a.
                     `,
                     "error"
                 )
@@ -8635,15 +8683,15 @@ if (ultimoCambio) {
 });
 
 
-// 🔥 SERVER
+// ðŸ”¥ SERVER
 /*app.listen(3000, () => {
-    console.log('🚀 http://localhost:3000');
+    console.log('ðŸš€ http://localhost:3000');
 });*/
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 http://localhost:${PORT}`);
+  console.log(`ðŸš€ http://localhost:${PORT}`);
 });
 
 

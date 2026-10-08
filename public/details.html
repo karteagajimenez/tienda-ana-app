@@ -1202,11 +1202,25 @@ let totalPeso =
                    1000 gramos = ₡6000
                 ========================================= */
 
-                const pesoRedondeado =
-    Math.floor(peso / 100) * 100 +
-    ((peso % 100) < 25 ? 0 : (peso % 100) <= 55 ? 50 : 100);
+                const pesoRedondeado = peso;
 
-const envio = (pesoRedondeado / 1000) * 6000;
+const tarifaPersonalizada = pedidosCliente.length > 0
+    ? pedidosCliente[0].tarifa_envio_personalizada
+    : null;
+
+const envioCalculado = (pesoRedondeado / 1000) * 6000;
+
+const envio = (
+    tarifaPersonalizada !== null &&
+    tarifaPersonalizada !== undefined &&
+    tarifaPersonalizada !== ""
+)
+    ? (
+        indice === 0
+            ? Number(tarifaPersonalizada)
+            : 0
+      )
+    : envioCalculado;
 
 
 

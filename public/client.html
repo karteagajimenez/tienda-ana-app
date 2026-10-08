@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -1720,20 +1720,25 @@ async function cargar(){
                     // ENVÍO TOTAL DE ESTA FACTURA
                     // ========================================
 
-                    const envioFactura =
-                        pedidosFactura.reduce(
-                            (total, pedido) => {
+                    const tarifaPersonalizada = pedidosFactura.length > 0
+    ? pedidosFactura[0].tarifa_envio_personalizada
+    : null;
 
-                                const peso = Number(pedido.peso_gramos) || 0;
-const pesoRedondeado =
-    Math.floor(peso / 100) * 100 +
-    ((peso % 100) < 25 ? 0 : (peso % 100) <= 55 ? 50 : 100);
+const envioCalculado = pedidosFactura.reduce(
+    (total, pedido) => {
+        const peso = Number(pedido.peso_gramos) || 0;
+        return total + (peso / 1000) * 6000;
+    },
+    0
+);
 
-return total + (pesoRedondeado / 1000) * 6000;
-
-                            },
-                            0
-                        );
+const envioFactura = (
+    tarifaPersonalizada !== null &&
+    tarifaPersonalizada !== undefined &&
+    tarifaPersonalizada !== ""
+)
+    ? Number(tarifaPersonalizada)
+    : envioCalculado;
 
 
                     // ========================================
