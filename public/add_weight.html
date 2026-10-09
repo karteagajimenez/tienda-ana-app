@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <link rel="icon" type="image/png" href="/favicon.png">
@@ -1059,6 +1059,567 @@ body > table > thead {
 }
 </style>
 
+<style id="estilosEditarAbono">
+
+/* Estos estilos afectan exclusivamente a Editar abono */
+
+#modalEditarAbono .modal-content {
+    width: 900px !important;
+    max-width: 95vw !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    padding: 0 0 25px !important;
+    border-radius: 15px !important;
+    background: #fff !important;
+}
+
+#modalEditarAbono .modal-content > h3 {
+    background: linear-gradient(135deg,#bd7f98,#c98fa8);
+    color: white !important;
+    text-align: left !important;
+    font-size: 27px !important;
+    padding: 24px 30px !important;
+    margin: 0 0 22px !important;
+}
+
+#modalEditarAbono #tablaHistorialAbonos {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    min-width: 540px;
+}
+
+#modalEditarAbono #tablaHistorialAbonos th {
+    background: #bd829b !important;
+    color: white !important;
+    padding: 14px 10px !important;
+    text-align: center !important;
+    border: 1px solid #e3cad5 !important;
+}
+
+#modalEditarAbono #tablaHistorialAbonos td {
+    padding: 13px 10px !important;
+    text-align: center !important;
+    border: 1px solid #ead7df !important;
+}
+
+#modalEditarAbono #tablaHistorialAbonos tbody tr:nth-child(odd) {
+    background: #fbe9f1;
+}
+
+#modalEditarAbono #tablaHistorialAbonos tbody tr {
+    cursor: pointer;
+}
+
+#modalEditarAbono #tablaHistorialAbonos tbody tr:hover {
+    background: #f5d4e2 !important;
+}
+
+#modalEditarAbono .modal-content > h4 {
+    background: linear-gradient(135deg,#bd7f98,#c98fa8);
+    color: white !important;
+    font-size: 20px !important;
+    padding: 17px 22px !important;
+    margin: 22px 25px 18px !important;
+    border: 0 !important;
+    border-radius: 10px 10px 0 0;
+    text-align: left !important;
+}
+
+#modalEditarAbono .modal-content > label {
+    display: inline-block !important;
+    width: 30% !important;
+    margin: 0 1% 8px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: #514b50 !important;
+    vertical-align: top;
+}
+
+#modalEditarAbono #editarAbonoViejo,
+#modalEditarAbono #editarAbonoMonto,
+#modalEditarAbono #editarAbonoMetodo {
+    width: 30% !important;
+    display: inline-block !important;
+    box-sizing: border-box !important;
+    margin: 0 1% 14px !important;
+    padding: 12px !important;
+    height: 49px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 8px !important;
+    font-size: 16px !important;
+}
+
+#modalEditarAbono #editarAbonoViejo {
+    background: #eeeeee !important;
+}
+
+#modalEditarAbono .modal-content > div:last-child {
+    text-align: right !important;
+    padding: 15px 28px 0 !important;
+}
+
+#modalEditarAbono button.cancel,
+#modalEditarAbono button.ok {
+    padding: 12px 25px !important;
+    border-radius: 9px !important;
+    font-weight: 600 !important;
+}
+
+#modalEditarAbono button.cancel {
+    background: #89999d !important;
+    color: white !important;
+}
+
+#modalEditarAbono button.ok {
+    background: #19bd70 !important;
+    color: white !important;
+}
+
+@media(max-width:650px) {
+    #modalEditarAbono .modal-content > label,
+    #modalEditarAbono #editarAbonoViejo,
+    #modalEditarAbono #editarAbonoMonto,
+    #modalEditarAbono #editarAbonoMetodo {
+        display: block !important;
+        width: 92% !important;
+        margin: 8px auto !important;
+    }
+
+    #modalEditarAbono .modal-content > h3 {
+        font-size: 22px !important;
+    }
+}
+
+</style>
+<style id="disenoNuevoEditarAbono">
+
+#modalEditarAbono .modal-content {
+    width: 900px !important;
+    max-width: 95vw !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    padding: 0 0 26px !important;
+    border-radius: 14px !important;
+    background: white !important;
+}
+
+#modalEditarAbono .cabecera-editar-abono {
+    background: linear-gradient(135deg, #bd7f98, #c98fa8) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 22px 30px !important;
+    color: white !important;
+}
+
+#modalEditarAbono .cabecera-editar-abono h3 {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 28px !important;
+    color: white !important;
+    text-align: left !important;
+}
+
+#modalEditarAbono .cerrar-editar-abono {
+    background: transparent !important;
+    color: white !important;
+    border: none !important;
+    font-size: 34px !important;
+    cursor: pointer;
+}
+
+#modalEditarAbono .seccion-abonos {
+    margin: 22px 30px 0;
+    padding: 0;
+    border: 1px solid #e8cbd7;
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+}
+
+#modalEditarAbono .titulo-abonos {
+    background: linear-gradient(135deg, #bd7f98, #c98fa8) !important;
+    color: white !important;
+    font-size: 21px !important;
+    font-weight: 700 !important;
+    text-align: left !important;
+    padding: 14px 20px !important;
+    margin: 0 !important;
+}
+
+#modalEditarAbono #tablaHistorialAbonos {
+    width: 100% !important;
+    border-collapse: collapse !important;
+}
+
+#modalEditarAbono #tablaHistorialAbonos th {
+    background: #bd829b !important;
+    color: white !important;
+    text-align: center !important;
+    border: 1px solid #e3cad5 !important;
+}
+
+#modalEditarAbono #tablaHistorialAbonos td {
+    text-align: center !important;
+    border: 1px solid #ead7df !important;
+}
+
+#modalEditarAbono #tablaHistorialAbonos tbody tr:nth-child(odd) {
+    background: #fbe9f1;
+}
+
+#modalEditarAbono #tablaHistorialAbonos tbody tr:nth-child(even) {
+    background: #f7e0ea;
+}
+
+#modalEditarAbono #tablaHistorialAbonos tbody tr {
+    cursor: pointer;
+}
+
+#modalEditarAbono #tablaHistorialAbonos tbody tr:hover {
+    background: #f5d4e2 !important;
+}
+
+</style>
+<style id="ajusteFinalEditarAbono">
+
+/* CONTENEDOR GENERAL */
+#modalEditarAbono .modal-content {
+    width: 900px !important;
+    max-width: 95vw !important;
+    padding: 0 0 26px !important;
+    border-radius: 12px !important;
+}
+
+/* ENCABEZADO PRINCIPAL */
+#modalEditarAbono .cabecera-editar-abono {
+    padding: 20px 32px !important;
+    min-height: 0 !important;
+}
+
+#modalEditarAbono .cabecera-editar-abono h3 {
+    font-size: 28px !important;
+    line-height: 1.2 !important;
+}
+
+/* TABLA DE ABONOS */
+#modalEditarAbono .seccion-abonos {
+    margin: 20px 30px 0 !important;
+}
+
+#modalEditarAbono .titulo-abonos {
+    font-size: 21px !important;
+    padding: 13px 20px !important;
+}
+
+/* RECUADRO INFERIOR */
+#modalEditarAbono .panel-editar-abono {
+    margin: 20px 30px 0 !important;
+    padding: 0 0 22px !important;
+    border: 1px solid #e8cbd7 !important;
+    border-radius: 11px !important;
+    overflow: hidden !important;
+}
+
+/* ENCABEZADO EDITAR ABONO SELECCIONADO */
+#modalEditarAbono .panel-editar-abono > h4 {
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 0 22px !important;
+    padding: 16px 22px !important;
+    border-radius: 0 !important;
+    font-size: 21px !important;
+    line-height: 1.3 !important;
+    background: linear-gradient(
+        135deg,
+        #bd7f98,
+        #c98fa8
+    ) !important;
+    color: white !important;
+}
+
+/* TRES COLUMNAS */
+#modalEditarAbono .campos-editar-abono {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 22px !important;
+    padding: 0 24px !important;
+    box-sizing: border-box !important;
+}
+
+#modalEditarAbono .campo-abono {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+}
+
+/* ETIQUETAS */
+#modalEditarAbono .campo-abono label {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 8px !important;
+    padding: 0 !important;
+    text-align: left !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+}
+
+/* CAMPOS DE TEXTO Y SELECTOR */
+#modalEditarAbono .campo-abono #editarAbonoViejo,
+#modalEditarAbono .campo-abono #editarAbonoMonto,
+#modalEditarAbono .campo-abono #editarAbonoMetodo {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 55px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 12px 15px !important;
+    font-size: 17px !important;
+    border-radius: 8px !important;
+}
+
+/* ABONO ACTUAL */
+#modalEditarAbono #editarAbonoViejo {
+    background: #eeeeee !important;
+}
+
+/* BOTONES */
+#modalEditarAbono .acciones-editar-abono {
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 14px !important;
+    padding: 30px 24px 0 !important;
+    margin: 0 !important;
+}
+
+#modalEditarAbono .acciones-editar-abono button {
+    min-width: 130px !important;
+    height: 55px !important;
+    font-size: 16px !important;
+}
+
+/* PANTALLAS PEQUEÑAS */
+@media (max-width: 650px) {
+    #modalEditarAbono .campos-editar-abono {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+
+    #modalEditarAbono .seccion-abonos,
+    #modalEditarAbono .panel-editar-abono {
+        margin-left: 12px !important;
+        margin-right: 12px !important;
+    }
+
+    #modalEditarAbono .acciones-editar-abono button {
+        min-width: 0 !important;
+        flex: 1;
+    }
+}
+
+</style>
+<style id="compactarEditarAbono">
+
+/* ===== BORDES Y TITULO - EDITAR ABONO ===== */
+
+/* Bordes exteriores de los dos cuadros */
+#modalEditarAbono .seccion-abonos,
+#modalEditarAbono .panel-editar-abono {
+    border: 2px solid #aeb3b8 !important;
+    border-radius: 11px !important;
+}
+
+/* Título del cuadro inferior alineado a la izquierda */
+#modalEditarAbono .panel-editar-abono > h4 {
+    text-align: left !important;
+}
+
+
+/* TAMAÑO GENERAL */
+#modalEditarAbono .modal-content {
+    width: 820px !important;
+    max-width: 95vw !important;
+    padding: 0 0 18px !important;
+}
+
+/* ENCABEZADO PRINCIPAL */
+#modalEditarAbono .cabecera-editar-abono {
+    padding: 15px 24px !important;
+    min-height: 0 !important;
+}
+
+#modalEditarAbono .cabecera-editar-abono h3 {
+    font-size: 23px !important;
+    line-height: 1.2 !important;
+}
+
+#modalEditarAbono .cerrar-editar-abono {
+    font-size: 27px !important;
+    padding: 0 !important;
+}
+
+/* SECCIÓN DE ABONOS */
+#modalEditarAbono .seccion-abonos {
+    margin: 16px 24px 0 !important;
+}
+
+#modalEditarAbono .titulo-abonos {
+    font-size: 18px !important;
+    padding: 10px 16px !important;
+}
+
+/* TABLA */
+#modalEditarAbono #tablaHistorialAbonos th {
+    font-size: 14px !important;
+    padding: 10px 8px !important;
+}
+
+#modalEditarAbono #tablaHistorialAbonos td {
+    font-size: 14px !important;
+    padding: 9px 8px !important;
+}
+
+/* PANEL INFERIOR */
+#modalEditarAbono .panel-editar-abono {
+    margin: 16px 24px 0 !important;
+    padding: 0 0 16px !important;
+}
+
+/* ENCABEZADO INFERIOR SIN MÁRGENES LATERALES */
+#modalEditarAbono .modal-content .panel-editar-abono > h4 {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 16px !important;
+    padding: 11px 16px !important;
+    box-sizing: border-box !important;
+    border-radius: 0 !important;
+    font-size: 18px !important;
+    line-height: 1.25 !important;
+}
+
+/* CAMPOS */
+#modalEditarAbono .campos-editar-abono {
+    gap: 15px !important;
+    padding: 0 18px !important;
+}
+
+#modalEditarAbono .campo-abono label {
+    font-size: 14px !important;
+    margin-bottom: 6px !important;
+}
+
+#modalEditarAbono .campo-abono #editarAbonoViejo,
+#modalEditarAbono .campo-abono #editarAbonoMonto,
+#modalEditarAbono .campo-abono #editarAbonoMetodo {
+    height: 43px !important;
+    padding: 8px 11px !important;
+    font-size: 14px !important;
+}
+
+/* BOTONES MÁS PEQUEÑOS */
+#modalEditarAbono .acciones-editar-abono {
+    gap: 10px !important;
+    padding: 20px 18px 0 !important;
+}
+
+#modalEditarAbono .acciones-editar-abono button {
+    min-width: 105px !important;
+    height: 40px !important;
+    padding: 8px 15px !important;
+    font-size: 13px !important;
+    border-radius: 7px !important;
+}
+
+@media (max-width: 650px) {
+    #modalEditarAbono .campos-editar-abono {
+        grid-template-columns: 1fr !important;
+    }
+
+    #modalEditarAbono .seccion-abonos,
+    #modalEditarAbono .panel-editar-abono {
+        margin-left: 12px !important;
+        margin-right: 12px !important;
+    }
+}
+
+</style>
+<style id="coloresPersonalizadosTablaAbonos">
+
+/* COLORES PERSONALIZADOS TABLA ABONOS */
+
+/* Encabezados de las columnas */
+#modalEditarAbono #tablaHistorialAbonos thead th {
+    background: #9C7085 !important;
+    color: #FFFFFF !important;
+    border-color: #D8B8C6 !important;
+}
+
+/* Fondo de las filas */
+#modalEditarAbono #tablaHistorialAbonos tbody tr {
+    background: #FCF9FA !important;
+}
+
+/* Fecha, monto y método de pago */
+#modalEditarAbono #tablaHistorialAbonos tbody td {
+    background: #FCF9FA !important;
+    color: #333333 !important;
+    border-color: #E8E0E4 !important;
+}
+
+/* Número de la fila */
+#modalEditarAbono #tablaHistorialAbonos tbody td:first-child {
+    color: #777777 !important;
+}
+
+/* Fila seleccionada */
+#modalEditarAbono #tablaHistorialAbonos tbody tr.seleccionado td,
+#modalEditarAbono #tablaHistorialAbonos tbody tr.selected td {
+    background: #F1E4EA !important;
+}
+
+/* Resaltar suavemente al pasar el mouse */
+#modalEditarAbono #tablaHistorialAbonos tbody tr:hover td {
+    background: #F5EBEF !important;
+}
+
+</style>
+<style id="bordesGrisesEditarAbono">
+
+/* BORDES GRISES MAS OSCUROS - EDITAR ABONO */
+
+#modalEditarAbono .seccion-abonos,
+#modalEditarAbono .panel-editar-abono {
+    border: 2px solid #000000 !important;
+    border-radius: 11px !important;
+}
+
+</style>
+<style id="lineaNegraAbonosRegistrados">
+
+/* LINEA NEGRA DEBAJO DE ABONOS REGISTRADOS */
+
+#modalEditarAbono .titulo-abonos {
+    border-bottom: 2px solid #000000 !important;
+}
+
+</style>
+<style id="textoNegritaAbonos">
+
+/* TEXTO NEGRO SEMINEGRITA ABONOS */
+
+#modalEditarAbono #tablaHistorialAbonos tbody td {
+    color: #111111 !important;
+    font-weight: 600 !important;
+}
+
+/* Mantener el boton Eliminar con su estilo original */
+#modalEditarAbono #tablaHistorialAbonos tbody td button {
+    font-weight: inherit;
+}
+
+</style>
 </head>
 
 <body>
@@ -1368,82 +1929,95 @@ body > table > thead {
      MODAL EDITAR ABONO
 ===================================================== -->
 
-<div
-    id="modalEditarAbono"
-    class="modal"
-    style="display:none;"
->
-
+<div id="modalEditarAbono" class="modal" style="display:none;">
     <div class="modal-content">
 
-        <h3>
-            Editar abono
-        </h3>
+        <div class="cabecera-editar-abono">
+            <h3>Editar abono</h3>
+            <button type="button" class="cerrar-editar-abono"
+                onclick="cerrarEditarAbono()" aria-label="Cerrar">
+                &times;
+            </button>
+        </div>
 
+        <div class="seccion-abonos">
+            <div class="titulo-abonos">Abonos registrados</div>
 
-    <label
-    id="labelAbonoViejo"
-    style="
-        display:none;
-        width:95%;
-        margin:8px auto 0;
-        text-align:left;
-        font-size:13px;
-        color:#555;
-        font-weight:bold;
-    "
->
-    Abono Actual
-</label>
+            <div class="contenedor-tabla-abonos">
+                <table id="tablaHistorialAbonos">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Fecha</th>
+                            <th>Monto</th>
+                            <th>Método de pago</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaHistorialAbonos">
+                        <tr>
+                            <td colspan="5">Cargando abonos...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-<input
-    type="number"
-    id="editarAbonoViejo"
-    readonly
-    style="display:none;"
->
+        <div class="panel-editar-abono">
 
-<label
-    id="labelAbonoNuevo"
-    style="
-        display:none;
-        width:95%;
-        margin:8px auto 0;
-        text-align:left;
-        font-size:13px;
-        color:#555;
-        font-weight:bold;
-    "
->
-    Abono nuevo
-</label>
+            <h4>Editar abono seleccionado</h4>
 
-<input
-    type="text"
-    id="editarAbonoMonto"
-    placeholder="Ingrese el nuevo monto"
-    inputmode="numeric"
-    style="display:none;"
->
+            <div class="campos-editar-abono">
 
-        <br>
+                <div class="campo-abono">
+                    <label id="labelAbonoViejo" for="editarAbonoViejo">
+                        Abono actual
+                    </label>
+                    <input type="text"
+                        id="editarAbonoViejo"
+                        readonly
+                        value=""
+                        placeholder="Seleccione un abono">
+                </div>
 
-   <button
-    class="cancel"
-    onclick="cerrarEditarAbono()"
->
-    Cancelar
-</button>
+                <div class="campo-abono">
+                    <label id="labelAbonoNuevo" for="editarAbonoMonto">
+                        Abono nuevo
+                    </label>
+                    <input type="text"
+                        id="editarAbonoMonto"
+                        value=""
+                        placeholder="Ingrese el nuevo monto"
+                        inputmode="numeric">
+                </div>
 
-<button
-    class="ok"
-    onclick="guardarEdicionAbono()"
->
-    Guardar
-</button>
+                <div class="campo-abono">
+                    <label for="editarAbonoMetodo">
+                        Método de pago
+                    </label>
+                    <select id="editarAbonoMetodo">
+                        <option value="">Seleccione un método</option>
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="SINPE">SINPE</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="acciones-editar-abono">
+                <button type="button" class="cancel"
+                    onclick="cerrarEditarAbono()">
+                    Cancelar
+                </button>
+                <button type="button" class="ok"
+                    onclick="guardarEdicionAbono()">
+                    Guardar
+                </button>
+            </div>
+
+        </div>
 
     </div>
-
 </div>
 <!-- =====================================================
      MODAL EDITAR PESO
@@ -4477,7 +5051,7 @@ const abonoAnterior =
     Number(
         document.getElementById(
             "editarAbonoViejo"
-        ).value
+        ).value.replace(/\D/g, "")
     ) || 0;
 
 
@@ -4530,8 +5104,8 @@ if(
                             id_abono:
                                 idAbono,
 
-                            monto_abono:
-                                nuevoMonto
+                            monto_abono: nuevoMonto,
+                            metodo_pago: document.getElementById("editarAbonoMetodo").value
 
                         })
 
@@ -4557,11 +5131,33 @@ if(
         }
 
 
-        cerrarEditarAbono();
-
-        cerrarModal();
-
         await cargarPedidos();
+
+        /* Actualizar Gestión de pedido después de modificar un abono */
+        const modalGestionAbonos = document.getElementById('modalDetalleCliente');
+
+        if (
+            modalGestionAbonos &&
+            modalGestionAbonos.classList.contains('abierto') &&
+            modalGestionAbonos.dataset.clienteId
+        ) {
+            mostrarFacturasCliente(
+                Number(modalGestionAbonos.dataset.clienteId),
+                true
+            );
+        }
+
+        await abrirEditarAbono();
+
+        const filaActualizada = Array.from(
+            document.querySelectorAll("#listaHistorialAbonos tr")
+        ).find(fila => {
+            return fila.dataset.idAbono === String(idAbono);
+        });
+
+        if (filaActualizada) {
+            filaActualizada.click();
+        }
 
 
         mostrarMensaje(
@@ -4981,209 +5577,221 @@ function cerrarEditarPeso(){
 }
 async function abrirEditarAbono(){
 
-    const modal =
-        document.getElementById(
-            "modalEditarAbono"
-        );
+    const modal = document.getElementById("modalEditarAbono");
+    const tabla = document.getElementById("listaHistorialAbonos");
+    const montoViejo = document.getElementById("editarAbonoViejo");
+    const montoNuevo = document.getElementById("editarAbonoMonto");
+    const metodo = document.getElementById("editarAbonoMetodo");
 
-    const inputMontoViejo =
-        document.getElementById(
-            "editarAbonoViejo"
-        );
+    delete modal.dataset.idAbono;
 
-    const inputMontoNuevo =
-        document.getElementById(
-            "editarAbonoMonto"
-        );
+    montoViejo.value = "";
+    montoNuevo.value = "";
+    metodo.value = "";
 
-    const labelAbonoViejo =
-        document.getElementById(
-            "labelAbonoViejo"
-        );
+    modal.style.display = "flex";
 
-    const labelAbonoNuevo =
-        document.getElementById(
-            "labelAbonoNuevo"
-        );
+    tabla.innerHTML = '<tr><td colspan="5">Cargando abonos...</td></tr>';
 
-
-    const cliente =
-        pedidosPorCliente[
-            clienteSeleccionado
-        ];
-
+    const cliente = pedidosPorCliente[clienteSeleccionado];
 
     if(!cliente){
-
-        mostrarMensaje(
-            "No se encontró el cliente"
-        );
-
+        tabla.innerHTML = '<tr><td colspan="5">No se encontró el cliente</td></tr>';
         return;
     }
 
+    const grupo = cliente.grupos[String(grupoSeleccionado)];
 
-    const grupo =
-        cliente.grupos[
-            String(grupoSeleccionado)
-        ];
-
-
-    if(
-        !grupo ||
-        !grupo.pedidos ||
-        grupo.pedidos.length === 0
-    ){
-
-        mostrarMensaje(
-            "No se encontró la factura seleccionada"
-        );
-
+    if(!grupo || !Array.isArray(grupo.pedidos) || grupo.pedidos.length === 0){
+        tabla.innerHTML = '<tr><td colspan="5">No se encontró la factura</td></tr>';
         return;
     }
-
 
     try{
 
-        /*
-            BUSCAR LOS ABONOS DE TODOS
-            LOS PEDIDOS DE ESTA FACTURA
-        */
+        const respuestas = await Promise.all(
+            grupo.pedidos.map(pedido =>
+                fetch(`/payments/${pedido.id_pedido}`)
+            )
+        );
 
-        const respuestas =
-            await Promise.all(
+        const todosLosAbonos = [];
 
-                grupo.pedidos.map(
-                    pedido =>
-                        fetch(
-                            `/payments/${pedido.id_pedido}`
-                        )
-                )
-
-            );
-
-
-        const todosLosAbonos =
-            [];
-
-
-        for(
-            const respuesta of respuestas
-        ){
+        for(const respuesta of respuestas){
 
             if(!respuesta.ok){
-                continue;
+                throw new Error("No se pudieron consultar los abonos");
             }
 
+            const data = await respuesta.json();
 
-            const data =
-                await respuesta.json();
-
-
-            if(
-                data.ok &&
-                Array.isArray(data.abonos)
-            ){
-
-                todosLosAbonos.push(
-                    ...data.abonos
-                );
-
+            if(!data.ok || !Array.isArray(data.abonos)){
+                throw new Error("Respuesta inválida del servidor");
             }
 
+            todosLosAbonos.push(...data.abonos);
         }
 
+        todosLosAbonos.sort(
+            (a,b) => Number(a.id_abono) - Number(b.id_abono)
+        );
 
-        /*
-            SI LA FACTURA NO TIENE ABONOS
-        */
+        tabla.innerHTML = "";
 
-        if(
-            todosLosAbonos.length === 0
-        ){
-
-            mostrarMensaje(
-                "Esta factura no tiene abonos registrados"
-            );
-
+        if(todosLosAbonos.length === 0){
+            tabla.innerHTML =
+                '<tr><td colspan="5">No hay abonos registrados</td></tr>';
             return;
         }
 
+        const formatoMonto = valor =>
+            "₡" + Number(valor || 0).toLocaleString("es-CR");
 
-        /*
-            ORDENAR DEL MÁS RECIENTE
-            AL MÁS ANTIGUO.
+        todosLosAbonos.forEach((abono, indice) => {
 
-            id_abono es autoincremental,
-            por eso el id más alto corresponde
-            al último abono registrado.
-        */
+            const fila = document.createElement("tr");
 
-        todosLosAbonos.sort(
-            (a, b) =>
-                Number(b.id_abono) -
-                Number(a.id_abono)
-        );
+            const fecha = abono.fecha_abono
+                ? String(abono.fecha_abono).substring(0,10)
+                : "";
 
+            const metodoRegistrado = abono.metodo_pago || "";
 
-        const ultimoAbono =
-            todosLosAbonos[0];
+            const columnas = [
+                String(indice + 1),
+                fecha,
+                formatoMonto(abono.monto_abono),
+                metodoRegistrado
+            ];
 
+            columnas.forEach(valor => {
+                const celda = document.createElement("td");
+                celda.textContent = valor;
+                fila.appendChild(celda);
+            });
 
-        /*
-            GUARDAR INTERNAMENTE
-            EL ABONO QUE SE VA A EDITAR
-        */
+            const celdaAccion = document.createElement("td");
+            const botonEliminar = document.createElement("button");
 
-        modal.dataset.idAbono =
-            ultimoAbono.id_abono;
+            botonEliminar.type = "button";
+            botonEliminar.textContent = "Eliminar";
+            botonEliminar.style.background = "#dc3545";
+            botonEliminar.style.color = "white";
+            botonEliminar.style.border = "none";
+            botonEliminar.style.borderRadius = "6px";
+            botonEliminar.style.padding = "7px 12px";
+            botonEliminar.style.cursor = "pointer";
 
+            botonEliminar.disabled = false;
+            botonEliminar.title = "Eliminar este abono";
 
-        /*
-            MOSTRAR MONTO ACTUAL
-        */
+            botonEliminar.addEventListener("click", async (event) => {
 
-        inputMontoViejo.value =
-            Number(
-                ultimoAbono.monto_abono
-            ) || 0;
+                event.stopPropagation();
 
+                const idAbonoEliminar = Number(abono.id_abono);
 
-        inputMontoNuevo.value =
-            "";
+                if (!Number.isInteger(idAbonoEliminar) || idAbonoEliminar <= 0) {
+                    mostrarMensaje("No se pudo identificar el abono");
+                    return;
+                }
 
+                const confirmar = await confirmarEliminacionAbono(
+                    abono.monto_abono
+                );
 
-        labelAbonoViejo.style.display =
-            "block";
+                if (!confirmar) {
+                    return;
+                }
 
-        inputMontoViejo.style.display =
-            "block";
+                botonEliminar.disabled = true;
 
+                try {
 
-        labelAbonoNuevo.style.display =
-            "block";
+                    const respuesta = await fetch("/delete-payment", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            id_abono: idAbonoEliminar
+                        })
+                    });
 
-        inputMontoNuevo.style.display =
-            "block";
+                    const resultado = await respuesta.json();
 
+                    if (!respuesta.ok || !resultado.ok) {
+                        throw new Error(
+                            resultado.mensaje || "No se pudo eliminar el abono"
+                        );
+                    }
 
-        modal.style.display =
-            "flex";
+                    await cargarPedidos();
 
+                    /* Actualizar Gestión de pedido después de modificar un abono */
+                    const modalGestionAbonos = document.getElementById('modalDetalleCliente');
+
+                    if (
+                        modalGestionAbonos &&
+                        modalGestionAbonos.classList.contains('abierto') &&
+                        modalGestionAbonos.dataset.clienteId
+                    ) {
+                        mostrarFacturasCliente(
+                            Number(modalGestionAbonos.dataset.clienteId),
+                            true
+                        );
+                    }
+
+                    await abrirEditarAbono();
+
+                    mostrarMensaje(
+                        "Abono eliminado correctamente",
+                        "exito"
+                    );
+
+                } catch (error) {
+
+                    console.error("Error eliminando abono:", error);
+
+                    mostrarMensaje(
+                        error.message || "No se pudo eliminar el abono"
+                    );
+
+                    botonEliminar.disabled = false;
+                }
+
+            });
+
+            celdaAccion.appendChild(botonEliminar);
+            fila.appendChild(celdaAccion);
+
+            fila.dataset.idAbono = String(abono.id_abono);
+            fila.addEventListener("click", () => {
+
+                tabla.querySelectorAll("tr").forEach(tr => {
+                    tr.style.background = "";
+                });
+
+                fila.style.background = "#edbfd2";
+
+                modal.dataset.idAbono = abono.id_abono;
+
+                montoViejo.value = formatoMonto(abono.monto_abono);
+                montoNuevo.value = "";
+
+                metodo.value = metodoRegistrado;
+            });
+
+            tabla.appendChild(fila);
+        });
 
     }catch(error){
 
-        console.error(
-            "Error cargando abono:",
-            error
-        );
+        console.error("Error cargando abonos:", error);
 
-        mostrarMensaje(
-            "No se pudo cargar el abono"
-        );
-
+        tabla.innerHTML =
+            '<tr><td colspan="5">Error al cargar los abonos</td></tr>';
     }
-
 }
 /* =========================================================
    CONFIRMAR
@@ -8085,6 +8693,174 @@ function mostrarMensaje(texto, tipo = "error"){
 
 </script>
 
+<!-- CONFIRMACION PERSONALIZADA PARA ELIMINAR ABONOS -->
+<style>
+#modalConfirmarEliminarAbono {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 99999;
+}
+
+#modalConfirmarEliminarAbono .modal-eliminar-contenido {
+    width: 100%;
+    max-width: 390px;
+    box-sizing: border-box;
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+}
+
+#modalConfirmarEliminarAbono .modal-eliminar-icono {
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: #fde8e8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 26px;
+}
+
+#modalConfirmarEliminarAbono h3 {
+    margin: 0 0 12px;
+    color: #e74c3c;
+    font-size: 22px;
+}
+
+#modalConfirmarEliminarAbono p {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#modalConfirmarEliminarAbono .modal-eliminar-botones {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+#modalConfirmarEliminarAbono .modal-eliminar-botones button {
+    min-width: 115px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#modalConfirmarEliminarAbono .btn-cancelar-eliminar {
+    background: #e5e5e5;
+    color: #333;
+}
+
+#modalConfirmarEliminarAbono .btn-confirmar-eliminar {
+    background: #e74c3c;
+    color: white;
+}
+
+#modalConfirmarEliminarAbono .modal-eliminar-botones button:hover {
+    opacity: 0.85;
+}
+</style>
+
+<div id="modalConfirmarEliminarAbono" role="dialog"
+     aria-modal="true" aria-labelledby="tituloEliminarAbono">
+
+    <div class="modal-eliminar-contenido">
+
+        <div class="modal-eliminar-icono">🗑️</div>
+
+        <h3 id="tituloEliminarAbono">Eliminar abono</h3>
+
+        <p id="mensajeConfirmarEliminarAbono"></p>
+
+        <div class="modal-eliminar-botones">
+
+            <button type="button"
+                    class="btn-cancelar-eliminar"
+                    id="cancelarConfirmacionAbono">
+                Cancelar
+            </button>
+
+            <button type="button"
+                    class="btn-confirmar-eliminar"
+                    id="aceptarConfirmacionAbono">
+                Eliminar
+            </button>
+
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmarEliminacionAbono(monto) {
+    return new Promise((resolver) => {
+
+        const modal = document.getElementById(
+            "modalConfirmarEliminarAbono"
+        );
+
+        const mensaje = document.getElementById(
+            "mensajeConfirmarEliminarAbono"
+        );
+
+        const cancelar = document.getElementById(
+            "cancelarConfirmacionAbono"
+        );
+
+        const aceptar = document.getElementById(
+            "aceptarConfirmacionAbono"
+        );
+
+        const cantidad = Number(monto) || 0;
+
+        const montoFormateado = "₡" +
+            cantidad.toLocaleString("es-CR", {
+                maximumFractionDigits: 2
+            });
+
+        mensaje.textContent =
+            "¿Desea eliminar definitivamente este abono de " +
+            montoFormateado +
+            "? El monto eliminado se descontará del total abonado " +
+            "y se actualizará el saldo pendiente de la factura.";
+
+        modal.style.display = "flex";
+
+        const tecla = (evento) => {
+            if (evento.key === "Escape") {
+                terminar(false);
+            }
+        };
+
+        const terminar = (confirmado) => {
+            modal.style.display = "none";
+            cancelar.removeEventListener("click", cancelarAccion);
+            aceptar.removeEventListener("click", aceptarAccion);
+            document.removeEventListener("keydown", tecla);
+            resolver(confirmado);
+        };
+
+        const cancelarAccion = () => terminar(false);
+        const aceptarAccion = () => terminar(true);
+
+        cancelar.addEventListener("click", cancelarAccion);
+        aceptar.addEventListener("click", aceptarAccion);
+        document.addEventListener("keydown", tecla);
+
+        cancelar.focus();
+    });
+}
+</script>
 </body>
 </html>
 

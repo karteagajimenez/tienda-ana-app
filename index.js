@@ -5364,8 +5364,8 @@ app.post(
         const idAbono =
             Number(req.body.id_abono);
 
-        const nuevoMonto =
-            Number(req.body.monto_abono);
+        const nuevoMonto = Number(req.body.monto_abono);
+        const metodoPago = req.body.metodo_pago == null ? null : String(req.body.metodo_pago).trim();
 
 
         // ======================================================
@@ -5547,17 +5547,21 @@ app.post(
                         conexion.query(
                             `
                                 SELECT
-                                    id_pedido,
-                                    peso_gramos,
-                                    total_precio
+    p.id_pedido,
+    p.peso_gramos,
+    p.total_precio,
+    g.tarifa_envio_personalizada
 
-                                FROM pedidos
+FROM pedidos p
 
-                                WHERE id_usuario = ?
-                                AND grupo_compra = ?
-                                AND archivado = 0
+INNER JOIN grupos_compra g
+    ON g.id_grupo = p.grupo_compra
 
-                                FOR UPDATE
+WHERE p.id_usuario = ?
+AND p.grupo_compra = ?
+AND p.archivado = 0
+
+FOR UPDATE
                             `,
                             [
                                 idUsuario,
@@ -5640,11 +5644,17 @@ app.post(
                                     );
 
 
-                                const envioGeneral =
-                                    (
-                                        pesoGeneral /
-                                        1000
-                                    ) * 6000;
+                                const tarifaPersonalizada =
+    pedidosFactura[0].tarifa_envio_personalizada;
+
+const tarifaEnvio =
+    tarifaPersonalizada !== null &&
+    tarifaPersonalizada !== undefined
+        ? Number(tarifaPersonalizada)
+        : 6000;
+
+const envioGeneral =
+    (pesoGeneral / 1000) * tarifaEnvio;
 
 
                                 const subtotalProductos =
@@ -5767,12 +5777,12 @@ app.post(
                                             `
                                                 UPDATE abonos
 
-                                                SET monto_abono = ?
-
+                                                SET monto_abono = ?, metodo_pago = ?
                                                 WHERE id_abono = ?
                                             `,
                                             [
                                                 nuevoMonto,
+                                                metodoPago,
                                                 idAbono
                                             ],
                                             (
@@ -5876,6 +5886,109 @@ app.post(
 
     }
 );
+app.post('/delete-payment', protegerAdmin, (req, res) => {
+
+    const idAbono = Number(req.body.id_abono);
+
+    if (!Number.isInteger(idAbono) || idAbono <= 0) {
+        return res.status(400).json({
+            ok: false,
+            mensaje: "Abono invalido"
+        });
+    }
+
+    conexion.beginTransaction((errorTransaccion) => {
+
+        if (errorTransaccion) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: "No se pudo iniciar la eliminacion"
+            });
+        }
+
+        conexion.query(`
+            SELECT
+                a.id_abono,
+                p.archivado
+            FROM abonos a
+            INNER JOIN pedidos p
+                ON p.id_pedido = a.id_pedido
+            WHERE a.id_abono = ?
+            LIMIT 1
+            FOR UPDATE
+        `, [idAbono], (errorBuscar, resultados) => {
+
+            if (errorBuscar) {
+                return conexion.rollback(() => {
+                    res.status(500).json({
+                        ok: false,
+                        mensaje: "No se pudo verificar el abono"
+                    });
+                });
+            }
+
+            if (!resultados || resultados.length === 0) {
+                return conexion.rollback(() => {
+                    res.status(404).json({
+                        ok: false,
+                        mensaje: "Abono no encontrado"
+                    });
+                });
+            }
+
+            if (Number(resultados[0].archivado) === 1) {
+                return conexion.rollback(() => {
+                    res.status(400).json({
+                        ok: false,
+                        mensaje: "No se pueden eliminar abonos de facturas archivadas"
+                    });
+                });
+            }
+
+            conexion.query(`
+                DELETE FROM abonos
+                WHERE id_abono = ?
+            `, [idAbono], (errorEliminar, resultado) => {
+
+                if (errorEliminar) {
+                    return conexion.rollback(() => {
+                        res.status(500).json({
+                            ok: false,
+                            mensaje: "No se pudo eliminar el abono"
+                        });
+                    });
+                }
+
+                if (resultado.affectedRows !== 1) {
+                    return conexion.rollback(() => {
+                        res.status(404).json({
+                            ok: false,
+                            mensaje: "Abono no encontrado"
+                        });
+                    });
+                }
+
+                conexion.commit((errorCommit) => {
+
+                    if (errorCommit) {
+                        return conexion.rollback(() => {
+                            res.status(500).json({
+                                ok: false,
+                                mensaje: "No se pudo completar la eliminacion"
+                            });
+                        });
+                    }
+
+                    return res.json({
+                        ok: true,
+                        mensaje: "Abono eliminado correctamente"
+                    });
+                });
+            });
+        });
+    });
+});
+
 app.post(
     '/add-payment',
     protegerAdmin,
