@@ -5647,14 +5647,12 @@ FOR UPDATE
                                 const tarifaPersonalizada =
     pedidosFactura[0].tarifa_envio_personalizada;
 
-const tarifaEnvio =
-    tarifaPersonalizada !== null &&
-    tarifaPersonalizada !== undefined
-        ? Number(tarifaPersonalizada)
-        : 6000;
-
 const envioGeneral =
-    (pesoGeneral / 1000) * tarifaEnvio;
+    tarifaPersonalizada !== null &&
+    tarifaPersonalizada !== undefined &&
+    tarifaPersonalizada !== ""
+        ? Number(tarifaPersonalizada)
+        : (pesoGeneral / 1000) * 6000;
 
 
                                 const subtotalProductos =
@@ -6197,17 +6195,17 @@ app.post(
                         conexion.query(
                             `
                                 SELECT
-                                    id_pedido,
-                                    peso_gramos,
-                                    total_precio
-
-                                FROM pedidos
-
-                                WHERE id_usuario = ?
-                                AND grupo_compra = ?
-                                AND archivado = 0
-
-                                FOR UPDATE
+    p.id_pedido,
+    p.peso_gramos,
+    p.total_precio,
+    g.tarifa_envio_personalizada
+FROM pedidos p
+INNER JOIN grupos_compra g
+    ON g.id_grupo = p.grupo_compra
+WHERE p.id_usuario = ?
+AND p.grupo_compra = ?
+AND p.archivado = 0
+FOR UPDATE
                             `,
                             [
                                 idUsuario,
@@ -6305,7 +6303,15 @@ app.post(
                                     );
 
 
-                                const envioGeneral = (pesoGeneral / 1000) * 6000;
+                                const tarifaPersonalizada =
+    pedidosFactura[0].tarifa_envio_personalizada;
+
+const envioGeneral =
+    tarifaPersonalizada !== null &&
+    tarifaPersonalizada !== undefined &&
+    tarifaPersonalizada !== ""
+        ? Number(tarifaPersonalizada)
+        : (pesoGeneral / 1000) * 6000;
                                 const subtotalProductos =
     pedidosFactura.reduce(
         (
