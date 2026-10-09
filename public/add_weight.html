@@ -1620,6 +1620,46 @@ body > table > thead {
 }
 
 </style>
+<style id="scrollHorizontalMovilAbonos">
+
+/* SCROLL HORIZONTAL MOVIL - TABLA EDITAR ABONO */
+
+@media (max-width: 768px) {
+
+    /* Permitir desplazamiento solo dentro de la tabla */
+    #modalEditarAbono .contenedor-tabla-abonos {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x pan-y;
+        box-sizing: border-box !important;
+    }
+
+    /* Conservar las cinco columnas completas */
+    #modalEditarAbono #tablaHistorialAbonos {
+        width: 760px !important;
+        min-width: 760px !important;
+        max-width: none !important;
+        table-layout: auto !important;
+    }
+
+    /* Evitar que los textos se partan */
+    #modalEditarAbono #tablaHistorialAbonos th,
+    #modalEditarAbono #tablaHistorialAbonos td {
+        white-space: nowrap !important;
+    }
+
+    /* Mantener visible el boton Eliminar dentro de su columna */
+    #modalEditarAbono #tablaHistorialAbonos td button {
+        white-space: nowrap !important;
+    }
+}
+
+</style>
 </head>
 
 <body>
