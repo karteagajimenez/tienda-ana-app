@@ -637,13 +637,13 @@ conexion.query(
             if (err) {
                 return res
                     .status(500)
-                    .send("Error del servidor âŒ");
+                    .send("Error del servidor.");
             }
 
             if (results.length === 0) {
                 return res
                     .status(401)
-                    .send("Usuario o contraseÃ±a incorrectos âŒ");
+                    .send("Usuario o contraseña incorrectos.");
             }
 
             const usuario = results[0];
@@ -660,7 +660,7 @@ conexion.query(
             if (!ok) {
                 return res
                     .status(401)
-                    .send("Usuario o contraseÃ±a incorrectos âŒ");
+                    .send("Usuario o contraseña incorrectos.");
             }
 
             // ðŸ” CREAR UNA SESIÃ“N NUEVA DESPUÃ‰S DEL LOGIN
