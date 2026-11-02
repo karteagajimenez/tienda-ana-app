@@ -152,6 +152,15 @@ conexion.connect(err => {
     console.log('âœ… Conectado a MySQL');
 });
 
+conexion.on('error', (err) => {
+    console.error('Error en la conexion MySQL:', err);
+
+    if (err.fatal) {
+        console.error('Conexion MySQL perdida. Reiniciando el proceso.');
+        process.exit(1);
+    }
+});
+
 // ðŸ”¥ CORREO
 const transporter = nodemailer.createTransport({
     service: 'gmail',
