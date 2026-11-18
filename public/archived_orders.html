@@ -2598,9 +2598,7 @@ async function cargarArchivados(){
                VALOR ENVÍO
             ============================================= */
 
-            const pesoRedondeado =
-    Math.floor(peso / 100) * 100 +
-    ((peso % 100) < 25 ? 0 : (peso % 100) <= 55 ? 50 : 100);
+            const pesoRedondeado = peso;
 
 const envio = (pesoRedondeado / 1000) * 6000;
 

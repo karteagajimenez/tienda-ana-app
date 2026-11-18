@@ -1224,9 +1224,7 @@ async function cargarArchivados(){
                 const precioProducto = precioUnitario * cantidad;
 
                 const peso = Number(p.peso_gramos) || 0;
-                const pesoRedondeado =
-                    Math.floor(peso / 100) * 100 +
-                    ((peso % 100) < 25 ? 0 : (peso % 100) <= 55 ? 50 : 100);
+                const pesoRedondeado = peso;
 
                 const envio = (pesoRedondeado / 1000) * 6000;
 
